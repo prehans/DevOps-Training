@@ -82,11 +82,9 @@ By addressing these issues proactively, organizations can streamline their SDLC,
 
 # Overview
 
-<<<<<<< HEAD
-![alt text](<Images/image%20(2).png>)
-=======
+
 ![alt text](Images/image.png)
->>>>>>> e78cf7e0f2f499ba455057d09374e76b03887f3e
+
 
 # Types of Version Control System
 
