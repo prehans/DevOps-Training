@@ -82,13 +82,13 @@ By addressing these issues proactively, organizations can streamline their SDLC,
 
 # Overview
 
-
 ![alt text](Images/image.png)
 
 <<<<<<< HEAD
-> > > > > > > e78cf7e0f2f499ba455057d09374e76b03887f3e
-=======
->>>>>>> 00c57ed18c7e1a7eba518dce1a4b330208eb2b16
+
+> > > > > > > # e78cf7e0f2f499ba455057d09374e76b03887f3e
+> > > > > > >
+> > > > > > > 00c57ed18c7e1a7eba518dce1a4b330208eb2b16
 
 # Types of Version Control System
 
@@ -339,3 +339,5 @@ When a merge request is created, it is marked as a draft by default. The Draft k
 This is an example of a pipeline graph that shows what the CI/CD build looks like. It lets you see how a set of one or more jobs are executed in the stages you define in the YAML file for the pipeline.
 
 ![alt text](Images/image4.png)
+
+![alt text](Images/image5.png)
