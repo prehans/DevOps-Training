@@ -282,3 +282,46 @@ In GitLab, an **Epic** is a high-level feature or large piece of work that is ty
 
 6. **Issue Linking:**
    - Issues and merge requests can be linked to an Epic, providing context and ensuring that all related work is tracked together.
+
+When a merge request is created, it is marked as a draft by default. The Draft keyword in the title of the merge request indicates that the merge is currently a draft. A draft merge cannot be merged until it is marked as ready. This helps to prevent accidental merges.
+
+### **Understanding GitLab CI/CD**
+
+**Continuous Integration (CI)** and **Continuous Delivery (CD)** are fundamental practices in modern software development that aim to improve code quality, streamline workflows, and accelerate delivery cycles. Here’s a detailed explanation of each practice and how they work together in GitLab CI/CD:
+
+### **Continuous Integration (CI)**
+
+1. **Definition and Purpose:**
+
+   - **Continuous Integration (CI)** is a development practice where code changes are frequently integrated into a shared repository. The key idea is to merge code changes from multiple developers into a central repository several times a day.
+   - **Purpose:** CI helps in identifying integration issues early, improving code quality, and fostering collaboration among team members. It ensures that code changes do not break the existing codebase and that the software remains functional and stable.
+
+2. **Process:**
+
+   - **Code Commit:** Developers commit their code changes to a shared repository.
+   - **Automated Build:** Each commit triggers an automated build process to compile the code and ensure that it integrates correctly with the existing codebase.
+   - **Automated Testing:** Automated tests are run to validate the changes. This includes unit tests, integration tests, and other types of testing to ensure code correctness and stability.
+   - **Feedback:** Developers receive feedback on their changes, allowing them to address issues quickly before the code is integrated into the main branch.
+
+3. **Benefits:**
+   - **Early Issue Detection:** CI helps catch integration problems and bugs early in the development cycle.
+   - **Improved Collaboration:** By frequently integrating code, team members can collaborate more effectively and avoid conflicts.
+   - **Maintained Code Quality:** Automated testing ensures that the codebase remains reliable and stable.
+
+### **Continuous Delivery (CD)**
+
+1. **Definition and Purpose:**
+
+   - **Continuous Delivery (CD)** extends the principles of CI to automate the delivery of code changes to production or staging environments. The goal is to ensure that software is always in a deployable state and that deployments can occur frequently and reliably.
+   - **Purpose:** CD streamlines the release process, making it easier to deploy new features, respond to customer feedback, and fix bugs promptly.
+
+2. **Process:**
+
+   - **Automated Deployment:** After successful integration and testing, code changes are automatically deployed to a staging environment. This environment closely mirrors the production environment.
+   - **Manual Approval (Optional):** Depending on the configuration, a manual approval step may be required before deploying changes to the production environment.
+   - **Production Deployment:** Once approved, changes are deployed to the production environment, where they are made available to end users.
+
+3. **Benefits:**
+   - **Frequent Releases:** CD allows for frequent and reliable releases of new features, enhancements, and fixes.
+   - **Reduced Risk:** By automating deployment and testing processes, CD reduces the risk associated with manual deployments and ensures that software is always in a releasable state.
+   - **Faster Response:** Teams can respond more quickly to user feedback and market demands.
