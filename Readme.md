@@ -249,3 +249,7 @@ Release branches are used to prepare and finalize software for a specific versio
 - **Production Branch:** Not always necessary if the release and stable branches serve the purpose.
 
 This approach ensures that your releases are well-managed, bug fixes are consistently applied, and your versioning is clear and organized.
+
+![alt text](image-1.png)
+
+![alt text](image-2.png)
