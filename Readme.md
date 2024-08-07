@@ -86,7 +86,8 @@ By addressing these issues proactively, organizations can streamline their SDLC,
 ![alt text](<Images/image%20(2).png>)
 =======
 ![alt text](Images/image.png)
->>>>>>> e78cf7e0f2f499ba455057d09374e76b03887f3e
+
+> > > > > > > e78cf7e0f2f499ba455057d09374e76b03887f3e
 
 # Types of Version Control System
 
@@ -331,3 +332,9 @@ When a merge request is created, it is marked as a draft by default. The Draft k
    - **Faster Response:** Teams can respond more quickly to user feedback and market demands.
 
 ![alt text](Images/image.png)
+
+# Anatomy of a CI/CD Pipeline
+
+This is an example of a pipeline graph that shows what the CI/CD build looks like. It lets you see how a set of one or more jobs are executed in the stages you define in the YAML file for the pipeline.
+
+![alt text](Images/image4.png)
