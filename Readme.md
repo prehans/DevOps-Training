@@ -191,3 +191,61 @@ After a feature branch is merged, it’s typically deleted to keep the repositor
 - **Branch Management**: Delete branches after merging to keep the repository organized, but retain important branches as needed.
 
 This structured approach helps manage and deploy code efficiently, ensuring stability and quality through multiple stages of development and testing.
+
+### **Release Branches Overview**
+
+**1. **Purpose of Release Branches:\*\*
+
+Release branches are used to prepare and finalize software for a specific version or release. They allow you to stabilize and make last-minute adjustments before the software is released to users. Release branches typically follow a versioning scheme like `2.3-stable` or `2.4-stable`.
+
+### **Workflow with Release Branches**
+
+**1. **Creating Release Branches:\*\*
+
+- **Creation:** When you’re ready to start preparing for a release, you create a release branch from the main development branch (often `master` or `main`). For example:
+
+  ```bash
+  git checkout -b release/2.3-stable
+  ```
+
+- **Purpose:** This branch is used to finalize the release. You can perform tasks like bug fixes, testing, and preparing documentation without affecting ongoing development in other branches.
+
+**2. **Merging Changes:\*\*
+
+- **Upstream First Policy:**
+
+  - **Primary Approach:** To maintain consistency, you should follow an "upstream first" policy. This means that all changes, including bug fixes and new features, should first be merged into the main branch (e.g., `master` or `main`).
+  - **Cherry-Picking:** After merging changes into the main branch, you can cherry-pick relevant commits into the release branch to ensure that bug fixes and important updates are also included in the release.
+  - **Example:**
+    ```bash
+    git checkout master
+    git merge <feature-branch>
+    git checkout release/2.3-stable
+    git cherry-pick <commit-id>
+    ```
+
+- **Tagging:** Once a release branch is finalized and the release is made, a new tag should be created to mark this specific version. Tags help in identifying and referencing specific versions of your software.
+  ```bash
+  git tag -a v2.3.0 -m "Release version 2.3.0"
+  git push origin v2.3.0
+  ```
+
+**3. **Stable Branch:\*\*
+
+- **Purpose:** Some projects maintain a `stable` branch that points to the latest released version. This branch provides a reference to the current stable state of the software, even if new release branches are created for future versions.
+- **Usage:** The `stable` branch is often updated to reflect the latest stable release. It serves as a reference point and may be used for hotfixes or patches applied to released versions.
+
+**4. **Production Branch:\*\*
+
+- **Common Practice:** In many workflows, a separate `production` branch may not be necessary if the release branches and the `stable` branch effectively cover the needs for production deployment.
+- **Alternative:** Instead of a dedicated production branch, the latest release branch or the `stable` branch may serve as the source of truth for what's currently in production.
+
+### **Summary of Key Points**
+
+- **Release Branches:** Used to finalize and prepare software for specific versions.
+- **Upstream First Policy:** Merge changes into the main branch first and then cherry-pick them into the release branch to avoid inconsistencies.
+- **Tagging:** Create a new tag for each release to mark the version clearly.
+- **Stable Branch:** Maintains a reference to the latest stable version, and may be used for hotfixes.
+- **Production Branch:** Not always necessary if the release and stable branches serve the purpose.
+
+This approach ensures that your releases are well-managed, bug fixes are consistently applied, and your versioning is clear and organized.
