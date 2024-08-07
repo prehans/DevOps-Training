@@ -82,7 +82,7 @@ By addressing these issues proactively, organizations can streamline their SDLC,
 
 # Overview
 
-![alt text](image.png)
+![alt text](Images/image.png)
 
 # Types of Version Control System
 
