@@ -250,11 +250,11 @@ Release branches are used to prepare and finalize software for a specific versio
 
 This approach ensures that your releases are well-managed, bug fixes are consistently applied, and your versioning is clear and organized.
 
-![alt text](image-1.png)
+![alt text](Images/image-1.png)
 
-![alt text](image-2.png)
+![alt text](Images/image-2.png)
 
-![alt text](image-3.png)
+![alt text](Images/image-3.png)
 
 In GitLab, an **Epic** is a high-level feature or large piece of work that is typically broken down into smaller, more manageable issues or tasks. Epics are used to organize and track work across multiple projects or issues and are particularly useful for managing large projects or features that span several milestones or iterations.
 
