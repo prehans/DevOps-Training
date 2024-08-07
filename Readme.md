@@ -82,7 +82,7 @@ By addressing these issues proactively, organizations can streamline their SDLC,
 
 # Overview
 
-![alt text](image.png)
+![alt text](<Images/image%20(2).png>)
 
 # Types of Version Control System
 
@@ -325,3 +325,5 @@ When a merge request is created, it is marked as a draft by default. The Draft k
    - **Frequent Releases:** CD allows for frequent and reliable releases of new features, enhancements, and fixes.
    - **Reduced Risk:** By automating deployment and testing processes, CD reduces the risk associated with manual deployments and ensures that software is always in a releasable state.
    - **Faster Response:** Teams can respond more quickly to user feedback and market demands.
+
+![alt text](Images/image.png)
