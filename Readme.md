@@ -402,3 +402,56 @@ This is an example of a pipeline graph that shows what the CI/CD build looks lik
 | `git log --summary`                        | View changes (detailed)        |
 | `git log --oneline`                        | View changes (briefly)         |
 | `git diff [source branch] [target branch]` | Preview changes before merging |
+
+# Head in Git
+
+![alt text](Images/image7.png)
+
+The `git checkout HEAD^` command is used to check out the commit immediately before the current commit. Here's a breakdown of what this command does and how it works:
+
+### Understanding `HEAD^`
+
+- **`HEAD`**: Refers to the current commit your working directory is based on.
+- **`HEAD^`**: Refers to the parent commit of `HEAD`. In Git, `HEAD^` is shorthand for `HEAD~1`, which means "one commit before the current commit." If you want to go further back, you can use `HEAD^^` (or `HEAD~2`), `HEAD~~~` (or `HEAD~3`), and so on.
+
+### Using `git checkout HEAD^`
+
+1. **Checkout the Parent Commit**:
+
+   ```bash
+   git checkout HEAD^
+   ```
+
+   This command checks out the parent commit of the current commit, placing your working directory into a "detached HEAD" state.
+
+2. **Viewing Changes**: Once checked out, you can inspect files and see the state of the repository at the parent commit.
+
+### Example Scenario
+
+Imagine your commit history looks like this:
+
+```
+A -- B -- C -- D (HEAD)
+```
+
+If you run `git checkout HEAD^`, you will switch to commit `C`.
+
+### Working with Detached HEAD State
+
+- **Inspect Files**: You can view the files as they were in the parent commit.
+- **Make Changes**: If you make changes and want to keep them, you should create a new branch:
+  ```bash
+  git checkout -b new-branch-name
+  ```
+- **Return to the Branch**: To go back to the latest commit on your branch:
+  ```bash
+  git checkout main
+  ```
+  Replace `main` with whatever branch you were on before.
+
+### Important Notes
+
+- **Detached HEAD State**: In this state, any new commits won’t be saved to a branch unless you explicitly create a new branch or otherwise integrate them.
+- **Recovery**: If you make changes in the detached HEAD state and don’t create a new branch, those changes might be lost when switching to another commit or branch.
+
+Using `HEAD^` is useful for viewing or reverting to previous states in your repository, but remember to manage your commits and branches carefully to avoid losing work.
