@@ -525,3 +525,62 @@ The `git revert` command is used to create a new commit that undoes the changes 
 
 - **`git reset`**: Alters branch history and can modify the working directory. Use for local changes and history adjustments.
 - **`git revert`**: Creates a new commit to reverse changes without altering commit history. Use for undoing changes safely in shared repositories.
+
+### Role Hierarchy Overview
+
+![alt text](Images/image9.png)
+
+In GitLab, roles and permissions are crucial for managing access and controlling what users can do within projects and groups. Here's a detailed explanation of the role hierarchy and how it works when a user is assigned multiple roles:
+
+When managing users in GitLab, roles are assigned to determine the level of access and control a user has within a project or group. GitLab uses a hierarchical system where different roles have varying levels of permissions.
+
+#### **Project vs. Group Roles**
+
+- **Project Roles**: Define permissions specifically for a single project.
+- **Group Roles**: Define permissions within a group that can contain multiple projects. These roles can apply to all projects within the group.
+
+### Hierarchical Role System
+
+1. **Role Levels**:
+
+   - **Guest**: Limited access, mostly read-only. Can view issues, merge requests, and some other elements but cannot make changes.
+   - **Reporter**: Can view and comment on issues, view code, and see most aspects of the project but cannot make changes.
+   - **Developer**: Can push code, manage issues, and perform other development-related tasks. Has more permissions than Reporter.
+   - **Maintainer**: Can manage project settings, handle project configuration, and have broad control over the project. Higher level than Developer.
+   - **Owner**: (For groups) Has the highest level of control over a group and its projects. Owners can change group settings, manage members, and more.
+
+2. **Permissions Hierarchy**:
+   - **Project Roles**: When a user is assigned a role at the project level, their permissions are confined to that specific project.
+   - **Group Roles**: When a user is assigned a role at the group level, it applies to all projects within the group. If a project has its own roles defined, the group role will apply to all projects under the group by default.
+
+### When a User is Added to Both a Project and a Group
+
+If a user is added to both a group and a project with different roles, GitLab uses the higher role to determine their effective permissions. Here’s how it works:
+
+1. **Role Assignment**:
+
+   - **Group Role**: If a user is assigned a role (e.g., Developer) at the group level, this role will apply to all projects within that group.
+   - **Project Role**: If the same user is also assigned a different role (e.g., Maintainer) at the project level, the project-specific role takes precedence.
+
+2. **Effective Permissions**:
+   - The user’s permissions are governed by the highest role they hold in any of the contexts where they are assigned. For example, if a user has a Developer role at the group level and a Maintainer role at the project level, they will have the permissions associated with the Maintainer role in that project.
+
+### Example
+
+Consider a user who is assigned:
+
+- **Developer** role in a group.
+- **Maintainer** role in a specific project within that group.
+
+In this case:
+
+- **For the group**: The user will have Developer-level permissions across all projects in the group.
+- **For the specific project**: The user will have Maintainer-level permissions due to the project-specific role, which overrides the group-level role for this particular project.
+
+### Summary
+
+- **Group Roles**: Apply to all projects within the group and define default permissions.
+- **Project Roles**: Apply specifically to individual projects and can override group-level permissions.
+- **Role Precedence**: When a user has roles at both the group and project levels, the higher role’s permissions apply in the specific context where the higher role is assigned.
+
+Understanding this hierarchy helps ensure that users have appropriate access levels and that permissions are correctly managed across both group-wide and project-specific contexts in GitLab.
