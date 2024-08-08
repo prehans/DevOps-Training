@@ -455,3 +455,7 @@ If you run `git checkout HEAD^`, you will switch to commit `C`.
 - **Recovery**: If you make changes in the detached HEAD state and don’t create a new branch, those changes might be lost when switching to another commit or branch.
 
 Using `HEAD^` is useful for viewing or reverting to previous states in your repository, but remember to manage your commits and branches carefully to avoid losing work.
+
+# Branch Forcing
+
+![alt text](Images/image8.png)
