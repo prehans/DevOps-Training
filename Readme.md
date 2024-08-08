@@ -459,3 +459,69 @@ Using `HEAD^` is useful for viewing or reverting to previous states in your repo
 # Branch Forcing
 
 ![alt text](Images/image8.png)
+
+### `git reset`
+
+The `git reset` command is used to move the current branch's HEAD to a specified state, and it can also modify the staging area and working directory. There are three primary forms of `git reset`:
+
+1. **Soft Reset (`--soft`)**:
+
+   - **Usage**: `git reset --soft <commit>`
+   - **Effect**: Moves the HEAD to the specified commit, but keeps changes in the index (staging area) and working directory. This means changes made after the specified commit are still staged and can be committed again.
+   - **Example**:
+     ```bash
+     git reset --soft HEAD~1
+     ```
+     This command will move HEAD to the previous commit while keeping your changes staged.
+
+2. **Mixed Reset (default)**:
+
+   - **Usage**: `git reset <commit>`
+   - **Effect**: Moves the HEAD to the specified commit and updates the staging area to match it, but does not modify the working directory. This effectively unstages any changes made after the specified commit but leaves the changes in your working directory.
+   - **Example**:
+     ```bash
+     git reset HEAD~1
+     ```
+     This command will move HEAD to the previous commit and unstage changes made after that commit, but the changes will still be in your working directory.
+
+3. **Hard Reset (`--hard`)**:
+   - **Usage**: `git reset --hard <commit>`
+   - **Effect**: Moves the HEAD to the specified commit, updates the staging area, and modifies the working directory to match the commit. All changes in the working directory and staging area are discarded.
+   - **Example**:
+     ```bash
+     git reset --hard HEAD~1
+     ```
+     This command will reset your branch to the previous commit and discard all changes in your working directory and staging area.
+
+### `git revert`
+
+The `git revert` command is used to create a new commit that undoes the changes made by a previous commit. Unlike `git reset`, `git revert` does not alter the commit history but instead adds a new commit that effectively reverses the changes.
+
+- **Usage**: `git revert <commit>`
+- **Effect**: Creates a new commit that reverses the changes introduced by the specified commit. This is useful for undoing changes in a shared history without rewriting the commit history.
+- **Example**:
+  ```bash
+  git revert a1b2c3d4
+  ```
+  This command will create a new commit that reverses the changes made in commit `a1b2c3d4`.
+
+### Key Differences
+
+- **History Modification**:
+
+  - `git reset` can alter commit history, especially with `--hard` or `--soft`, which can affect collaborators if pushed to a shared repository.
+  - `git revert` does not change commit history; it creates a new commit that undoes the changes, making it safer for shared branches.
+
+- **Usage Context**:
+
+  - Use `git reset` for local changes, when you want to undo or redo commits before they’re shared with others.
+  - Use `git revert` for undoing changes in a way that is safe for shared branches, as it preserves commit history.
+
+- **Effect on Working Directory**:
+  - `git reset --hard` will affect your working directory and discard changes.
+  - `git revert` will leave your working directory as is but adds a new commit to reverse the changes.
+
+### Summary
+
+- **`git reset`**: Alters branch history and can modify the working directory. Use for local changes and history adjustments.
+- **`git revert`**: Creates a new commit to reverse changes without altering commit history. Use for undoing changes safely in shared repositories.
