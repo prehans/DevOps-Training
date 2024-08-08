@@ -618,3 +618,5 @@ Iteration date ranges cannot overlap within an iteration cadence
 The iteration detail page shows you overall % complete as well as burndown and burnup charts
 
 ![alt text](Images/image10.png)
+
+![alt text](Images/image11.png)
