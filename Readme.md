@@ -584,3 +584,37 @@ In this case:
 - **Role Precedence**: When a user has roles at both the group and project levels, the higher role’s permissions apply in the specific context where the higher role is assigned.
 
 Understanding this hierarchy helps ensure that users have appropriate access levels and that permissions are correctly managed across both group-wide and project-specific contexts in GitLab.
+
+# Milestones
+
+Milestones
+Milestones in GitLab are a way to track issues and merge requests created to achieve a broader goal in a certain period of time. Milestones allow you to organize issues and merge requests into a cohesive group, with an optional start date and an optional due date.
+
+For example, if you have a lot of issues related to a specific deliverable or goal, you can create a milestone and assign all of the issues to it.
+
+Key features/functions
+
+You can assign both issues and merge requests to milestones
+Everything assigned to the same milestone shares the same start date and end date
+Milestones can exist at the project or group level
+The milestone view also contains a burndown and burnup chart showing the progress of completing a milestone
+
+# Iterations
+
+Iterations are a way to track issues over a period of time. This allows teams to track velocity and volatility metrics. For tracking over different time periods, you can use iterations milestones. You can create and manage various iteration cadences.
+
+For example, you can use:
+
+Milestones for Program Increments, which span 8-12 weeks.
+Iterations for Sprints, which span 2 weeks.
+
+Key features/functions
+
+You can consider an iteration like a sprint and assign issues to your iterations
+Iterations are at the group level only and groups can have only 1 active iteration at a time
+Iterations are grouped into iteration cadences
+Iterations require start and end dates
+Iteration date ranges cannot overlap within an iteration cadence
+The iteration detail page shows you overall % complete as well as burndown and burnup charts
+
+![alt text](Images/image10.png)
