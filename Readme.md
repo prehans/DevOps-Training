@@ -620,3 +620,7 @@ The iteration detail page shows you overall % complete as well as burndown and b
 ![alt text](Images/image10.png)
 
 ![alt text](Images/image11.png)
+
+# PIPELINE
+
+A pipeline is made of multiple stages , and stages consists of one or multiple job and the job are executed by the runner that makes job complete and hand it over to the Gitlab.
