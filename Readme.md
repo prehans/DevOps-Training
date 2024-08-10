@@ -802,3 +802,129 @@ workflow:
    when: never
     - when: always
 ````
+
+# Needs
+
+The needs keyword enables executing jobs out-of-order, allowing you to implement a directed acyclic graph (DAG) in your CI configuration.
+
+This lets you run some jobs without waiting for other ones, disregarding stage ordering so you can have multiple stages running concurrently. You can ignore stage ordering and run some jobs without waiting for others to complete. Jobs in multiple stages can run concurrently. See below for an example YAML with needs utilized.
+
+```yaml
+linux:build:
+  stage: build
+
+mac:build:
+  stage: build
+
+lint:
+  stage: test
+  needs: []
+
+linux:rspec:
+  stage: test
+  needs: ["linux:build"]
+
+mac:rubocop:
+  stage: test
+  needs: ["mac:build"]
+
+production:
+  stage: deploy
+```
+
+# Reusable Template
+
+Creating a reusable pipeline in GitLab is a great way to streamline your CI/CD processes and ensure consistency across projects. In GitLab, you can create reusable pipelines by using templates, including predefined jobs, or defining custom pipeline configurations that can be included in multiple `.gitlab-ci.yml` files.
+
+Here's how you can create a reusable pipeline in GitLab:
+
+### 1. **Create a Template Repository**
+
+- Create a repository that will hold your reusable pipeline definitions.
+- In this repository, you can define your pipeline stages, jobs, and variables.
+
+### 2. **Define Reusable Jobs in the Template**
+
+- In your template repository, create a `.gitlab-ci.yml` file where you define the jobs you want to reuse.
+
+Example:
+
+```yaml
+# .gitlab-ci.yml in the template repository
+.build_job_template:
+  script:
+    - echo "Running the build job"
+    - make build
+
+.test_job_template:
+  script:
+    - echo "Running tests"
+    - make test
+
+.deploy_job_template:
+  script:
+    - echo "Deploying application"
+    - make deploy
+```
+
+Here, `.build_job_template`, `.test_job_template`, and `.deploy_job_template` are defined as hidden jobs (jobs prefixed with a dot) that are not executed directly but can be included in other pipelines.
+
+### 3. **Include the Template in Other Projects**
+
+- In the `.gitlab-ci.yml` of your other projects, you can include the jobs defined in the template repository.
+
+Example:
+
+```yaml
+include:
+  - project: "namespace/template-repository"
+    file: "/.gitlab-ci.yml"
+
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  extends: .build_job_template
+
+test:
+  extends: .test_job_template
+
+deploy:
+  extends: .deploy_job_template
+```
+
+Here, `include` is used to pull the `.gitlab-ci.yml` from the template repository, and `extends` is used to reuse the jobs defined there.
+
+### 4. **Use Pipeline Variables**
+
+- You can use pipeline variables to customize the behavior of the reusable jobs.
+
+Example:
+
+```yaml
+variables:
+  BUILD_ENV: "production"
+
+build:
+  extends: .build_job_template
+  script:
+    - echo "Building for $BUILD_ENV"
+    - make build
+```
+
+The `BUILD_ENV` variable can be customized per project or pipeline.
+
+### 5. **Test and Maintain the Template**
+
+- Test the reusable pipeline by running it in different projects.
+- Keep the template repository updated and version-controlled to maintain consistency across all pipelines that use it.
+
+### Benefits of Reusable Pipelines:
+
+- **Consistency**: Ensures that the same steps are followed in different projects.
+- **Maintainability**: Changes can be made in one place (the template repository) and automatically propagate to all pipelines that include the template.
+- **Efficiency**: Reduces duplication of code and configuration, making your pipelines easier to manage.
+
+This approach allows you to create scalable and maintainable CI/CD pipelines across multiple projects in GitLab.
