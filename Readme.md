@@ -712,3 +712,38 @@ In this example, the `node_modules/` directory is cached between builds. The `ke
 - **Cache:** Used to speed up pipeline execution by reusing previously stored data. Caches are typically used for dependencies or build artifacts that are expensive to regenerate or download.
 
 By using artifacts and cache effectively, you can improve the efficiency and speed of your CI/CD pipelines in GitLab.
+
+Dependencies
+Dependencies restrict which artifacts are passed to a specific job by providing a list of jobs to fetch artifacts from selectively. They are defined in the job and pass a list of all previous jobs the artifacts should be downloaded from. See below for an example YAML file with dependencies.
+
+```yaml
+build:osx:
+  stage: build
+  script: make build:osx
+  artifacts:
+    paths:
+      - binaries/
+
+build:linux:
+  stage: build
+  script: make build:linux
+  artifacts:
+    paths:
+      - binaries/
+
+test:osx:
+  stage: test
+  script: make test:osx
+  dependencies:
+    - build:osx
+
+test:linux:
+  stage: test
+  script: make test:linux
+  dependencies:
+    - build:linux
+
+deploy:
+  stage: deploy
+  script: make deploy
+```
