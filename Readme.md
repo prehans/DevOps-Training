@@ -834,7 +834,7 @@ production:
   stage: deploy
 ```
 
-# Reusable Template
+# Reusable Pipeline
 
 Creating a reusable pipeline in GitLab is a great way to streamline your CI/CD processes and ensure consistency across projects. In GitLab, you can create reusable pipelines by using templates, including predefined jobs, or defining custom pipeline configurations that can be included in multiple `.gitlab-ci.yml` files.
 
@@ -930,3 +930,72 @@ The `BUILD_ENV` variable can be customized per project or pipeline.
 - **Efficiency**: Reduces duplication of code and configuration, making your pipelines easier to manage.
 
 This approach allows you to create scalable and maintainable CI/CD pipelines across multiple projects in GitLab.
+
+# Shifting security left
+
+"Shifting security left" in GitLab refers to integrating security practices and testing early in the software development lifecycle (SDLC), rather than waiting until later stages like deployment. This approach aims to identify and resolve security vulnerabilities as early as possible, reducing the cost and effort of fixing issues and improving overall security.
+
+### How to Shift Security Left in GitLab
+
+1. **Enable Security Scanning in CI/CD Pipelines**
+   GitLab provides several built-in security scanning features that can be integrated into your CI/CD pipelines:
+
+   - **Static Application Security Testing (SAST):** Scans your source code for vulnerabilities.
+   - **Dependency Scanning:** Identifies vulnerabilities in your project's dependencies.
+   - **Container Scanning:** Scans container images for known vulnerabilities.
+   - **Dynamic Application Security Testing (DAST):** Simulates attacks on a live application to find vulnerabilities.
+
+   Example configuration in `.gitlab-ci.yml`:
+
+   ```yaml
+   include:
+     - template: Security/SAST.gitlab-ci.yml
+     - template: Security/Dependency-Scanning.gitlab-ci.yml
+     - template: Security/Container-Scanning.gitlab-ci.yml
+     - template: Security/DAST.gitlab-ci.yml
+
+   stages:
+     - build
+     - test
+     - security
+
+   sast:
+     stage: security
+
+   dependency_scanning:
+     stage: security
+
+   container_scanning:
+     stage: security
+
+   dast:
+     stage: security
+   ```
+
+2. **Incorporate Security Scanning Early in the Development Process**
+
+   - **Pre-commit Hooks:** Use Git hooks to run security checks before code is committed to the repository.
+   - **Merge Request Scanning:** Configure security scans to automatically run on merge requests, ensuring that vulnerabilities are caught before code is merged into the main branch.
+
+3. **Use GitLab’s Security Dashboard**
+
+   - The Security Dashboard in GitLab provides an overview of vulnerabilities across your projects. This allows you to monitor and manage security issues effectively and prioritize fixes.
+
+4. **Automate Security Remediation**
+
+   - GitLab can automatically suggest security patches for vulnerabilities found in dependencies, making it easier for developers to apply fixes quickly.
+
+5. **Custom Security Policies**
+
+   - GitLab allows you to define custom security policies using code, which can be enforced across your projects. These policies can include rules for branch protection, required scans, and more.
+
+6. **Security Training and Awareness**
+   - Educate your development team on the importance of security and how to write secure code. Incorporating tools and practices into daily workflows helps developers consider security from the outset.
+
+### Benefits of Shifting Security Left
+
+- **Early Detection of Vulnerabilities:** Identifying and fixing issues early in the development process reduces the risk of deploying vulnerable code.
+- **Cost Efficiency:** Fixing security issues earlier in the SDLC is typically less costly than addressing them after deployment.
+- **Continuous Improvement:** Regular security testing helps create a culture of continuous improvement in security practices.
+
+Shifting security left in GitLab aligns with DevSecOps principles, ensuring that security is an integral part of the development process rather than an afterthought.
