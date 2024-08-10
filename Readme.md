@@ -624,3 +624,25 @@ The iteration detail page shows you overall % complete as well as burndown and b
 # PIPELINE
 
 A pipeline is made of multiple stages , and stages consists of one or multiple job and the job are executed by the runner that makes job complete and hand it over to the Gitlab.
+
+<!-- Gitlab pipeline details  -->
+
+<!-- ////////////////////////// -->
+
+### Docker Image
+
+A Docker image is a lightweight, standalone, and executable package that includes everything needed to run a piece of software. This includes the code, runtime, libraries, environment variables, and configuration files.
+
+In more detail:
+
+- **Layered Structure:** Docker images are made up of layers. Each layer represents a set of file changes or additions and is built on top of previous layers. This layered structure allows for efficient use of disk space and makes it easier to distribute and update images.
+
+- **Immutability:** Once a Docker image is created, it doesn’t change. This immutability ensures that the software runs the same way regardless of where it is deployed, leading to consistent environments.
+
+- **Portability:** Docker images can be run on any system that has Docker installed, regardless of the underlying operating system or hardware. This portability is one of the main benefits of using Docker.
+
+- **Reusability:** Since Docker images can be built from a base image (like an official operating system or language runtime image) and then customized, they promote reuse and sharing of common configurations and dependencies.
+
+- **Dockerfile:** The Docker image is typically built from a `Dockerfile`, which is a text file containing instructions on how to construct the image. The `Dockerfile` specifies the base image, copies files, installs dependencies, and sets up the environment for the application.
+
+Overall, Docker images help streamline development, testing, and deployment processes by providing a consistent environment across different stages and platforms.
