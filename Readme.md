@@ -771,18 +771,17 @@ pseudo-deploy:
 Close Example 2: Triggered by a Merge Request
 This conditional rule ensures that a pipeline only runs when a merge request event is triggered:
 
-````yaml
-
+```yaml
 job:
   script: "echo Hello, Rules!"
   rules:
     - if: ‘$CI_PIPELINE_SOURCE == “merge_request_event”’
-
-    ```
+```
 
 Close Example 3: Delayed Job Start & Allowed Failure
 This job will run 3 hours after triggered and will be allowed to fail (will not prevent further stages from firing):
 
+```yaml
 docker build:
   script: docker build -t my-image:$CI_COMMIT_REF_SLUG .
   rules:
@@ -790,10 +789,12 @@ docker build:
     when: delayed
     start_in: '3 hours'
     allow_failure: true
+```
 
 Close Example 4: Workflow Rules
 This pipeline will not run if the commit message ends with “-wip”. It also will not run if it was triggered by a tag being applied. Otherwise, this pipeline will run.
 
+```yaml
 workflow:
   rules:
    - if: $CI_COMMIT_MESSAGE =~ /-wip$/
@@ -801,7 +802,8 @@ workflow:
     - if: $CI_COMMIT_TAG
    when: never
     - when: always
-````
+<<<<<<< HEAD
+```
 
 # Needs
 
