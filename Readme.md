@@ -1160,6 +1160,76 @@ To enable any of these scanners, you typically include the corresponding GitLab 
 
 GitLab provides comprehensive security scanning tools to help you identify and address vulnerabilities in your code, dependencies, and container images. By incorporating these scanners into your CI/CD pipelines, you can enhance the security and compliance of your applications.
 
+SAST can be considered white box testing, meaning that it's able to look inside your application to look at the code. DAST is black box testing, meaning that the application is tested from the outside.
+
+Dynamic Application Security Testing (DAST) is a type of security testing that analyzes a running application to find vulnerabilities and security flaws. Unlike Static Application Security Testing (SAST), which examines the source code, DAST tests the application from the outside, simulating real-world attacks.
+
+GitLab offers built-in DAST capabilities as part of its DevSecOps tools, allowing you to integrate security testing into your CI/CD pipeline. Here's a detailed overview of how DAST works in GitLab:
+
+### 1. **How DAST Works in GitLab**
+
+- **Scanning**: DAST scans a running application for vulnerabilities, such as SQL injection, cross-site scripting (XSS), and others. It does this by interacting with the application just as a user or attacker would, sending various inputs to see how the application responds.
+- **Reporting**: After the scan, GitLab generates a report that lists all the detected vulnerabilities, including details on the type of issue, its severity, and potential remediation steps.
+- **Automation**: DAST in GitLab can be automated as part of your CI/CD pipeline. This means every time you push code, the application can be automatically scanned for vulnerabilities.
+
+### 2. **Setting Up DAST in GitLab**
+
+To set up DAST in your GitLab CI/CD pipeline, follow these steps:
+
+- **1. Add DAST to your `.gitlab-ci.yml`**:
+  You can add a DAST job to your GitLab pipeline by including the `DAST.gitlab-ci.yml` template. Here's a basic example:
+
+  ```yaml
+  include:
+    - template: DAST.gitlab-ci.yml
+
+  dast:
+    stage: test
+    script:
+      - echo "Running DAST"
+    variables:
+      DAST_WEBSITE: "https://example.com"
+  ```
+
+- **2. Configure DAST Variables**:
+  You need to configure several variables to define how the DAST job should run:
+
+  - **`DAST_WEBSITE`**: The URL of the website or application you want to scan.
+  - **`DAST_EXCLUDE_URLS`**: URLs to exclude from the scan.
+  - **`DAST_FULL_SCAN_ENABLED`**: If set to `true`, enables a more comprehensive scan (disabled by default).
+  - **`DAST_AUTH_URL`, `DAST_USERNAME`, `DAST_PASSWORD`**: For scanning applications that require authentication.
+
+  These variables can be set directly in the `.gitlab-ci.yml` file or through GitLab's CI/CD settings.
+
+- **3. Run the Pipeline**:
+  Once configured, running the pipeline will trigger the DAST job, which will scan the specified website and produce a report on detected vulnerabilities.
+
+### 3. **Understanding DAST Reports**
+
+- **Vulnerability List**: The report will contain a list of all detected vulnerabilities, categorized by type (e.g., SQL Injection, XSS).
+- **Severity Levels**: Each vulnerability is assigned a severity level (e.g., Critical, High, Medium, Low).
+- **Detailed Findings**: For each vulnerability, the report provides detailed information, including the affected URL, attack vector, and suggestions for remediation.
+
+GitLab allows you to view these reports directly in the Merge Request (MR) interface, making it easy to review and address security issues before merging code.
+
+### 4. **Integrating DAST with Other GitLab Security Tools**
+
+- **Security Dashboards**: GitLab provides a security dashboard where you can view all the vulnerabilities detected across your projects. This helps in tracking and managing security issues at a higher level.
+- **Vulnerability Management**: GitLab allows you to create issues directly from the DAST report, assign them to team members, and track their resolution.
+- **SAST and Dependency Scanning**: DAST can be used in conjunction with SAST and Dependency Scanning (which checks for vulnerabilities in your code dependencies) for comprehensive security testing.
+
+### 5. **Best Practices for Using DAST in GitLab**
+
+- **Run DAST on Staging Environments**: Since DAST requires a running application, it's typically run on a staging environment rather than in production.
+- **Use Authentication**: If your application requires login, configure DAST with authentication details to scan areas that are behind login screens.
+- **Review and Triage**: Regularly review DAST reports and prioritize fixing high-severity issues.
+
+### Summary
+
+GitLab's DAST feature provides an automated way to test your applications for security vulnerabilities as part of your CI/CD pipeline. By integrating DAST into your DevSecOps workflow, you can catch security issues early in the development process, reducing the risk of vulnerabilities in your production environment.
+
+![alt text](Images/image13.png)
+
 # DOCKER
 
 The command `docker run -p 3000:3000 524d80f7d9b5` is used to run a Docker container from an image with the ID `524d80f7d9b5`, and map port 3000 of the host machine to port 3000 of the container. Here's a breakdown:
