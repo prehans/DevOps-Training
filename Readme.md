@@ -1445,7 +1445,111 @@ The Dependency Scanning report provides detailed information about the vulnerabi
 
 ### Summary
 
-Dependency Scanning in GitLab is an essential tool for securing your software supply chain by automatically identifying vulnerabilities in the third-party libraries and components your project depends on. By integrating it into your CI/CD pipeline, you can ensure that your software is built on secure foundations, reducing the risk of introducing vulnerabilities into your production environment. This tool, combined with regular updates and vigilant monitoring, forms a key part of a comprehensive security strategy.
+Dependency Scanning in GitLab is an essential tool for securing your software supply chain by automatically identifying vulnerabilities in the third-party libraries and components your project depends on. By integrating it into your CI/CD pipeline, you can ensure that your software is built on secure foundations, reducing the risk of introducing vulnerabilities into your production
+environment. This tool, combined with regular updates and vigilant monitoring, forms a key part of a comprehensive security strategy.
+
+# Container Scanning
+
+**Container Scanning** in GitLab is a security feature designed to automatically analyze Docker images for vulnerabilities. It scans the container images used in your projects and checks for known security issues in the software components that make up the image. This helps to ensure that the containers you deploy to production are secure and free from vulnerabilities that could be exploited.
+
+### Key Features of Container Scanning
+
+1. **Automatic Vulnerability Detection**:
+
+   - Container Scanning identifies vulnerabilities in the packages and libraries within your Docker images by comparing them against databases of known vulnerabilities, such as the National Vulnerability Database (NVD) and other security advisories.
+
+2. **Integration with CI/CD**:
+
+   - Container Scanning is integrated directly into GitLab’s CI/CD pipelines, meaning every time you build a Docker image as part of your CI/CD process, it can be automatically scanned for vulnerabilities.
+   - This helps catch security issues early in the development lifecycle, before the image is deployed to production.
+
+3. **Comprehensive Security Reports**:
+
+   - GitLab generates detailed reports that list all the detected vulnerabilities in the container images, including their severity, affected components, and remediation recommendations.
+   - These reports are accessible directly within the GitLab interface, making it easy for developers and security teams to review and address issues.
+
+4. **Support for Multiple Container Registries**:
+
+   - GitLab Container Scanning can be used with Docker images stored in various container registries, including GitLab's own container registry, Docker Hub, and other third-party registries.
+
+5. **Continuous Monitoring**:
+   - Once vulnerabilities are detected, GitLab can continuously monitor your Docker images for new vulnerabilities as they are disclosed, helping to maintain the security of your containers over time.
+
+### Setting Up Container Scanning in GitLab
+
+To set up Container Scanning in GitLab, you need to include the appropriate configuration in your CI/CD pipeline. Here’s how to do it:
+
+1. **Add Container Scanning to Your `.gitlab-ci.yml`**:
+
+   - To enable Container Scanning, you need to include the `Container-Scanning.gitlab-ci.yml` template in your CI/CD pipeline configuration file.
+   - Here’s an example:
+
+     ```yaml
+     include:
+       - template: Container-Scanning.gitlab-ci.yml
+
+     container_scanning:
+       stage: test
+       script:
+         - echo "Running Container Scanning"
+     ```
+
+   - This template automatically configures a Container Scanning job in your CI/CD pipeline.
+
+2. **Configure the Scanning Process**:
+
+   - You can configure various aspects of the Container Scanning job using environment variables. For example:
+     - **`CS_IMAGE`**: Specifies the Docker image to scan.
+     - **`CS_EXCLUDED_PATHS`**: Specifies paths that should be excluded from the scan.
+     - **`CS_DISABLE_DISTRIBUTION`**: Disables scanning for specific distributions or package managers.
+
+3. **Run the Pipeline**:
+
+   - Once configured, running the pipeline will trigger the Container Scanning job. The Docker image specified in the configuration will be scanned for vulnerabilities.
+
+4. **Review the Security Report**:
+   - After the pipeline completes, you can review the Container Scanning report, which will be available under the "Security" tab of your project or merge request.
+   - The report includes details on each vulnerability, including its severity, impact, and remediation steps.
+
+### Understanding Container Scanning Reports
+
+The Container Scanning report provides detailed information about the vulnerabilities found in your Docker images, including:
+
+- **Vulnerability Name**: The name or identifier of the vulnerability (e.g., CVE number).
+- **Severity Level**: The severity of the vulnerability, classified as Critical, High, Medium, Low, or Unknown.
+- **Affected Component**: The specific package or library within the Docker image that contains the vulnerability.
+- **Vulnerable Version**: The version of the component that is vulnerable.
+- **Fixed Version**: The version of the component that contains the fix.
+- **Description and Recommendations**: Detailed information about the vulnerability and suggested remediation steps, such as updating to a newer version of the component.
+
+### Best Practices for Using Container Scanning
+
+1. **Scan Images Regularly**:
+
+   - Make it a practice to regularly scan your Docker images for vulnerabilities. This helps ensure that any new vulnerabilities introduced by updated base images or dependencies are detected promptly.
+
+2. **Integrate Early in the Development Process**:
+
+   - Integrate Container Scanning into your CI/CD pipeline early in the development process. This ensures that vulnerabilities are caught before the images are deployed to production.
+
+3. **Use Minimal Base Images**:
+
+   - Use minimal base images for your Docker containers. Smaller images with fewer components reduce the attack surface and the number of potential vulnerabilities.
+
+4. **Automate Image Updates**:
+
+   - Regularly update your Docker images to the latest versions of base images and dependencies. Automation tools like Renovate can help keep your images up to date.
+
+5. **Monitor and Address Vulnerabilities**:
+
+   - Regularly review the Container Scanning reports and address high-severity vulnerabilities promptly. Consider using GitLab’s automated issue creation to track vulnerabilities and their remediation.
+
+6. **Combine with Other Security Tools**:
+   - Use Container Scanning in conjunction with other GitLab security tools, such as Dependency Scanning, SAST, and DAST, for comprehensive security coverage.
+
+### Summary
+
+Container Scanning in GitLab is an essential tool for securing your containerized applications. By integrating Container Scanning into your CI/CD pipeline, you can automatically detect and fix vulnerabilities in your Docker images before they are deployed to production. This proactive approach to security helps protect your applications from potential exploits and ensures that your containerized environments are secure and compliant with industry standards.
 
 # DOCKER
 
