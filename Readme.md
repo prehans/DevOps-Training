@@ -1334,6 +1334,119 @@ The report helps developers and security teams quickly understand and address an
 
 GitLab's IaC scanning feature is a powerful tool that helps ensure the security and compliance of your infrastructure as code. By integrating IaC scanning into your CI/CD pipeline, you can automatically detect and fix misconfigurations and vulnerabilities in your infrastructure before they are deployed, reducing the risk of security incidents and compliance violations. This tool is essential for maintaining a secure and compliant infrastructure in modern DevOps environments.
 
+# Dependency Scanning
+
+**Dependency Scanning** in GitLab is a security feature that automatically analyzes the dependencies in your project to identify known vulnerabilities. This tool scans the libraries and packages your application relies on and checks them against databases of known vulnerabilities, helping to ensure that your software is secure before it is deployed.
+
+### Key Features of Dependency Scanning
+
+1. **Automatic Vulnerability Detection**:
+
+   - Dependency Scanning identifies vulnerabilities in the open-source libraries and components your project uses.
+   - It compares the dependencies against a database of known vulnerabilities, such as the National Vulnerability Database (NVD) and other security advisories.
+
+2. **Integration with CI/CD**:
+
+   - The scanning process is integrated directly into GitLab’s CI/CD pipeline, meaning every time you push code or create a merge request, the dependencies are automatically scanned for vulnerabilities.
+   - This ensures that vulnerabilities are caught early in the development lifecycle.
+
+3. **Detailed Security Reports**:
+
+   - GitLab generates detailed security reports that list all detected vulnerabilities, including their severity, affected versions, and recommendations for remediation.
+   - These reports are accessible directly within the GitLab interface, making it easy for developers to review and address issues.
+
+4. **Support for Multiple Languages**:
+
+   - GitLab Dependency Scanning supports a wide range of programming languages and package managers, including but not limited to:
+     - JavaScript (npm, Yarn)
+     - Python (pip, pipenv)
+     - Ruby (Bundler)
+     - Java (Maven, Gradle)
+     - PHP (Composer)
+     - Go (Go modules)
+     - .NET (NuGet)
+
+5. **Continuous Monitoring**:
+
+   - Once vulnerabilities are detected, GitLab can continuously monitor your project for new vulnerabilities as they are disclosed, ensuring that you are always aware of potential security risks in your dependencies.
+
+6. **Custom Dependency Scanning**:
+   - You can customize the scanning process by excluding certain paths, files, or specific vulnerabilities from being reported, allowing for more fine-grained control over the results.
+
+### Setting Up Dependency Scanning in GitLab
+
+1. **Add Dependency Scanning to Your `.gitlab-ci.yml`**:
+
+   - To enable Dependency Scanning, you need to include the `Dependency-Scanning.gitlab-ci.yml` template in your CI/CD pipeline configuration file.
+   - Here’s an example:
+
+     ```yaml
+     include:
+       - template: Dependency-Scanning.gitlab-ci.yml
+
+     dependency_scanning:
+       stage: test
+       script:
+         - echo "Running Dependency Scanning"
+     ```
+
+   - This will add a Dependency Scanning job to your CI/CD pipeline.
+
+2. **Configure the Scanning Process**:
+
+   - While the default configuration works for most projects, you can customize it using environment variables or additional configuration files.
+   - For example, you can set the following variables:
+     - **`DS_EXCLUDED_PATHS`**: Exclude specific directories from being scanned.
+     - **`DS_DISABLE_DISTRIBUTION`**: Disable certain package managers or languages from being scanned.
+
+3. **Run the Pipeline**:
+
+   - Once configured, run your CI/CD pipeline. The Dependency Scanning job will automatically scan the dependencies and produce a report.
+
+4. **Review the Security Report**:
+   - After the pipeline completes, you can review the Dependency Scanning report, which will be available under the "Security" tab of your project or merge request.
+   - The report includes details on each vulnerability, including its severity, impact, and remediation steps.
+
+### Understanding Dependency Scanning Reports
+
+The Dependency Scanning report provides detailed information about the vulnerabilities found in your project's dependencies, including:
+
+- **Vulnerability Name**: The name or identifier of the vulnerability (e.g., CVE number).
+- **Severity Level**: The severity of the vulnerability, classified as Critical, High, Medium, Low, or Unknown.
+- **Affected Dependency**: The specific library or package that contains the vulnerability.
+- **Vulnerable Version**: The version of the dependency that is vulnerable.
+- **Fixed Version**: The version of the dependency that contains the fix.
+- **Description and Recommendations**: Detailed information about the vulnerability and suggested remediation steps, such as upgrading to a newer version.
+
+### Best Practices for Using Dependency Scanning
+
+1. **Regularly Update Dependencies**:
+
+   - Make it a practice to regularly update your project’s dependencies to the latest versions to minimize the risk of vulnerabilities.
+
+2. **Integrate Early in the Development Process**:
+
+   - Integrate Dependency Scanning into your CI/CD pipeline early in the development process to catch vulnerabilities before they reach production.
+
+3. **Automate Remediation**:
+
+   - Use tools like Renovate or Dependabot to automatically create merge requests for updating vulnerable dependencies. GitLab can also be configured to automatically create issues for vulnerabilities found.
+
+4. **Monitor Security Advisories**:
+
+   - Stay informed about new vulnerabilities in the libraries and packages you use. Continuous monitoring in GitLab helps with this, but it’s also good practice to keep an eye on relevant security advisories.
+
+5. **Review and Triage Vulnerabilities**:
+
+   - Regularly review the Dependency Scanning reports and prioritize fixing high-severity issues. Not all vulnerabilities are critical, so effective triaging is important.
+
+6. **Custom Exclusions**:
+   - If certain paths or dependencies should not be scanned (e.g., test-only dependencies), configure the scanner to exclude them to avoid unnecessary alerts.
+
+### Summary
+
+Dependency Scanning in GitLab is an essential tool for securing your software supply chain by automatically identifying vulnerabilities in the third-party libraries and components your project depends on. By integrating it into your CI/CD pipeline, you can ensure that your software is built on secure foundations, reducing the risk of introducing vulnerabilities into your production environment. This tool, combined with regular updates and vigilant monitoring, forms a key part of a comprehensive security strategy.
+
 # DOCKER
 
 The command `docker run -p 3000:3000 524d80f7d9b5` is used to run a Docker container from an image with the ID `524d80f7d9b5`, and map port 3000 of the host machine to port 3000 of the container. Here's a breakdown:
