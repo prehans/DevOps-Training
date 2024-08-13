@@ -1230,6 +1230,110 @@ GitLab's DAST feature provides an automated way to test your applications for se
 
 ![alt text](Images/image13.png)
 
+# IAC Security SCanning
+
+Infrastructure as Code (IaC) Scanning is a security feature in GitLab designed to automatically detect security and compliance issues within your infrastructure as code configurations. IaC involves managing and provisioning computing infrastructure through machine-readable files, rather than through physical hardware configuration or interactive configuration tools. Examples of IaC include Terraform, AWS CloudFormation, and Ansible.
+
+GitLab's IaC scanning helps to identify potential misconfigurations or vulnerabilities in these files, ensuring that your infrastructure is secure before it is deployed.
+
+### Key Features of IaC Scanning in GitLab
+
+1. **Automatic Detection of Vulnerabilities**:
+
+   - GitLab scans IaC files for known security issues and misconfigurations, such as open security groups in AWS or public access to storage buckets.
+   - It supports various IaC tools like Terraform, CloudFormation, and Kubernetes YAML files.
+
+2. **Integration with CI/CD**:
+
+   - IaC scanning can be integrated directly into your GitLab CI/CD pipelines, allowing you to automatically scan IaC files every time code is committed or a merge request is created.
+   - This ensures that any issues are caught early in the development process, before changes are deployed to production.
+
+3. **Comprehensive Security Reports**:
+
+   - The results of IaC scans are provided in detailed security reports, which are available within the GitLab interface.
+   - Reports include information on detected vulnerabilities, their severity, and recommendations for remediation.
+
+4. **Compliance Checks**:
+
+   - IaC scanning also includes compliance checks to ensure that your infrastructure meets industry standards and best practices.
+   - This is particularly useful for organizations that need to adhere to regulatory requirements like GDPR, HIPAA, or PCI-DSS.
+
+5. **Continuous Monitoring**:
+   - GitLab can continuously monitor IaC files for changes and automatically scan them whenever they are modified.
+   - This continuous monitoring helps to maintain the security and compliance of your infrastructure over time.
+
+### How to Set Up IaC Scanning in GitLab
+
+Setting up IaC scanning in GitLab involves a few simple steps:
+
+1. **Add IaC Scanning to Your `.gitlab-ci.yml`**:
+
+   - To enable IaC scanning, you need to include the `IaC.gitlab-ci.yml` template in your GitLab CI/CD pipeline configuration file.
+   - Here’s an example of how to include it:
+
+     ```yaml
+     include:
+       - template: IaC-Scan.gitlab-ci.yml
+
+     iac_scan:
+       stage: test
+       script:
+         - echo "Running IaC Scan"
+     ```
+
+   - This template automatically configures the IaC scanning job in your pipeline.
+
+2. **Configure Scan Settings**:
+
+   - You can configure various settings for the IaC scanning job using environment variables. For example:
+     - **`IAC_SCAN_ENABLED`**: Enables or disables IaC scanning.
+     - **`IAC_SCAN_FILE_PATHS`**: Specifies the paths to the IaC files you want to scan.
+     - **`IAC_SCAN_EXCLUDE_PATHS`**: Specifies paths that should be excluded from the scan.
+
+3. **Run the Pipeline**:
+
+   - Once the IaC scanning is configured, it will run as part of your CI/CD pipeline. Each time code is committed or a merge request is created, the IaC files will be automatically scanned for vulnerabilities and misconfigurations.
+
+4. **Review the Security Report**:
+   - After the pipeline runs, you can review the IaC scanning results in the security tab of your project or merge request.
+   - The report will highlight any issues found, along with recommendations for fixing them.
+
+### Understanding IaC Scanning Reports
+
+The IaC scanning report in GitLab provides detailed information about any detected issues, including:
+
+- **Vulnerability Type**: The category of the issue, such as "Insecure Security Group" or "Open Storage Bucket."
+- **Severity**: The impact of the issue, usually categorized as Critical, High, Medium, Low, or Info.
+- **File and Line Number**: The specific location in the IaC file where the issue was detected.
+- **Recommendation**: Suggested steps for remediating the issue.
+
+The report helps developers and security teams quickly understand and address any risks associated with their infrastructure code.
+
+### Best Practices for Using IaC Scanning
+
+1. **Integrate Early in the Pipeline**:
+
+   - Integrate IaC scanning as early as possible in your CI/CD pipeline to catch issues before they reach production.
+   - This helps reduce the risk of deploying vulnerable or misconfigured infrastructure.
+
+2. **Regularly Review and Update Scans**:
+
+   - Regularly review the IaC scanning reports and address any issues promptly.
+   - Keep your scanning configurations and rules up-to-date to ensure that new types of vulnerabilities are detected.
+
+3. **Use with Other Security Tools**:
+
+   - Combine IaC scanning with other security tools available in GitLab, such as SAST, DAST, and Dependency Scanning, for comprehensive security coverage.
+   - This layered approach ensures that both your application code and infrastructure are secure.
+
+4. **Educate Your Team**:
+   - Educate your development and operations teams on the importance of secure infrastructure as code and how to use IaC scanning effectively.
+   - Encourage best practices like least privilege, encryption, and proper access controls in IaC.
+
+### Summary
+
+GitLab's IaC scanning feature is a powerful tool that helps ensure the security and compliance of your infrastructure as code. By integrating IaC scanning into your CI/CD pipeline, you can automatically detect and fix misconfigurations and vulnerabilities in your infrastructure before they are deployed, reducing the risk of security incidents and compliance violations. This tool is essential for maintaining a secure and compliant infrastructure in modern DevOps environments.
+
 # DOCKER
 
 The command `docker run -p 3000:3000 524d80f7d9b5` is used to run a Docker container from an image with the ID `524d80f7d9b5`, and map port 3000 of the host machine to port 3000 of the container. Here's a breakdown:
