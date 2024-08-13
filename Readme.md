@@ -1159,3 +1159,96 @@ To enable any of these scanners, you typically include the corresponding GitLab 
 ### Summary
 
 GitLab provides comprehensive security scanning tools to help you identify and address vulnerabilities in your code, dependencies, and container images. By incorporating these scanners into your CI/CD pipelines, you can enhance the security and compliance of your applications.
+
+# DOCKER
+
+The command `docker run -p 3000:3000 524d80f7d9b5` is used to run a Docker container from an image with the ID `524d80f7d9b5`, and map port 3000 of the host machine to port 3000 of the container. Here's a breakdown:
+
+- **`docker run`**: This is the command to create and start a container from a Docker image.
+
+- **`-p 3000:3000`**: This option maps port 3000 on your local machine (host) to port 3000 inside the container. The format is `host_port:container_port`, meaning that any traffic sent to port 3000 on your host will be forwarded to port 3000 in the container.
+
+- **`524d80f7d9b5`**: This is the ID of the Docker image you want to run. Each Docker image has a unique ID, and you can use either the ID or the image name (e.g., `nginx`, `node`) to refer to it.
+
+When you execute this command, Docker will:
+
+1. Start a new container from the image with the ID `524d80f7d9b5`.
+2. Map port 3000 on your host machine to port 3000 on the container.
+3. Run the container, allowing you to access whatever service is running on port 3000 inside the container by accessing `localhost:3000` on your host machine.
+
+This command is typically used when the application inside the container listens on port 3000 (such as a Node.js app).
+
+# Docker Architecture
+
+Docker architecture is based on a client-server model and consists of several key components that work together to enable containerization. Here's an overview of the Docker architecture:
+
+### 1. **Docker Client**
+
+- The Docker client (`docker`) is the primary way users interact with Docker. When you run Docker commands (e.g., `docker run`, `docker build`), you are using the Docker client.
+- The client sends commands to the Docker daemon, which carries them out. The client can communicate with more than one daemon.
+
+### 2. **Docker Daemon (dockerd)**
+
+- The Docker daemon (`dockerd`) is responsible for managing Docker containers, images, networks, and storage volumes on the host system.
+- It listens for Docker API requests and acts on them (e.g., managing containers and images).
+- The daemon can communicate with other daemons to manage Docker services.
+
+### 3. **Docker Images**
+
+- Docker images are read-only templates that contain the application code, dependencies, and the environment required to run a container.
+- Images are created using a Dockerfile, which defines a set of instructions to build the image.
+- Images are stored in a registry, such as Docker Hub, and can be pulled and shared.
+
+### 4. **Docker Containers**
+
+- Containers are runnable instances of Docker images. They are lightweight and isolated, running directly on the host machine's kernel.
+- Each container is created from an image and includes everything needed to run an application, including code, runtime, system tools, libraries, and settings.
+- Containers are isolated from each other and from the host system, providing a secure environment for running applications.
+
+### 5. **Docker Registry**
+
+- A Docker registry is a repository for Docker images. Docker Hub is the default public registry, but you can also set up private registries.
+- Registries are used to store and distribute Docker images. Users can push (upload) images to a registry or pull (download) images from it.
+- The registry allows for versioning of images and easy sharing between different environments or teams.
+
+### 6. **Docker Engine**
+
+- The Docker Engine is the core of Docker, consisting of the Docker Daemon, REST API, and CLI. It is responsible for building, running, and managing containers.
+- The engine can run on various platforms, including Linux, Windows, and macOS.
+
+### 7. **Docker Networking**
+
+- Docker provides networking capabilities that allow containers to communicate with each other, the host, and external networks.
+- Docker supports several networking drivers, including bridge, host, overlay, and macvlan, allowing for different network configurations and levels of isolation.
+
+### 8. **Docker Storage**
+
+- Docker containers use storage volumes to persist data beyond the container's lifecycle.
+- Docker provides different storage drivers that manage how data is stored and accessed by containers, including volumes, bind mounts, and tmpfs.
+
+### Diagram of Docker Architecture (Conceptual)
+
+```
++------------------+               +------------------+
+|  Docker Client   | <-----------> |  Docker Daemon   |
++------------------+   REST API    +------------------+
+                                   /        |          \
+                            +-----+         |           +----+
+                            |                |                |
+                +-----------------+  +-----------------+  +-----------------+
+                |  Docker Images  |  |  Docker Network |  | Docker Volumes  |
+                +-----------------+  +-----------------+  +-----------------+
+
+                             +-----------------------------------+
+                             |  Docker Containers (Running)      |
+                             +-----------------------------------+
+```
+
+### Summary
+
+- **Client-Server Architecture**: The client interacts with the Docker daemon via the Docker API.
+- **Images and Containers**: Docker images are templates for creating containers, and containers are the running instances of these images.
+- **Registry**: Docker images are stored and distributed using a registry.
+- **Networking and Storage**: Docker provides mechanisms for container networking and persistent storage.
+
+This architecture allows Docker to be both powerful and flexible, supporting a wide range of applications and workflows.
