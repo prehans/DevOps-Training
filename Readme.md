@@ -2456,3 +2456,12 @@ GitLab Shell is a crucial component of GitLab, responsible for managing SSH conn
 ### Summary
 
 **Gitaly** is a central service in GitLab’s architecture, responsible for managing Git repository storage and operations. It ensures that Git operations are executed efficiently, securely, and at scale, making it possible for GitLab to handle large numbers of repositories and high volumes of Git activity. By centralizing repository access and optimizing Git commands, Gitaly enhances GitLab’s performance and scalability, especially in enterprise environments. Understanding Gitaly’s role and configuration is essential for maintaining a high-performance GitLab installation.
+
+# GitLab Rails / Puma
+
+"GitLab Rails is the main application code for GitLab. Puma is the rails web server that serves the ruby code. This is where the Application UI, the API, and most of the operations occur. It communicates with almost every other component of GitLab and visa-versa. You will observe most log errors from this component."
+
+# Redis & Postgres
+
+Redis is used primarily as a storage backup to Sidekiq. It's also used to store temporary data, such as authentication tokens and session data. However, most of its data can be ephemeral. If the Sidekiq queue data gets lost, there can be data loss elsewhere on the instance.
+Postgres is where all persistent data is stored and kept. The data is encrypted using secret files that GitLab Rails/Puma uses to read it.
