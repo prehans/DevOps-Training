@@ -2204,3 +2204,81 @@ A **reverse proxy** is an essential component in modern web architecture, provid
 ### Summary
 
 GitLab Shell is a crucial component of GitLab, responsible for managing SSH connections and executing Git commands on behalf of users. It ensures secure, authenticated access to Git repositories while integrating closely with the GitLab Rails application and Gitaly for efficient operation handling. Understanding GitLab Shell's role and configuration is essential for maintaining a secure and well-functioning GitLab environment.
+
+# Gitlab Workhorse
+
+**GitLab Workhorse** is a key component of the GitLab architecture, acting as a lightweight reverse proxy server that handles various tasks to offload work from the main GitLab Rails application. It is designed to manage and optimize the handling of HTTP requests, especially those related to large file uploads and downloads, Git operations, and other time-consuming or resource-intensive processes.
+
+### Key Functions of GitLab Workhorse
+
+1. **Handling Large File Uploads**:
+
+   - GitLab Workhorse manages large file uploads, such as when users upload large repositories, images, or other files through the GitLab web interface.
+   - Instead of passing the entire file through the GitLab Rails application, Workhorse streams the upload directly to object storage (like Amazon S3) or to the appropriate backend service. This reduces the load on the Rails application and improves performance.
+
+2. **Accelerating Git Operations**:
+
+   - Workhorse handles Git HTTP requests, such as `git clone`, `git fetch`, and `git push` over HTTP/HTTPS. It processes these requests more efficiently than the Rails application could alone.
+   - It directly interacts with Gitaly, the GitLab service responsible for Git repository storage, to perform these operations, bypassing the need to route everything through the Rails application.
+
+3. **Managing Static and Dynamic Content**:
+
+   - Workhorse serves static assets (like images, CSS, and JavaScript files) directly to clients, reducing the workload on the Rails application.
+   - For dynamic content, Workhorse forwards requests to the Rails application after performing initial processing, such as verifying session tokens or checking the request method.
+
+4. **Handling Repository Downloads**:
+
+   - When users download repository archives (like ZIP or tarball files), Workhorse generates and streams these files to the user. This process is offloaded from the Rails application, allowing it to handle more concurrent requests without performance degradation.
+
+5. **Accelerating CI/CD Pipeline Artifacts**:
+
+   - Workhorse handles the upload and download of CI/CD pipeline artifacts, such as build logs, binary files, and other output generated during the CI/CD process.
+   - This offloading is crucial in large installations where the CI/CD system generates significant amounts of data.
+
+6. **Reverse Proxy for Websockets**:
+
+   - Workhorse can act as a reverse proxy for WebSocket connections, which are used for features like live updates in the GitLab web interface (e.g., issue boards, merge requests).
+   - It ensures that WebSocket connections are efficiently routed to the appropriate backend service, maintaining real-time communication between clients and the server.
+
+7. **Authentication and Security**:
+   - Before forwarding requests to the GitLab Rails application, Workhorse can validate session cookies, API tokens, and other authentication mechanisms.
+   - This helps ensure that only authenticated and authorized requests reach the Rails application, adding an extra layer of security.
+
+### How GitLab Workhorse Fits into GitLab's Architecture
+
+1. **Client Requests**:
+
+   - When a user sends an HTTP request (e.g., accessing the GitLab web interface, performing Git operations over HTTP, or uploading files), the request first reaches GitLab Workhorse.
+
+2. **Initial Processing by Workhorse**:
+
+   - Workhorse handles tasks like verifying authentication, processing large file uploads, serving static files, and managing WebSocket connections.
+
+3. **Interfacing with Gitaly**:
+
+   - For Git-related operations, Workhorse communicates directly with Gitaly, the service responsible for managing Git repositories. This allows for efficient handling of repository data without involving the Rails application in every request.
+
+4. **Forwarding to Rails Application**:
+
+   - For dynamic content, API requests, or operations that require business logic, Workhorse forwards the processed request to the GitLab Rails application, which handles the core application logic.
+
+5. **Returning the Response**:
+   - After processing the request (either within Workhorse or by forwarding it to the Rails application), Workhorse sends the appropriate response back to the client.
+
+### Configuration and Customization
+
+- **Configuration**: GitLab Workhorse is typically configured through GitLab's main configuration file (`gitlab.rb` in Omnibus installations). Configuration options include settings for handling large files, WebSocket support, and connection timeouts.
+
+- **Customization**: Administrators can customize how Workhorse handles specific types of requests, such as adjusting the limits on file uploads or configuring how certain URLs are routed.
+
+### Performance and Optimization
+
+- **Load Reduction**: By offloading tasks like file uploads, Git operations, and static content serving from the Rails application, Workhorse significantly reduces the load on GitLab's main application server. This allows GitLab to handle more concurrent users and operations.
+
+- **Efficient Resource Use**: Workhorse is written in Go, which is known for its efficiency in handling concurrent tasks. This makes Workhorse particularly effective at managing multiple simultaneous requests with minimal overhead.
+
+- **Scaling**: In large GitLab installations, multiple instances of GitLab Workhorse can be deployed to distribute the load and improve redundancy. This is especially useful in high-availability setups.
+
+### Summary
+
+**GitLab Workhorse** is a crucial component in the GitLab ecosystem, responsible for efficiently handling HTTP requests, particularly those involving large file uploads, Git operations, and WebSocket connections. By offloading these tasks from the GitLab Rails application, Workhorse improves the overall performance and scalability of GitLab, ensuring a smoother and more responsive user experience. Understanding its role and configuration is vital for optimizing a GitLab installation, especially in environments with high traffic or large-scale operations.
