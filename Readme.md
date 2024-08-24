@@ -2780,3 +2780,98 @@ VirtualBox is a free and open-source virtualization software developed by Oracle
 - **Learning and Experimentation**: Users can safely experiment with new operating systems, software, or configurations without affecting their primary system.
 - **Development**: VirtualBox is often used to create isolated development environments, enabling developers to work on projects in different OS environments.
 - **Legacy Software**: VirtualBox allows users to run older operating systems or software that may not be compatible with modern hardware.
+
+In virtualization environments like VirtualBox, network adapters are used to manage how virtual machines (VMs) connect to networks, including how they communicate with the host system, other VMs, and external networks. Two common network adapter types are **Host-Only Adapter** and **Bridged Adapter**. Here's how they differ:
+
+### Host-Only Adapter
+
+A **Host-Only Adapter** is a type of network connection in VirtualBox that creates a private network between the host machine and the virtual machine(s). This network is isolated from the external network (like the internet) and can only be accessed by the host and the VMs that are configured to use the host-only network.
+
+#### Characteristics:
+
+- **Private Network**: The VM and the host machine can communicate with each other, but the VM cannot access external networks or the internet.
+- **Isolated**: The network is isolated, meaning VMs on a host-only network cannot communicate with the outside world, but they can communicate with the host and other VMs on the same host-only network.
+- **Use Cases**: Host-Only Adapters are often used for testing or when you want to isolate the VM from the internet while still allowing communication between the VM and the host for tasks like file sharing, local development, or running network simulations.
+
+### Bridged Adapter
+
+A **Bridged Adapter** allows the VM to connect to the same network as the host machine, effectively making the VM appear as another machine on the same physical network. This setup "bridges" the virtual network adapter in the VM to the host's physical network adapter.
+
+#### Characteristics:
+
+- **Same Network as Host**: The VM is connected directly to the host's network, meaning it can communicate with other devices on the network, access the internet, and be accessed by other devices on the network as if it were a physical machine.
+- **IP Address**: The VM will get its own IP address from the network’s DHCP server, just like any other device on the network.
+- **Use Cases**: Bridged Adapters are used when you want the VM to have full access to the network, such as for network services, server deployment, or when you need the VM to be accessible from other devices on the network.
+
+### Comparison:
+
+- **Host-Only Adapter**:
+
+  - **Visibility**: VMs are visible only to the host and other VMs using the host-only network.
+  - **External Access**: No access to the internet or external network.
+  - **IP Address**: IP addresses are typically assigned from a private IP range defined by VirtualBox.
+
+- **Bridged Adapter**:
+  - **Visibility**: VMs are visible on the same network as the host and can interact with other devices on that network.
+  - **External Access**: Full access to the internet and the local network.
+  - **IP Address**: IP address is assigned by the network’s DHCP server, making it similar to any other device on the network.
+
+### Choosing Between Host-Only and Bridged Adapter:
+
+- **Use Host-Only Adapter** if you want to create a secure, isolated network where VMs can only communicate with each other and the host machine.
+- **Use Bridged Adapter** if you need the VM to be part of the same network as the host, allowing it to communicate with other network devices and access the internet.
+
+These adapters can be configured through the network settings of the VM in VirtualBox, depending on the specific networking requirements of your virtual environment.
+
+# Important
+
+Host only adapter = allows communication between your PC and the virtual machine
+
+Bridge adapter = allows communication between your PC and VM plus allows communication to the internet.
+
+# Putty
+
+PuTTY is a free and open-source terminal emulator, serial console, and network file transfer application. It is widely used for connecting to remote servers, particularly in Unix or Linux environments, from a Windows machine. PuTTY supports several network protocols, including SSH (Secure Shell), Telnet, SCP (Secure Copy), and rlogin, making it a versatile tool for system administrators, developers, and IT professionals.
+
+### Key Features of PuTTY:
+
+1. **SSH Client**: PuTTY is most commonly used as an SSH client, allowing secure remote connections to servers. SSH encrypts the connection, providing a secure method for accessing and managing remote systems.
+
+2. **Telnet Client**: Although less secure, PuTTY also supports Telnet, a protocol that provides unencrypted remote access. It is still used in some older systems and networks.
+
+3. **Serial Communication**: PuTTY can be used as a serial console, making it useful for connecting to devices such as routers, switches, or embedded systems via serial ports.
+
+4. **SCP and SFTP Support**: PuTTY includes command-line tools like `pscp` (PuTTY Secure Copy) and `psftp` (PuTTY Secure File Transfer Protocol), which enable secure file transfers between the local and remote systems using SCP and SFTP.
+
+5. **Session Management**: PuTTY allows users to save and manage multiple session configurations, including IP addresses, port numbers, authentication methods, and terminal settings. This makes it easy to reconnect to frequently used servers.
+
+6. **Customizable Terminal**: PuTTY's terminal emulator is highly customizable, allowing users to adjust settings such as colors, fonts, keyboard mappings, and window behavior. It also supports a wide range of character encodings.
+
+7. **Port Forwarding**: PuTTY supports SSH port forwarding (also known as tunneling), allowing users to securely route network traffic through the SSH connection, which can be useful for accessing internal network resources securely.
+
+8. **Key Authentication**: PuTTY supports public key authentication for SSH connections. Users can generate and manage SSH keys using PuTTYgen, a companion tool included with PuTTY.
+
+9. **Lightweight and Portable**: PuTTY is a lightweight application with a small footprint. It can be run from a USB drive without installation, making it highly portable.
+
+### Common Uses of PuTTY:
+
+- **Remote Server Management**: System administrators use PuTTY to securely manage and configure remote servers, often in Linux or Unix environments.
+- **Network Device Configuration**: PuTTY is used to connect to and configure network devices like routers, switches, and firewalls, especially when using serial connections.
+- **Secure File Transfer**: Developers and IT professionals use PuTTY's SCP and SFTP tools to securely transfer files between local and remote systems.
+- **Tunneling and Port Forwarding**: PuTTY is often used to set up SSH tunnels for securely accessing internal services or bypassing network restrictions.
+
+### Getting Started with PuTTY:
+
+1. **Download and Install**: PuTTY can be downloaded from the [official PuTTY website](https://www.putty.org/). Installation is straightforward, and no additional setup is typically required.
+
+2. **Connecting to a Remote Server**:
+
+   - Launch PuTTY and enter the IP address or hostname of the server you want to connect to.
+   - Select the connection type (e.g., SSH) and enter the port number (default is 22 for SSH).
+   - Click "Open" to initiate the connection. You may be prompted to accept the server's host key and enter your username and password.
+
+3. **Saving Sessions**: After configuring a session, you can save the settings by entering a session name and clicking "Save." This allows you to quickly reconnect to the same server in the future.
+
+4. **Using PuTTYgen for SSH Keys**: If you prefer to use SSH key authentication, you can generate a key pair using PuTTYgen and configure PuTTY to use the private key for authentication.
+
+PuTTY is an essential tool for anyone who needs to manage remote servers or devices, offering a secure and versatile way to connect and interact with remote systems.
