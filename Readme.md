@@ -2876,129 +2876,6 @@ PuTTY is a free and open-source terminal emulator, serial console, and network f
 
 PuTTY is an essential tool for anyone who needs to manage remote servers or devices, offering a secure and versatile way to connect and interact with remote systems.
 
-# File System in Linux
-
-In Linux, the file system is a critical component that organizes, stores, and manages data on storage devices. Here’s an overview of Linux file systems, their structure, and key concepts:
-
-### Key Concepts of Linux File Systems
-
-1. **File System Hierarchy**
-
-   - **Root Directory (`/`)**: The top-level directory in Linux. All other files and directories are located under this root directory.
-   - **Directories**: Common directories include:
-     - **`/bin`**: Essential command binaries.
-     - **`/boot`**: Boot loader files, including the kernel.
-     - **`/dev`**: Device files.
-     - **`/etc`**: System configuration files.
-     - **`/home`**: User home directories.
-     - **`/lib`**: Essential shared libraries.
-     - **`/media`**: Mount points for removable media.
-     - **`/mnt`**: Mount points for temporarily mounted filesystems.
-     - **`/opt`**: Optional application software packages.
-     - **`/proc`**: Virtual filesystem providing process and kernel information.
-     - **`/root`**: Home directory for the root user.
-     - **`/run`**: Runtime variable data.
-     - **`/srv`**: Data for services provided by the system.
-     - **`/sys`**: Virtual filesystem providing information about the kernel and devices.
-     - **`/tmp`**: Temporary files.
-     - **`/usr`**: User utilities and applications.
-     - **`/var`**: Variable data like logs and databases.
-
-2. **File System Types**
-
-   - **Ext4 (Fourth Extended File System)**: The most commonly used Linux file system, offering improved performance and reliability over its predecessors.
-   - **XFS**: High-performance file system known for its scalability and robustness.
-   - **Btrfs**: Advanced file system with features like snapshots, checksumming, and dynamic inode allocation.
-   - **F2FS**: Flash-Friendly File System, optimized for NAND flash memory.
-   - **NTFS**: Used for compatibility with Windows systems, often used in dual-boot setups.
-   - **FAT32**: Simple file system commonly used for compatibility with various operating systems, especially for removable media.
-
-3. **File System Mounting**
-
-   - **Mounting**: Attaching a file system to a directory in the existing file system hierarchy.
-   - **Mount Command**: Used to mount file systems.
-
-     ```bash
-     sudo mount /dev/sdXn /mount/point
-     ```
-
-     Where `/dev/sdXn` is the device identifier and `/mount/point` is the directory where the file system will be mounted.
-
-   - **Unmounting**: Detaching a file system.
-     ```bash
-     sudo umount /mount/point
-     ```
-
-4. **File System Management Commands**
-
-   - **`df`**: Reports disk space usage.
-
-     ```bash
-     df -h
-     ```
-
-   - **`du`**: Reports disk usage of files and directories.
-
-     ```bash
-     du -sh /path/to/directory
-     ```
-
-   - **`lsblk`**: Lists information about block devices.
-
-     ```bash
-     lsblk
-     ```
-
-   - **`blkid`**: Displays information about block devices and their file systems.
-
-     ```bash
-     sudo blkid
-     ```
-
-   - **`fsck`**: File system consistency check and repair tool.
-
-     ```bash
-     sudo fsck /dev/sdXn
-     ```
-
-   - **`mount`**: Lists mounted file systems and their mount points.
-     ```bash
-     mount
-     ```
-
-5. **File System Permissions**
-
-   - **Ownership**: Files and directories have an owner and a group.
-   - **Permissions**: Read (`r`), write (`w`), and execute (`x`) permissions for the owner, group, and others.
-   - **Changing Permissions**: Use `chmod`.
-
-     ```bash
-     chmod 755 /path/to/file
-     ```
-
-   - **Changing Ownership**: Use `chown`.
-
-     ```bash
-     sudo chown user:group /path/to/file
-     ```
-
-   - **Changing Group Ownership**: Use `chgrp`.
-     ```bash
-     sudo chgrp group /path/to/file
-     ```
-
-### Summary
-
-- **File System Hierarchy**: Organized in a tree-like structure starting from the root directory `/`.
-- **File System Types**: Includes ext4, XFS, Btrfs, NTFS, and FAT32, each with different features and uses.
-- **Mounting and Unmounting**: Attaching and detaching file systems from directories.
-- **Management Commands**: Includes `df`, `du`, `lsblk`, `blkid`, `fsck`, and `mount` for managing file systems.
-- **Permissions**: Control access to files and directories.
-
-Understanding these concepts will help you manage and interact with file systems on Linux effectively. If you have any specific questions or need further details, feel free to ask!
-
-In Linux, the file system is a critical component that organizes, stores, and manages data on storage devices. Here’s an overview of Linux file systems, their structure, and key concepts:
-
 # Key Concepts of Linux File Systems
 
 1. **File System Hierarchy**
@@ -3031,3 +2908,315 @@ In Linux, the file system is a critical component that organizes, stores, and ma
    - **F2FS**: Flash-Friendly File System, optimized for NAND flash memory.
    - **NTFS**: Used for compatibility with Windows systems, often used in dual-boot setups.
    - **FAT32**: Simple file system commonly used for compatibility with various operating systems, especially for removable media.
+
+# Navigating File System
+
+Navigating the file system in Linux is done primarily through the terminal using a variety of commands. Here’s a guide to the most commonly used commands for file system navigation:
+
+### Basic Navigation Commands
+
+1. **`pwd` (Print Working Directory)**
+
+   - Displays the current directory you're in.
+   - Example:
+     ```bash
+     pwd
+     ```
+     Output might be something like:
+     ```
+     /home/user
+     ```
+
+2. **`ls` (List)**
+
+   - Lists files and directories in the current directory.
+   - Example:
+     ```bash
+     ls
+     ```
+   - **Options**:
+
+     - `ls -l`: Detailed list view with file permissions, owner, size, and date modified.
+     - `ls -a`: Shows all files, including hidden ones (those starting with `.`).
+     - `ls -lh`: Human-readable format (e.g., sizes in KB, MB).
+
+   - Example:
+     ```bash
+     ls -lah
+     ```
+
+3. **`cd` (Change Directory)**
+
+   - Changes the current directory to a different one.
+   - Example:
+     ```bash
+     cd /path/to/directory
+     ```
+   - **Options**:
+
+     - `cd ~`: Moves to your home directory.
+     - `cd /`: Moves to the root directory.
+     - `cd ..`: Moves up one directory level.
+     - `cd -`: Switches to the previous directory.
+
+   - Example:
+     ```bash
+     cd /var/log
+     ```
+
+4. **`mkdir` (Make Directory)**
+
+   - Creates a new directory.
+   - Example:
+     ```bash
+     mkdir new_directory
+     ```
+   - **Options**:
+     - `mkdir -p /path/to/new_directory`: Creates parent directories as needed.
+
+5. **`rmdir` (Remove Directory)**
+
+   - Removes an empty directory.
+   - Example:
+
+     ```bash
+     rmdir empty_directory
+     ```
+
+   - **Note**: If the directory is not empty, you must use `rm -r`.
+
+6. **`rm` (Remove)**
+
+   - Removes files or directories.
+   - Example:
+     ```bash
+     rm filename
+     ```
+   - **Options**:
+     - `rm -r directory_name`: Removes a directory and its contents recursively.
+     - `rm -i`: Prompts for confirmation before each file is deleted.
+     - `rm -f`: Forces deletion without prompt.
+
+7. **`cp` (Copy)**
+
+   - Copies files or directories from one location to another.
+   - Example:
+     ```bash
+     cp source_file destination_file
+     ```
+   - **Options**:
+     - `cp -r /source/directory /destination/directory`: Copies directories and their contents recursively.
+     - `cp -i`: Prompts before overwriting files.
+
+8. **`mv` (Move or Rename)**
+
+   - Moves files or directories, or renames them.
+   - Example (Move):
+     ```bash
+     mv source_file /path/to/destination
+     ```
+   - Example (Rename):
+     ```bash
+     mv old_name new_name
+     ```
+
+9. **`find` (Search for Files)**
+
+   - Searches for files and directories based on various criteria.
+   - Example:
+     ```bash
+     find /path/to/search -name "filename"
+     ```
+   - **Options**:
+     - `find /home/user -name "*.txt"`: Finds all `.txt` files in `/home/user`.
+     - `find . -type d -name "foldername"`: Finds directories by name.
+
+10. **`locate` (Locate Files)**
+
+    - Quickly finds files by name using a prebuilt database.
+    - Example:
+
+      ```bash
+      locate filename
+      ```
+
+    - **Note**: Run `sudo updatedb` to update the database.
+
+### Viewing Files and Directories
+
+1. **`cat` (Concatenate and Display)**
+
+   - Displays the contents of a file.
+   - Example:
+     ```bash
+     cat filename
+     ```
+
+2. **`less`**
+
+   - Views the contents of a file one screen at a time.
+   - Example:
+     ```bash
+     less filename
+     ```
+   - **Navigation**:
+     - `Space`: Move forward a screen.
+     - `b`: Move back a screen.
+     - `q`: Quit.
+
+3. **`head` and `tail`**
+   - **`head`**: Displays the first 10 lines of a file.
+     ```bash
+     head filename
+     ```
+   - **`tail`**: Displays the last 10 lines of a file.
+     ```bash
+     tail filename
+     ```
+   - **Options**:
+     - `tail -n 20 filename`: Shows the last 20 lines.
+     - `tail -f filename`: Follows the file, showing new lines as they are added (useful for log files).
+
+### File System Information
+
+1. **`df` (Disk Free)**
+
+   - Displays disk space usage for file systems.
+   - Example:
+     ```bash
+     df -h
+     ```
+
+2. **`du` (Disk Usage)**
+
+   - Shows disk usage for files and directories.
+   - Example:
+     ```bash
+     du -sh /path/to/directory
+     ```
+
+3. **`mount` and `umount`**
+   - **`mount`**: Lists mounted file systems or mounts a file system.
+     ```bash
+     mount
+     ```
+   - **`umount`**: Unmounts a file system.
+     ```bash
+     sudo umount /path/to/mount_point
+     ```
+
+### Summary
+
+- **`pwd`**: Shows your current directory.
+- **`ls`**: Lists files and directories.
+- **`cd`**: Changes your current directory.
+- **`mkdir` and `rmdir`**: Create and remove directories.
+- **`rm`, `cp`, `mv`**: Remove, copy, and move files and directories.
+- **`find` and `locate`**: Search for files and directories.
+- **`cat`, `less`, `head`, `tail`**: View contents of files.
+- **`df`, `du`, `mount`, `umount`**: Manage and view file system information.
+
+These commands are essential for navigating and managing files in the Linux file system. With these tools, you can move through directories, view and manipulate files, and gather information about your system’s storage.
+
+When you list files and directories in Linux using the `ls -l` command, you get detailed information about each item. The output provides several attributes for each file or directory. Here’s what each part of the output means:
+
+### Example of `ls -l` Output
+
+```bash
+$ ls -l
+-rw-r--r--  1 user group  4096 Aug 24 10:00 example.txt
+drwxr-xr-x  2 user group  4096 Aug 24 09:30 example_directory
+```
+
+### Explanation of Attributes
+
+1. **File Type and Permissions (`-rw-r--r--`)**
+
+   - The first character indicates the type of the file:
+
+     - `-`: Regular file
+     - `d`: Directory
+     - `l`: Symbolic link
+     - `b`: Block device
+     - `c`: Character device
+     - `p`: Named pipe (FIFO)
+     - `s`: Socket
+
+   - The next nine characters show the file's permissions, grouped into three sets:
+
+     - **Owner Permissions** (first three characters): `rw-`
+     - **Group Permissions** (middle three characters): `r--`
+     - **Other Permissions** (last three characters): `r--`
+
+   - **Permission Codes**:
+
+     - `r`: Read permission
+     - `w`: Write permission
+     - `x`: Execute permission
+     - `-`: No permission
+
+   - Example:
+     - `-rw-r--r--`: A regular file where the owner can read and write, the group can read, and others can read.
+
+2. **Link Count (`1`)**
+
+   - This number indicates the number of hard links to the file or the number of subdirectories in a directory.
+   - Example:
+     - `1` means there is one link (or no subdirectories if it’s a directory).
+
+3. **Owner (`user`)**
+
+   - The username of the owner of the file or directory.
+   - Example:
+     - `user` indicates that the file is owned by the user named "user."
+
+4. **Group (`group`)**
+
+   - The group that owns the file or directory.
+   - Example:
+     - `group` indicates that the file belongs to the group named "group."
+
+5. **File Size (`4096`)**
+
+   - The size of the file in bytes.
+   - For directories, this represents the amount of space taken by the directory's structure, not the size of the contents.
+   - Example:
+     - `4096` bytes (4 KB).
+
+6. **Last Modified Date and Time (`Aug 24 10:00`)**
+
+   - The date and time when the file or directory was last modified.
+   - Example:
+     - `Aug 24 10:00` indicates the file was last modified on August 24th at 10:00 AM.
+
+7. **File Name (`example.txt`)**
+   - The name of the file or directory.
+   - Example:
+     - `example.txt` is the name of the file.
+
+### Full Example Breakdown
+
+```bash
+drwxr-xr-x  2 user group  4096 Aug 24 09:30 example_directory
+```
+
+- **`d`**: This is a directory.
+- **`rwxr-xr-x`**: The owner has read, write, and execute permissions; the group and others have read and execute permissions.
+- **`2`**: There are two links (likely the directory itself and one subdirectory or a parent link).
+- **`user`**: Owned by the user named "user."
+- **`group`**: Owned by the group named "group."
+- **`4096`**: The directory takes up 4096 bytes.
+- **`Aug 24 09:30`**: Last modified on August 24th at 09:30 AM.
+- **`example_directory`**: The directory name is "example_directory."
+
+### Summary of Attributes
+
+- **File Type and Permissions**: Indicate whether it's a file, directory, or other, and what operations (read, write, execute) are allowed.
+- **Link Count**: Number of hard links to the file or subdirectories in a directory.
+- **Owner**: User who owns the file.
+- **Group**: Group that owns the file.
+- **File Size**: Size of the file in bytes.
+- **Last Modified Date and Time**: When the file was last modified.
+- **File Name**: The name of the file or directory.
+
+This detailed listing helps you understand not just the contents of a directory, but also the properties and permissions associated with each item.
