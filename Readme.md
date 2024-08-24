@@ -3715,3 +3715,136 @@ we can use
 - **`printf`**: Offers more control over text formatting than `echo`.
 
 Choose the method that best suits your needs, whether you're making a quick addition or editing a file more extensively.
+
+# Help command
+
+The `whatis` command in Linux is used to display a brief description of a command or a program. It provides a summary that is extracted from the man (manual) pages, making it a quick way to understand what a specific command does.
+
+### Usage of the `whatis` Command
+
+```bash
+whatis [command]
+```
+
+### Example Usages
+
+1. **Get a Description of a Single Command:**
+
+   - To see a brief description of the `ls` command:
+     ```bash
+     whatis ls
+     ```
+   - Output:
+     ```
+     ls (1)               - list directory contents
+     ```
+
+2. **Get Descriptions of Multiple Commands:**
+
+   - You can query multiple commands at once:
+     ```bash
+     whatis cd pwd mkdir
+     ```
+   - Output:
+     ```
+     cd (1)               - change the shell working directory
+     pwd (1)              - print name of current/working directory
+     mkdir (1)            - make directories
+     ```
+
+3. **Search with Keywords:**
+   - If you don’t know the exact name of a command, you can search for it:
+     ```bash
+     whatis "network"
+     ```
+   - This will list commands related to "network".
+
+### Summary
+
+- **`whatis`**: Provides a short description of a command or program.
+- Useful for quickly understanding what a command does without needing to read the full man page.
+- You can use it to get descriptions for multiple commands at once.
+
+It's a handy tool for quickly refreshing your memory about what specific commands are for, especially when working with a large number of Linux commands.
+
+The `man` command in Linux is used to display the manual pages for commands, programs, and system calls. These manual pages provide detailed documentation, including descriptions, usage, options, and examples.
+
+### Usage of the `man` Command
+
+```bash
+man [command]
+```
+
+### Example Usages
+
+1. **Viewing the Manual for a Command:**
+
+   - To see the manual page for the `ls` command:
+     ```bash
+     man ls
+     ```
+   - This opens the manual page for `ls`, showing a detailed description, options, and usage examples.
+
+2. **Navigating the Manual:**
+
+   - Use the following keys to navigate:
+     - **Up/Down arrows**: Scroll line by line.
+     - **Space**: Scroll down one page.
+     - **`b`**: Scroll up one page.
+     - **`/search_term`**: Search for a keyword in the manual.
+     - **`n`**: Move to the next occurrence of the search term.
+     - **`q`**: Quit the manual page.
+
+3. **Viewing a Specific Section:**
+
+   - Manual pages are divided into sections (1-9), where:
+     - 1: User commands
+     - 2: System calls
+     - 3: Library functions
+     - 4: Special files
+     - 5: File formats and conventions
+     - 6: Games and screensavers
+     - 7: Miscellaneous
+     - 8: System administration commands
+     - 9: Kernel routines
+   - To view a specific section, use:
+     ```bash
+     man [section_number] [command]
+     ```
+   - For example, to view the system call section of the `open` command:
+     ```bash
+     man 2 open
+     ```
+
+4. **Finding Commands with a Keyword:**
+   - If you don’t know the exact name of a command, you can use `man -k` (equivalent to `apropos`) to search for it:
+     ```bash
+     man -k "list"
+     ```
+   - This will list all manual pages with "list" in their name or description.
+
+### Example Output
+
+When you run `man ls`, you might see something like this:
+
+```
+LS(1)                    User Commands                    LS(1)
+
+NAME
+       ls - list directory contents
+
+SYNOPSIS
+       ls [OPTION]... [FILE]...
+
+DESCRIPTION
+       List information about the FILEs (the current directory by default). Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.
+       ...
+```
+
+### Summary
+
+- **`man`**: Opens the manual page for a command, providing detailed documentation.
+- **Sections**: The manual pages are divided into sections (1-9), each serving a different purpose.
+- **Navigation**: You can navigate within the manual using keyboard shortcuts.
+
+The `man` command is an essential tool for learning about commands and understanding their options and usage in detail.
