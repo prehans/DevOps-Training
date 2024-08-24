@@ -2465,3 +2465,318 @@ GitLab Shell is a crucial component of GitLab, responsible for managing SSH conn
 
 Redis is used primarily as a storage backup to Sidekiq. It's also used to store temporary data, such as authentication tokens and session data. However, most of its data can be ephemeral. If the Sidekiq queue data gets lost, there can be data loss elsewhere on the instance.
 Postgres is where all persistent data is stored and kept. The data is encrypted using secret files that GitLab Rails/Puma uses to read it.
+
+# Object Storage
+
+Object Storage is a way to manage and store files in a scalable and efficient manner. It’s especially useful for applications like GitLab, which manage a lot of data.
+
+### What is Object Storage?
+
+Imagine Object Storage as a giant, online filing cabinet where you can store all sorts of digital files. This "filing cabinet" can be accessed from anywhere and is designed to handle large amounts of data with ease.
+
+### Why Use Object Storage with GitLab?
+
+1. **Backup Simplicity**: Normally, when GitLab backs up your data, it includes everything, which can lead to very large backup files. By using Object Storage, GitLab can skip backing up files stored in Object Storage because these files are already safely stored and managed by the Object Storage service. This makes your backups smaller and faster to create.
+
+2. **Reliable Backups**: Object Storage services often come with built-in redundancy and backups, meaning your data is protected and available even if something goes wrong. This helps ensure that your backup files are not only smaller but also more secure.
+
+3. **Data Redundancy in HA/GEO Instances**: In setups where GitLab is spread across multiple servers or locations, Object Storage helps by keeping data accessible from all parts of the system. This means if one server or location has an issue, the data is still available from other locations.
+
+### Setting Up Object Storage
+
+To use Object Storage with GitLab, you need to:
+
+1. **Create Buckets**: Set up a "bucket" in the Object Storage service for different types of data GitLab handles.
+2. **Configure GitLab**: Adjust settings in GitLab's configuration files to connect to your Object Storage service.
+
+Even if you’re using GitLab's standard installation (Omnibus) and don't need Object Storage, it’s still a good idea to use it for its benefits, like improved backup processes and data redundancy.
+
+# Gitlab Omnibus
+
+GitLab Omnibus is a packaged version of GitLab that includes everything you need to run GitLab on a single server. It’s a straightforward, all-in-one installer that bundles GitLab with its dependencies, making it easier to set up and manage compared to manual installations. Here’s a quick overview:
+
+### Key Features of GitLab Omnibus
+
+1. **All-in-One Package**: Omnibus GitLab includes GitLab itself, along with all necessary components like PostgreSQL (the database), Redis (for caching), and Nginx (the web server), all bundled together. This simplifies installation and maintenance because you don’t need to install and configure these components separately.
+
+2. **Ease of Installation**: You can install GitLab Omnibus using package managers like `apt` for Debian-based systems or `yum` for Red Hat-based systems. This simplifies the installation process.
+
+3. **Integrated Configuration**: Omnibus GitLab comes with a pre-configured setup, so you don’t need to manually configure services or dependencies. You only need to adjust a few settings to get GitLab up and running.
+
+4. **Built-in Updates**: It provides a simple way to keep your GitLab instance up to date. You can easily apply updates and security patches through the package manager.
+
+### Storage with GitLab Omnibus
+
+By default, GitLab Omnibus stores all its data on the local server. This includes repositories, logs, and other important files. However, you can use Object Storage to handle large files and backups more efficiently.
+
+- **Object Storage**: Even if you use Omnibus GitLab, it’s recommended to set up Object Storage for large file storage and backups. This is because Object Storage can manage large volumes of data more effectively and provide features like redundancy and high availability.
+
+### Benefits of GitLab Omnibus
+
+1. **Simplified Management**: Since everything is bundled together, you don’t need to worry about setting up and managing multiple services separately.
+
+2. **Pre-configured Settings**: GitLab Omnibus comes with default configurations that are optimized for general use, reducing the need for manual setup.
+
+3. **Convenient Upgrades**: Updating your GitLab instance is straightforward with Omnibus, as it handles upgrades for both GitLab and its dependencies.
+
+Overall, GitLab Omnibus is ideal for users who want a simple, unified setup for GitLab without having to deal with the complexities of configuring each component individually.
+
+# GitLab Cloud Native Hybrid (GitLab CNH)
+
+The **GitLab Cloud Native Hybrid (GitLab CNH)** is a special way to set up GitLab using Kubernetes, a popular platform for managing and deploying applications. This setup is designed to be very stable and reliable because GitLab is often used as a critical tool by organizations, meaning that any issues with it can cause big problems.
+
+### What Makes GitLab CNH Different?
+
+1. **Built for Kubernetes**: Unlike other GitLab setups, GitLab CNH is made specifically to work with Kubernetes. This means it uses Kubernetes features like containerization (where each part of GitLab runs in its own isolated environment) and an Ingress Router (which manages web traffic). It also handles logs and data differently to make it more scalable and efficient.
+
+2. **Separation of Storage**: The key difference with the Cloud Native Hybrid setup is that important parts of GitLab, like the databases (Redis and Postgres) and Gitaly (which handles Git data), are not run inside Kubernetes. Instead, they are hosted on separate virtual machines (VMs) outside of Kubernetes. This separation is done because GitLab’s use of these databases is very demanding, and running them in Kubernetes can cause performance issues.
+
+3. **Why It Matters**: GitLab is often a central part of an organization’s operations. For example, a company might use GitLab to store all its infrastructure code and manage deployments. If GitLab goes down, it can disrupt the entire workflow. Therefore, it’s crucial that GitLab is as stable as possible, which is why GitLab CNH is designed with reliability in mind.
+
+### How to Set Up GitLab CNH
+
+1. **Evaluate the Need**: Before jumping into this setup, it’s important to consider if deploying GitLab on Kubernetes is the right choice for your organization. Kubernetes is powerful but complex, so it’s important to plan carefully.
+
+2. **Prepare for VMs**: You will need to set up VMs to host the stateful parts of GitLab (Redis, Postgres, and Gitaly). Some organizations use cloud-managed services for Redis and Postgres, but Gitaly will still need to be managed on VMs. If you want high availability (to ensure everything keeps running smoothly even if something fails), you’ll need multiple VMs for each component.
+
+3. **Install with Helm**: To install GitLab CNH, you’ll use a tool called Helm, which is standard in the Kubernetes world. Helm uses a configuration file called a “Helm Values” file to set up everything, similar to how the `gitlab.rb` file is used in other GitLab installations.
+
+### Summary
+
+The GitLab Cloud Native Hybrid setup is a powerful but complex way to run GitLab on Kubernetes, designed for maximum stability and performance. It’s recommended for organizations that need the flexibility and scalability of Kubernetes but also require a very reliable and stable GitLab environment. Due to its complexity, it’s advised to consult with GitLab Professional Services if you’re considering this setup.
+
+# GitLab Environment Toolkit (GET)
+
+The **GitLab Environment Toolkit (GET)** is a tool designed to simplify the process of setting up large and complex GitLab installations, whether you’re using Kubernetes or traditional virtual machines (VMs). Let’s break down how it works and why it’s useful.
+
+### Why Use GET?
+
+Setting up GitLab on multiple machines can be a complicated and time-consuming process. You might need to configure and manage 10 or more machines, making sure that everything is set up in the right order. GET helps streamline this process by automating much of the work.
+
+### What Does GET Do?
+
+1. **Automated Setup**: GET uses tools like **Ansible** and **Terraform** to automate the setup of the infrastructure you need for GitLab. Terraform is used to create the necessary cloud resources (like servers, databases, and load balancers), and Ansible is used to configure those resources to run GitLab.
+
+2. **Flexibility with Cloud Resources**: Even though GitLab Omnibus is an all-in-one package, GET allows you to replace certain components with cloud services if you prefer. For example, you could use Amazon’s ElastiCache instead of Redis or an AWS Elastic Load Balancer (ELB) instead of Nginx.
+
+3. **Simplified Configuration**: Once the cloud resources are set up, GET will automatically configure the VMs with the necessary GitLab settings. It uses a configuration file called `gitlab.rb` to ensure each machine is set up correctly to run GitLab Omnibus.
+
+4. **Kubernetes Support**: If you’re using Kubernetes, GET can also help. Instead of setting up VMs, GET will use a Helm Chart to deploy GitLab’s components on your Kubernetes cluster. It will configure everything needed for GitLab to run in this environment, though it won’t set up Kubernetes itself—that’s something you’d need to do separately.
+
+### Why Is GET Useful?
+
+- **Simplifies Complex Setups**: For large GitLab installations, especially those with High Availability (HA) or GEO (geographically distributed) configurations, GET makes the process much easier and more consistent.
+
+- **Reduces Errors**: By automating the setup process, GET helps reduce the chance of human errors that could occur when manually setting up and configuring multiple machines.
+
+- **Built on Experience**: Before GET, people had to create their own scripts and processes for setting up GitLab in the cloud, leading to inconsistent methods. GET now incorporates the best practices learned from those experiences, providing a more standardized approach.
+
+### Limitations
+
+While GET is powerful, it’s also very "opinionated." This means it follows a specific method or approach for setting up GitLab. If your environment or requirements are unique, you might need to customize GET to fit your needs.
+
+### In Summary
+
+The GitLab Environment Toolkit is a tool designed to make the complex process of setting up GitLab across multiple machines or in a Kubernetes environment much easier and more reliable. It automates many of the tasks involved, ensuring that your GitLab installation is consistent and well-configured, whether you're using traditional VMs or cloud-native solutions.
+
+# Gitlab Geo and HA
+
+GitLab Geo and GitLab HA (High Availability) are both designed to ensure that GitLab remains available and performant, but they do so in different ways and are suited to different use cases. Here's a detailed explanation:
+
+### GitLab Geo
+
+**Purpose:**  
+GitLab Geo is designed to improve access and availability of GitLab instances across multiple geographic locations. It is particularly useful for organizations with globally distributed teams.
+
+**Key Features:**
+
+1. **Geographic Distribution:**
+
+   - **Multiple Locations:** Geo allows you to set up secondary GitLab instances in different regions or countries. These secondary instances are read-only replicas of the primary instance.
+   - **Reduced Latency:** Users can interact with the GitLab instance closest to them, which reduces latency when pulling code or accessing data.
+
+2. **Data Replication:**
+
+   - **Postgres Database:** The primary GitLab instance uses streaming replication to keep the Postgres database synchronized with the secondary instances. This ensures that the secondary databases are always up to date, with a small replication delay.
+   - **Object Storage:** For large files like CI artifacts, attachments, and LFS objects, GitLab Geo replicates these to secondary instances. If an Object Storage provider supports replication, it will handle this; otherwise, GitLab will replicate the data over HTTPS.
+   - **Git Repository Data:** Git repositories are synchronized from the primary instance to the secondary instances using Gitaly nodes over HTTPS. When a user pushes code to a secondary instance, the push is proxied to the primary instance. However, when a user pulls code, it is served directly from the closest instance.
+
+3. **Synchronization Management:**
+   - **Change Tracking:** A separate Postgres database on the primary instance tracks all changes, ensuring they are replicated to secondary instances. This helps maintain consistency across all locations.
+   - **Monitoring:** The status of this replication and synchronization can be monitored through the GitLab Geo Dashboard or by using the command `gitlab-rake gitlab:geo:check`.
+
+**Use Case:**  
+GitLab Geo is ideal for organizations with teams distributed across different geographic locations who need low-latency access to GitLab repositories and data. It also provides a disaster recovery option since secondary instances can be promoted to primary in case of failure.
+
+### GitLab HA (High Availability)
+
+**Purpose:**  
+GitLab HA is focused on ensuring the availability of a GitLab instance within a single geographic location. It is designed to prevent downtime and ensure continuous operation by providing redundancy within that location.
+
+**Key Features:**
+
+1. **Single Location, Multiple Instances:**
+
+   - **Redundancy:** GitLab HA involves deploying multiple instances of GitLab components (like Postgres, Gitaly, Redis, etc.) within the same region or data center. This setup ensures that if one instance fails, another can take over, minimizing downtime.
+   - **Failover and Load Balancing:** Components are usually behind load balancers, which can redirect traffic to healthy instances in case of failure.
+
+2. **No Geographic Distribution:**
+   - **Latency Considerations:** Due to the need for low latency between components, GitLab HA instances should not be spread across different regions. All instances should be within the same geographic area to ensure optimal performance.
+
+**Use Case:**  
+GitLab HA is best suited for organizations that need to ensure their GitLab instance is always available within a single location. It is focused on redundancy and fault tolerance rather than geographic distribution.
+
+### Complementary Nature
+
+- **Disaster Recovery and Performance:** GitLab Geo and HA can be used together. For instance, you can have a highly available GitLab instance in one region (using HA) and then use Geo to replicate this instance to other regions for disaster recovery and improved global access.
+- **Differentiation:** While GitLab HA is about maintaining uptime within a single location, GitLab Geo is about making GitLab accessible and performant across multiple locations. They address different aspects of availability and can be deployed together for comprehensive coverage.
+
+When deciding between GitLab Geo and GitLab HA, the choice hinges on an organization's specific needs, use cases, and resources. Here's a breakdown of how to approach this decision:
+
+### Understanding the Needs
+
+1. **Downtime Tolerance:**
+
+   - **GitLab Geo:** If an organization can tolerate a short downtime (10-20 minutes) in the event of a failure and prioritizes global accessibility and low latency, GitLab Geo might be the better option. It allows for a quick failover to a secondary instance in another geographic location, but this requires some manual intervention.
+   - **GitLab HA:** For organizations that cannot tolerate downtime and need continuous availability, GitLab HA is designed to keep services running even if some components fail. However, it is more complex to manage and may lead to longer maintenance periods due to its intricate setup.
+
+2. **Global Distribution vs. Single Location:**
+
+   - **GitLab Geo:** Ideal for organizations with teams spread across multiple geographic locations, where reducing latency and ensuring fast access to repositories is crucial. Geo provides global access to a read-only replica, which can be promoted to a primary if needed.
+   - **GitLab HA:** Suitable for organizations that operate primarily in one region and need to ensure that their GitLab services remain up and running without interruption. It focuses on redundancy within a single geographic location.
+
+3. **Complexity and Resource Management:**
+
+   - **GitLab Geo:** Simpler to manage compared to GitLab HA, especially for organizations that do not have a large team of DevOps engineers. Automation can assist with failover processes, but some manual steps are still required.
+   - **GitLab HA:** Requires a higher level of expertise and resources to manage, given its complexity. The setup involves multiple instances of each component (Postgres, Redis, etc.), which need to be managed and monitored closely. The complexity can lead to longer downtime during issues or maintenance if not managed properly.
+
+4. **Capacity and Scalability:**
+   - **GitLab Geo:** Does not add capacity; it primarily focuses on replication and availability across regions. It’s more about data accessibility rather than scaling for high traffic.
+   - **GitLab HA:** Offers additional capacity and is ideal for high-traffic instances. It supports zero-downtime upgrades and maintenance, which can be crucial for larger organizations with continuous operations.
+
+### Which to Choose?
+
+- **For Organizations with Global Teams and Moderate Downtime Tolerance:**
+
+  - GitLab Geo is often the better choice. It provides a way to distribute access geographically and offers a backup solution with a manageable downtime window for failover. It’s also less complex and easier to manage for teams without deep expertise in high-availability setups.
+
+- **For Organizations Requiring Continuous Uptime and Operating in a Single Location:**
+
+  - GitLab HA might be necessary. It ensures redundancy at the component level, reducing the risk of service disruption. However, it comes with the need for more sophisticated management, which could require additional staff and resources.
+
+- **For Larger Organizations or Those Needing Both Global Access and High Availability:**
+  - Implementing both GitLab Geo and GitLab HA can provide comprehensive coverage. Geo can handle global distribution and failover, while HA ensures redundancy and continuous operation within the primary region. This approach, however, requires significant resources and careful planning.
+
+### Conclusion
+
+The decision should be based on an organization's tolerance for downtime, the geographic distribution of its teams, the available expertise, and the need for capacity. Properly evaluating these factors will help determine whether GitLab Geo, GitLab HA, or a combination of both is the best fit.
+
+# Gitlab Runner
+
+The GitLab Runner is a crucial part of GitLab's CI/CD (Continuous Integration/Continuous Deployment) ecosystem. It is responsible for executing the jobs defined in your CI/CD pipelines. Here's a detailed overview of how the GitLab Runner works:
+
+### GitLab Runner Basics
+
+1. **What is a GitLab Runner?**
+
+   - **Core Function:** The GitLab Runner is an independent service that works with GitLab CI/CD to run jobs. These jobs are defined in the `.gitlab-ci.yml` file of your repository.
+   - **Single Binary:** The Runner is a single executable binary, which simplifies installation and management. It comes with a configuration file where you can define various settings, including the type of executor it should use.
+
+2. **How It Works:**
+
+   - **Check-In Process:** The Runner continuously checks in with the GitLab server (every few seconds) to see if there are any jobs it needs to execute. This check-in process is an outbound connection from the Runner to GitLab, meaning the Runner doesn't need to accept inbound connections, enhancing security and flexibility.
+   - **Job Execution:** When a job is assigned to the Runner, it executes the job according to the defined CI/CD pipeline. If no jobs are pending, the Runner remains idle until the next check-in.
+
+3. **Installation Flexibility:**
+   - **Anywhere Deployment:** The GitLab Runner's lightweight nature allows it to be installed almost anywhere. This could range from traditional environments like Virtual Machines (VMs) or Kubernetes clusters to more unconventional locations like IoT devices or even kitchen appliances.
+   - **Versatility:** This flexibility allows organizations to execute CI/CD pipelines in diverse environments, automating a wide range of tasks beyond just software builds and tests.
+
+### Executors in GitLab Runner
+
+1. **What is an Executor?**
+   - **Definition:** An executor is a plugin that the GitLab Runner uses to determine how and where to execute a CI/CD job. The choice of executor depends on the environment and the specific requirements of the job.
+2. **Common Executors:**
+
+   - **Shell Executor:** This is the simplest executor, which runs the CI/CD job directly on the machine where the Runner is installed, using a bash shell.
+   - **Docker Executor:** The Docker executor runs the job inside a Docker container, providing a clean and isolated environment for each job. This is useful for consistent environments and managing dependencies.
+   - **Kubernetes Executor:** With this executor, jobs are run inside a Kubernetes cluster. The Runner interacts with Kubernetes to spin up and tear down pods for each job, making it ideal for cloud-native applications.
+   - **VirtualBox/Parallels Executors:** These executors spin up a new virtual machine for each job, providing full isolation from the host machine. This is useful for testing in different OS environments or for jobs requiring heavy resource isolation.
+
+3. **Custom Executors:**
+   - **Community Contributions:** GitLab allows for the creation of custom executors. This is particularly useful when you need to run CI/CD jobs in environments or platforms not officially supported by GitLab. For example, the GitLab community has developed custom executors like the GitLab Runner Tart Driver, enabling even more specialized use cases.
+
+### Installing a GitLab Runner on a Virtual Machine
+
+1. **Preparation:**
+
+   - Ensure the VM has the necessary operating system and access to the internet or your GitLab server.
+   - Download the GitLab Runner binary suitable for your OS.
+
+2. **Installation Steps:**
+
+   - **Binary Installation:** Download and install the GitLab Runner binary on the VM.
+   - **Configuration:** Set up the Runner by registering it with your GitLab instance. During registration, you'll be prompted to provide information like the GitLab URL, registration token, and the executor type (e.g., Shell, Docker, etc.).
+   - **Start the Runner:** Once configured, start the Runner service. It will begin checking in with GitLab and be ready to execute CI/CD jobs as soon as they are assigned.
+
+3. **Advanced Configuration:**
+   - You can further configure the Runner with additional options, such as defining caching strategies, setting up concurrent job limits, and specifying custom environment variables.
+
+By understanding and configuring GitLab Runners and their executors, you can tailor your CI/CD environment to meet the specific needs of your projects, whether you need a simple setup on a local machine or a complex, distributed system.
+
+# Linux
+
+Linux is an open-source operating system (OS) that is widely used for servers, desktops, mobile devices, and embedded systems. It is based on the Unix operating system and was first released by Linus Torvalds in 1991. Linux is known for its stability, security, and flexibility, making it a popular choice for developers, system administrators, and users who need a reliable operating system.
+
+### Key Features of Linux:
+
+1. **Open Source**: Linux's source code is freely available to the public, allowing anyone to view, modify, and distribute it. This has led to a large community of developers and contributors who continuously improve and update the OS.
+
+2. **Multi-user and Multitasking**: Linux supports multiple users simultaneously without impacting performance. It is also a multitasking operating system, meaning it can run multiple processes at the same time.
+
+3. **Security**: Linux is considered more secure than many other operating systems. Its architecture and permissions system make it harder for malware and viruses to gain access to critical system resources.
+
+4. **Customizability**: Linux can be customized to a great extent, from the user interface to the kernel itself. There are many distributions (distros) of Linux, such as Ubuntu, Fedora, and Debian, each with its own set of features and configurations.
+
+5. **Package Management**: Linux distributions often come with package managers that make it easy to install, update, and remove software. Examples include `apt` (for Debian-based systems) and `yum` (for Red Hat-based systems).
+
+6. **Wide Hardware Support**: Linux can run on a wide range of hardware, from powerful servers to older, less capable machines, making it versatile for different applications.
+
+7. **Community Support**: Linux has a large and active community that provides support through forums, documentation, and tutorials. This community-driven approach has contributed to the rapid evolution and improvement of Linux.
+
+### Common Uses of Linux:
+
+- **Servers**: Linux is the OS of choice for many web servers, database servers, and application servers due to its stability and security.
+- **Development**: Developers often use Linux because of its robust development environment, including support for multiple programming languages and tools.
+- **Embedded Systems**: Linux is widely used in embedded systems, such as routers, smart TVs, and other IoT devices.
+- **Desktops**: While less common than Windows or macOS, Linux is used on desktops by those who prefer its customizability and performance.
+
+## About Virtual Box
+
+VirtualBox is a free and open-source virtualization software developed by Oracle. It allows users to run multiple operating systems simultaneously on a single physical machine, creating virtual machines (VMs) that behave as if they were separate computers. VirtualBox is widely used for testing, development, and running applications in different environments without needing separate physical hardware.
+
+### Key Features of VirtualBox:
+
+1. **Cross-Platform Support**: VirtualBox runs on various host operating systems, including Windows, macOS, Linux, and Solaris. This makes it versatile for users working in different environments.
+
+2. **Wide Range of Guest OS Support**: VirtualBox supports a broad range of guest operating systems, including various versions of Windows, Linux, macOS (with some restrictions), Solaris, and even older systems like DOS.
+
+3. **Snapshots**: VirtualBox allows users to take snapshots of the current state of a virtual machine. This feature is useful for testing and development, as it allows users to revert to a previous state if something goes wrong.
+
+4. **Seamless Mode**: This feature allows applications from the guest OS to appear on the host OS's desktop as if they were native applications. It provides an integrated experience for users running multiple OS environments.
+
+5. **Shared Folders and Clipboard**: VirtualBox enables easy sharing of files and clipboard content between the host and guest operating systems, making it easier to move data between environments.
+
+6. **Virtual Networking**: VirtualBox provides robust networking features, allowing VMs to connect to the internet, communicate with each other, and access the host network. Users can configure network settings to simulate different network environments.
+
+7. **USB Device Support**: VirtualBox allows guest OSs to access USB devices connected to the host machine, such as printers, storage devices, and other peripherals.
+
+8. **3D Graphics Acceleration**: VirtualBox supports 3D graphics acceleration for guest OSs, improving the performance of graphical applications running in virtual machines.
+
+9. **Command Line Interface (CLI) and API**: Advanced users can manage VirtualBox through its command-line interface or use its API for scripting and automation.
+
+### Common Uses of VirtualBox:
+
+- **Software Testing**: Developers and testers use VirtualBox to run different operating systems and software configurations to ensure compatibility and performance.
+- **Learning and Experimentation**: Users can safely experiment with new operating systems, software, or configurations without affecting their primary system.
+- **Development**: VirtualBox is often used to create isolated development environments, enabling developers to work on projects in different OS environments.
+- **Legacy Software**: VirtualBox allows users to run older operating systems or software that may not be compatible with modern hardware.
