@@ -4346,3 +4346,128 @@ paste file1 file2
 - **`paste`**: Merge lines of files.
 
 These commands are fundamental for text processing and filtering in Linux, and they can be combined in pipelines for powerful data manipulation.
+
+# Linux File editor (vi)
+
+The `vi` editor is a powerful and widely used text editor in Linux and Unix systems. It’s a modal editor, meaning it operates in different modes, each with its own specific purpose. Here's a basic guide to using `vi`.
+
+### Opening a File with `vi`
+
+To open a file in `vi`, type the following command:
+
+```bash
+vi file_name
+```
+
+If the file does not exist, `vi` will create it when you save your changes.
+
+### Modes in `vi`
+
+`vi` operates in several modes, but the most commonly used are:
+
+1. **Normal Mode**: This is the default mode. In this mode, you can move around the file and execute commands. You cannot insert or delete text directly in this mode.
+
+2. **Insert Mode**: This mode is for editing text. You can enter this mode by pressing `i` (insert), `a` (append), or `o` (open a new line).
+
+3. **Command Mode**: This mode is for saving your work, exiting the editor, searching, and other tasks. You enter command mode from normal mode by typing `:` (colon).
+
+### Basic Commands
+
+#### Switching Modes
+
+- **Normal Mode to Insert Mode**:
+  - `i`: Insert text at the cursor position.
+  - `a`: Append text after the cursor.
+  - `o`: Open a new line below the current line.
+- **Insert Mode to Normal Mode**:
+
+  - Press `Esc` to return to Normal Mode.
+
+- **Normal Mode to Command Mode**:
+  - Press `:` to enter Command Mode from Normal Mode.
+
+#### Saving and Exiting
+
+- **Save changes and exit**:
+
+  ```bash
+  :wq
+  ```
+
+  - `:w` (write) saves the changes, and `q` (quit) exits the editor.
+
+- **Exit without saving**:
+
+  ```bash
+  :q!
+  ```
+
+  - `q!` forces `vi` to quit without saving changes.
+
+- **Save changes without exiting**:
+  ```bash
+  :w
+  ```
+  - Writes (saves) changes to the file but keeps `vi` open.
+
+#### Navigating in Normal Mode
+
+- **Arrow Keys**: Move the cursor up, down, left, or right.
+- **`h`**: Move left (back one character).
+- **`j`**: Move down (next line).
+- **`k`**: Move up (previous line).
+- **`l`**: Move right (forward one character).
+
+- **`0`**: Move to the beginning of the line.
+- **`$`**: Move to the end of the line.
+- **`w`**: Move to the beginning of the next word.
+- **`b`**: Move to the beginning of the previous word.
+- **`G`**: Move to the end of the file.
+- **`gg`**: Move to the beginning of the file.
+
+#### Editing Text
+
+- **`x`**: Delete the character under the cursor.
+- **`dd`**: Delete the entire current line.
+- **`dw`**: Delete the word starting at the cursor.
+- **`u`**: Undo the last action.
+- **`p`**: Paste the last deleted or copied text after the cursor.
+- **`yy`**: Copy (yank) the current line.
+- **`P`**: Paste the copied or deleted text before the cursor.
+
+#### Searching
+
+- **Search forward**:
+
+  ```bash
+  /pattern
+  ```
+
+  - Type `/` followed by the pattern you want to search for, then press `Enter`.
+
+- **Search backward**:
+
+  ```bash
+  ?pattern
+  ```
+
+  - Type `?` followed by the pattern, then press `Enter`.
+
+- **Move to the next match**: Press `n`.
+- **Move to the previous match**: Press `N`.
+
+### Summary
+
+- **Normal Mode**: For navigation and executing commands.
+- **Insert Mode**: For editing text.
+- **Command Mode**: For saving, exiting, and performing other commands.
+
+#### Basic Workflow Example
+
+1. Open a file: `vi file_name`
+2. Enter Insert Mode: Press `i` to start editing.
+3. Edit your text.
+4. Return to Normal Mode: Press `Esc`.
+5. Save and exit: Type `:wq` and press `Enter`.
+
+`vi` is a powerful editor, and once you get used to its modal nature, it can be incredibly efficient for text editing.
