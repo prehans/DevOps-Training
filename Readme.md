@@ -4471,3 +4471,859 @@ If the file does not exist, `vi` will create it when you save your changes.
 5. Save and exit: Type `:wq` and press `Enter`.
 
 `vi` is a powerful editor, and once you get used to its modal nature, it can be incredibly efficient for text editing.
+
+User account management in Linux involves creating, modifying, and deleting user accounts, setting passwords, managing groups, and controlling permissions. Below is an overview of the key tasks and commands related to user account management.
+
+### 1. **Creating a User Account**
+
+To create a new user account, you use the `useradd` command.
+
+```bash
+sudo useradd username
+```
+
+- **`-m`**: Creates a home directory for the user.
+
+  ```bash
+  sudo useradd -m username
+  ```
+
+- **`-s`**: Specifies the default shell for the user.
+
+  ```bash
+  sudo useradd -s /bin/bash username
+  ```
+
+- **`-G`**: Adds the user to one or more groups.
+  ```bash
+  sudo useradd -G groupname username
+  ```
+
+### 2. **Setting a Password**
+
+After creating a user, you’ll need to set a password with the `passwd` command.
+
+```bash
+sudo passwd username
+```
+
+The system will prompt you to enter and confirm the new password.
+
+### 3. **Modifying a User Account**
+
+You can modify an existing user account with the `usermod` command.
+
+```bash
+sudo usermod options username
+```
+
+Common options include:
+
+- **`-l newname`**: Change the username.
+
+  ```bash
+  sudo usermod -l newname oldname
+  ```
+
+- **`-d /new/home/directory`**: Change the user’s home directory.
+
+  ```bash
+  sudo usermod -d /new/home/directory username
+  ```
+
+- **`-s /bin/sh`**: Change the user’s login shell.
+
+  ```bash
+  sudo usermod -s /bin/sh username
+  ```
+
+- **`-aG groupname`**: Add the user to a supplementary group without removing them from other groups.
+  ```bash
+  sudo usermod -aG groupname username
+  ```
+
+### 4. **Deleting a User Account**
+
+To delete a user account, use the `userdel` command.
+
+```bash
+sudo userdel username
+```
+
+- **`-r`**: Remove the user’s home directory and mail spool.
+  ```bash
+  sudo userdel -r username
+  ```
+
+### 5. **Managing User Groups**
+
+Groups are collections of users, used for setting permissions.
+
+- **Create a group**:
+
+  ```bash
+  sudo groupadd groupname
+  ```
+
+- **Add a user to a group**:
+
+  ```bash
+  sudo usermod -aG groupname username
+  ```
+
+- **Remove a user from a group**:
+  ```bash
+  sudo gpasswd -d username groupname
+  ```
+
+### 6. **Viewing User Information**
+
+To see detailed information about a user, use the `id` command.
+
+```bash
+id username
+```
+
+This displays the user’s UID (User ID), GID (Group ID), and group memberships.
+
+### 7. **Listing All Users**
+
+You can view all the users on the system by checking the `/etc/passwd` file.
+
+```bash
+cat /etc/passwd
+```
+
+This file contains user account information.
+
+### 8. **Switching Users**
+
+To switch from one user account to another, use the `su` command.
+
+```bash
+su username
+```
+
+You’ll need to enter the password for the user you’re switching to. To return to the original user, type `exit`.
+
+### 9. **File Permissions and Ownership**
+
+File permissions and ownership are crucial for managing what users can do with files and directories.
+
+- **View file permissions**:
+
+  ```bash
+  ls -l
+  ```
+
+- **Change file permissions**:
+
+  ```bash
+  chmod options filename
+  ```
+
+- **Change file ownership**:
+  ```bash
+  sudo chown username:groupname filename
+  ```
+
+### Summary of Commands
+
+- **Create a user**: `sudo useradd -m username`
+- **Set a password**: `sudo passwd username`
+- **Modify a user**: `sudo usermod options username`
+- **Delete a user**: `sudo userdel -r username`
+- **Create a group**: `sudo groupadd groupname`
+- **Add user to a group**: `sudo usermod -aG groupname username`
+- **Switch users**: `su username`
+- **Change permissions**: `chmod options filename`
+- **Change ownership**: `sudo chown username:groupname filename`
+
+This overview should help you manage user accounts effectively in a Linux environment.
+
+System utility commands in Linux are essential tools that help you manage, monitor, and maintain your system. These commands cover a wide range of tasks, from checking system performance to managing processes and disk usage. Here’s an overview of some key system utility commands:
+
+### 1. **System Information**
+
+- **`uname`**: Displays basic system information.
+
+  ```bash
+  uname -a
+  ```
+
+  - `-a`: Displays all information (kernel version, hostname, OS, etc.).
+
+- **`hostname`**: Shows or sets the system's hostname.
+
+  ```bash
+  hostname
+  ```
+
+- **`uptime`**: Shows how long the system has been running, along with the load average.
+
+  ```bash
+  uptime
+  ```
+
+- **`top`**: Displays a real-time view of running processes and system resource usage.
+
+  ```bash
+  top
+  ```
+
+- **`htop`**: An enhanced version of `top` with a more user-friendly interface (if installed).
+
+  ```bash
+  htop
+  ```
+
+- **`df`**: Reports disk space usage.
+
+  ```bash
+  df -h
+  ```
+
+  - `-h`: Human-readable format.
+
+- **`du`**: Estimates file and directory space usage.
+
+  ```bash
+  du -sh /path/to/directory
+  ```
+
+  - `-s`: Summary.
+  - `-h`: Human-readable format.
+
+- **`free`**: Displays memory usage (RAM).
+
+  ```bash
+  free -h
+  ```
+
+- **`vmstat`**: Reports virtual memory statistics.
+
+  ```bash
+  vmstat
+  ```
+
+- **`iostat`**: Provides CPU and I/O statistics (part of the `sysstat` package).
+  ```bash
+  iostat
+  ```
+
+### 2. **Process Management**
+
+- **`ps`**: Displays information about running processes.
+
+  ```bash
+  ps aux
+  ```
+
+  - `a`: All users.
+  - `u`: User-oriented format.
+  - `x`: Include processes without a terminal.
+
+- **`kill`**: Terminates a process by PID.
+
+  ```bash
+  kill PID
+  ```
+
+- **`killall`**: Kills processes by name.
+
+  ```bash
+  sudo killall processname
+  ```
+
+- **`pkill`**: Sends signals to processes by name or other attributes.
+
+  ```bash
+  pkill processname
+  ```
+
+- **`nice`**: Starts a process with a specified priority.
+
+  ```bash
+  nice -n 10 command
+  ```
+
+- **`renice`**: Changes the priority of an existing process.
+  ```bash
+  sudo renice -n 10 PID
+  ```
+
+### 3. **System Monitoring**
+
+- **`top`**: Provides a dynamic real-time view of the system’s processes.
+
+  ```bash
+  top
+  ```
+
+- **`htop`**: A more user-friendly version of `top`.
+
+  ```bash
+  htop
+  ```
+
+- **`dmesg`**: Displays kernel ring buffer messages, useful for diagnosing hardware and boot issues.
+
+  ```bash
+  dmesg | less
+  ```
+
+- **`sar`**: Collects, reports, and saves system activity information (part of `sysstat`).
+
+  ```bash
+  sar -u 1 3
+  ```
+
+  - `-u`: CPU usage.
+  - `1 3`: Report every 1 second, 3 times.
+
+- **`vmstat`**: Reports virtual memory statistics.
+  ```bash
+  vmstat 1 5
+  ```
+
+### 4. **Disk and Filesystem Management**
+
+- **`fdisk`**: Partition management tool.
+
+  ```bash
+  sudo fdisk -l
+  ```
+
+- **`mkfs`**: Creates a filesystem on a device (like a hard disk partition).
+
+  ```bash
+  sudo mkfs.ext4 /dev/sdX1
+  ```
+
+- **`mount`**: Mounts a filesystem.
+
+  ```bash
+  sudo mount /dev/sdX1 /mnt
+  ```
+
+- **`umount`**: Unmounts a filesystem.
+
+  ```bash
+  sudo umount /mnt
+  ```
+
+- **`lsblk`**: Lists information about block devices.
+  ```bash
+  lsblk
+  ```
+
+### 5. **Networking**
+
+- **`ifconfig`**: Displays or configures network interfaces (deprecated, but still widely used).
+
+  ```bash
+  ifconfig
+  ```
+
+- **`ip`**: A newer and more powerful tool for configuring network interfaces.
+
+  ```bash
+  ip addr
+  ```
+
+- **`ping`**: Tests network connectivity to another host.
+
+  ```bash
+  ping example.com
+  ```
+
+- **`netstat`**: Displays network connections, routing tables, interface statistics, masquerade connections, and multicast memberships.
+
+  ```bash
+  netstat -tuln
+  ```
+
+- **`ss`**: A utility to investigate sockets (more modern than `netstat`).
+
+  ```bash
+  ss -tuln
+  ```
+
+- **`traceroute`**: Traces the route packets take to a network host.
+
+  ```bash
+  traceroute example.com
+  ```
+
+- **`nmap`**: A network scanning tool.
+  ```bash
+  sudo nmap -sP 192.168.1.0/24
+  ```
+
+### 6. **System Maintenance**
+
+- **`cron`**: Schedules jobs to run at specific times.
+
+  ```bash
+  crontab -e
+  ```
+
+  - Opens the crontab file for editing, where you can schedule tasks.
+
+- **`at`**: Schedules a command to be run at a specific time.
+
+  ```bash
+  echo "command" | at 10:00
+  ```
+
+- **`shutdown`**: Shuts down the system.
+
+  ```bash
+  sudo shutdown -h now
+  ```
+
+- **`reboot`**: Reboots the system.
+
+  ```bash
+  sudo reboot
+  ```
+
+- **`systemctl`**: Controls the systemd system and service manager.
+
+  ```bash
+  sudo systemctl status service_name
+  ```
+
+- **`journalctl`**: Views logs collected by `systemd`.
+  ```bash
+  sudo journalctl -xe
+  ```
+
+### Summary
+
+- **System Information**: `uname`, `hostname`, `df`, `free`, `top`, `htop`.
+- **Process Management**: `ps`, `kill`, `pkill`, `nice`, `renice`.
+- **System Monitoring**: `top`, `dmesg`, `sar`, `vmstat`.
+- **Disk Management**: `fdisk`, `mkfs`, `mount`, `umount`.
+- **Networking**: `ifconfig`, `ip`, `ping`, `netstat`, `ss`.
+- **System Maintenance**: `cron`, `shutdown`, `systemctl`, `journalctl`.
+
+These commands are vital for maintaining and monitoring a Linux system efficiently.
+
+The `cal` command in Linux is used to display a calendar in the terminal. By default, it shows the current month's calendar, but it can also display any specific month or year, or even an entire year’s calendar. Here’s how you can use the `cal` command:
+
+### Basic Usage
+
+1. **Display the Current Month’s Calendar**
+
+   Simply type `cal` without any options to display the current month’s calendar:
+
+   ```bash
+   cal
+   ```
+
+   Example output:
+
+   ```
+      August 2024
+   Su Mo Tu We Th Fr Sa
+               1  2  3
+    4  5  6  7  8  9 10
+   11 12 13 14 15 16 17
+   18 19 20 21 22 23 24
+   25 26 27 28 29 30 31
+   ```
+
+2. **Display a Specific Month’s Calendar**
+
+   To display a calendar for a specific month and year, provide the month and year as arguments:
+
+   ```bash
+   cal 9 2024
+   ```
+
+   This command shows the calendar for September 2024.
+
+3. **Display an Entire Year’s Calendar**
+
+   You can view the calendar for an entire year by specifying only the year:
+
+   ```bash
+   cal 2024
+   ```
+
+   Example output:
+
+   ```
+                                 2024
+          January               February               March
+   Su Mo Tu We Th Fr Sa    Su Mo Tu We Th Fr Sa    Su Mo Tu We Th Fr Sa
+       1  2  3  4  5  6                 1  2  3                      1  2
+    7  8  9 10 11 12 13     4  5  6  7  8  9 10     3  4  5  6  7  8  9
+   14 15 16 17 18 19 20    11 12 13 14 15 16 17    10 11 12 13 14 15 16
+   21 22 23 24 25 26 27    18 19 20 21 22 23 24    17 18 19 20 21 22 23
+   28 29 30 31             25 26 27 28 29          24 25 26 27 28 29 30
+                                                  31
+          April                  May                   June
+   Su Mo Tu We Th Fr Sa    Su Mo Tu We Th Fr Sa    Su Mo Tu We Th Fr Sa
+       1  2  3  4  5  6              1  2  3  4                     1
+    7  8  9 10 11 12 13     5  6  7  8  9 10 11     2  3  4  5  6  7  8
+   14 15 16 17 18 19 20    12 13 14 15 16 17 18     9 10 11 12 13 14 15
+   21 22 23 24 25 26 27    19 20 21 22 23 24 25    16 17 18 19 20 21 22
+   28 29 30                26 27 28 29 30 31       23 24 25 26 27 28 29
+                                                  30
+           July                 August              September
+   Su Mo Tu We Th Fr Sa    Su Mo Tu We Th Fr Sa    Su Mo Tu We Th Fr Sa
+       1  2  3  4  5  6              1  2  3                     1  2
+    7  8  9 10 11 12 13     4  5  6  7  8  9 10     3  4  5  6  7  8  9
+   14 15 16 17 18 19 20    11 12 13 14 15 16 17    10 11 12 13 14 15 16
+   21 22 23 24 25 26 27    18 19 20 21 22 23 24    17 18 19 20 21 22 23
+   28 29 30 31             25 26 27 28 29 30 31    24 25 26 27 28 29 30
+
+          October              November              December
+   Su Mo Tu We Th Fr Sa    Su Mo Tu We Th Fr Sa    Su Mo Tu We Th Fr Sa
+          1  2  3  4  5                     1                        1
+    6  7  8  9 10 11 12     3  4  5  6  7  8  9     2  3  4  5  6  7  8
+   13 14 15 16 17 18 19    10 11 12 13 14 15 16     9 10 11 12 13 14 15
+   20 21 22 23 24 25 26    17 18 19 20 21 22 23    16 17 18 19 20 21 22
+   27 28 29 30 31          24 25 26 27 28 29 30    23 24 25 26 27 28 29
+                                                  30 31
+   ```
+
+4. **Display a Previous or Future Month’s Calendar**
+
+   You can use the `cal` command to display a calendar for a specific month in the past or future by providing the month and year.
+
+   ```bash
+   cal 12 2023
+   ```
+
+   This command will show the calendar for December 2023.
+
+### 5. **Julian Calendar**
+
+Display the calendar with Julian dates (day of the year) using the `-j` option:
+
+```bash
+cal -j
+```
+
+### 6. **Display Monday as the First Day of the Week**
+
+By default, `cal` shows Sunday as the first day of the week. You can change this to Monday using the `-m` option:
+
+```bash
+cal -m
+```
+
+### 7. **Highlight Today’s Date**
+
+To highlight the current date in the calendar, use the `-h` option (this is the default behavior):
+
+```bash
+cal -h
+```
+
+### 8. **Display a Calendar with Sunday as the First Day (Default)**
+
+Display the calendar with Sunday as the first day (default behavior):
+
+```bash
+cal
+```
+
+### 9. **More Options**
+
+- **Display the current month in a compact format**:
+
+  ```bash
+  cal -3
+  ```
+
+  Shows the previous, current, and next month.
+
+- **Print the number of the week in the calendar**:
+  ```bash
+  cal -w
+  ```
+
+### Summary
+
+- **`cal`**: Display the current month’s calendar.
+- **`cal 9 2024`**: Display the calendar for September 2024.
+- **`cal 2024`**: Display the calendar for the year 2024.
+- **`cal -j`**: Display the calendar with Julian dates.
+- **`cal -m`**: Start the week on Monday.
+
+The `cal` command is a simple yet powerful tool for quickly viewing a calendar in the terminal.
+
+In Linux, **processes** and **scheduling** are fundamental concepts that manage the execution of programs and the allocation of system resources. Here's an overview:
+
+### 1. Processes in Linux
+
+A **process** is an instance of a program that is being executed. Each process in Linux has a unique Process ID (PID) and can be in different states such as running, sleeping, stopped, or zombie.
+
+#### Types of Processes:
+
+- **Foreground Processes**: Processes that run directly in the terminal and take user input.
+- **Background Processes**: Processes that run without user interaction, often in the background.
+
+#### Key Commands to Manage Processes:
+
+- **`ps`**: Lists the currently running processes.
+  - Example: `ps aux` shows detailed information about all processes.
+- **`top` or `htop`**: Provides a dynamic, real-time view of running processes.
+- **`kill`**: Terminates a process by sending a signal.
+  - Example: `kill 1234` kills the process with PID 1234.
+- **`killall`**: Kills all processes with a specific name.
+  - Example: `killall firefox` kills all Firefox processes.
+- **`bg`**: Resumes a suspended job in the background.
+  - Example: `bg %1` resumes job 1 in the background.
+- **`fg`**: Brings a background process to the foreground.
+  - Example: `fg %1` brings job 1 to the foreground.
+- **`nice` and `renice`**: Adjust the priority of a process.
+  - Example: `nice -n 10 ./script.sh` runs `script.sh` with a lower priority.
+  - Example: `renice +5 1234` changes the priority of process 1234.
+
+### 2. Scheduling in Linux
+
+**Scheduling** refers to how the system decides which processes should run at any given time. The Linux kernel uses various scheduling algorithms to manage process execution and ensure efficient use of CPU resources.
+
+#### Key Concepts:
+
+- **Scheduler**: The component of the kernel that decides which process runs next.
+- **Context Switching**: The process of saving the state of a currently running process and loading the state of another process.
+- **Time Slice**: The amount of time a process is allowed to run before the scheduler switches to another process.
+- **Scheduling Policies**: Linux supports several scheduling policies that determine how processes are prioritized.
+
+#### Scheduling Policies:
+
+- **SCHED_OTHER**: The default time-sharing policy for most processes.
+- **SCHED_FIFO**: First-in, first-out real-time scheduling, where processes run until they finish or are blocked.
+- **SCHED_RR**: Round-robin real-time scheduling, similar to FIFO but with a time quantum.
+- **SCHED_BATCH**: Suitable for processes that are not interactive and can run in the background.
+- **SCHED_IDLE**: For processes that should only run when the system is idle.
+
+#### Controlling Process Scheduling:
+
+- **`nice`**: Launches a process with a specific priority.
+- **`renice`**: Alters the priority of an existing process.
+- **`chrt`**: Manipulates the real-time attributes of a process.
+  - Example: `chrt -r 20 ./script.sh` runs `script.sh` with a real-time priority of 20.
+
+#### Checking and Modifying Scheduling:
+
+- **`ps -eo pid,comm,pri,nice`**: Displays the priority and nice value of processes.
+- **`chrt -p <PID>`**: Displays the real-time attributes of a given process.
+
+### 3. Monitoring Processes and Scheduling
+
+- **`top`/`htop`**: These commands show the processes in real-time, including their CPU usage, memory usage, and other vital statistics.
+- **`vmstat`**: Reports information about processes, memory, paging, block IO, traps, and CPU activity.
+
+### Summary
+
+- **Processes**: Instances of programs that are currently executing, each identified by a unique PID. Managed using commands like `ps`, `kill`, `bg`, and `fg`.
+- **Scheduling**: The mechanism by which the Linux kernel decides which process to execute next, ensuring efficient use of the CPU. Can be influenced using `nice`, `renice`, and `chrt`.
+
+Understanding processes and scheduling is crucial for managing system performance, ensuring that critical tasks receive the necessary resources while non-essential tasks are appropriately managed.
+
+In Linux, a **daemon** is a background process that runs independently of user interaction. Daemons typically start when the system boots and continue running to perform specific tasks or services. They are often used for managing system operations like network services, hardware activity, or scheduled tasks.
+
+### Key Characteristics of Daemons:
+
+- **Background Operation**: Daemons run in the background, meaning they do not have a controlling terminal and do not require user interaction.
+- **Autonomous**: They often start automatically during system boot and run continuously without user input.
+- **Naming Convention**: Daemon names often end with the letter "d" (e.g., `sshd` for the SSH daemon, `httpd` for the Apache HTTP Server daemon).
+- **System Services**: Daemons usually provide services that are critical to the functioning of the system or network, such as managing connections, logging, or scheduling tasks.
+
+### Examples of Common Daemons:
+
+- **`sshd`**: Manages incoming SSH connections, allowing remote login to the system.
+- **`httpd`**: The Apache HTTP Server daemon, which serves web pages over the network.
+- **`cron`**: Schedules and runs tasks at specified times or intervals.
+- **`syslogd`**: Collects and logs system messages.
+- **`inetd`** or **`xinetd`**: Manages network connections for various services.
+
+### Starting, Stopping, and Managing Daemons:
+
+In most Linux distributions, daemons are managed by an **init system** such as `systemd`, `SysVinit`, or `Upstart`. Here’s how you can interact with daemons using `systemd`, which is the most common init system in modern Linux distributions:
+
+- **Start a Daemon**:
+
+  ```bash
+  sudo systemctl start <daemon_name>
+  ```
+
+  Example: To start the SSH daemon:
+
+  ```bash
+  sudo systemctl start sshd
+  ```
+
+- **Stop a Daemon**:
+
+  ```bash
+  sudo systemctl stop <daemon_name>
+  ```
+
+  Example: To stop the SSH daemon:
+
+  ```bash
+  sudo systemctl stop sshd
+  ```
+
+- **Enable a Daemon to Start at Boot**:
+
+  ```bash
+  sudo systemctl enable <daemon_name>
+  ```
+
+  Example: To ensure the SSH daemon starts at boot:
+
+  ```bash
+  sudo systemctl enable sshd
+  ```
+
+- **Disable a Daemon**:
+
+  ```bash
+  sudo systemctl disable <daemon_name>
+  ```
+
+  Example: To disable the SSH daemon from starting at boot:
+
+  ```bash
+  sudo systemctl disable sshd
+  ```
+
+- **Check the Status of a Daemon**:
+  ```bash
+  sudo systemctl status <daemon_name>
+  ```
+  Example: To check the status of the SSH daemon:
+  ```bash
+  sudo systemctl status sshd
+  ```
+
+### Creating a Custom Daemon
+
+If you need to create a custom daemon, you can write a shell script or program that performs a specific task, and then configure it to run in the background and start automatically at boot.
+
+Basic steps to create a custom daemon:
+
+1. **Write the Script**: Create a script that runs your task.
+2. **Move the Script**: Place the script in `/usr/local/bin/` or another appropriate directory.
+3. **Create a Service File**: For `systemd`, you would create a `.service` file in `/etc/systemd/system/`.
+4. **Enable and Start the Daemon**: Use `systemctl` to enable and start your daemon.
+
+### Summary
+
+- **Daemon**: A background process that runs without user interaction, often starting at system boot and providing essential system services.
+- **Common Daemons**: `sshd` (SSH), `httpd` (Apache), `cron` (task scheduling).
+- **Management**: Daemons are typically managed via the `systemctl` command in `systemd`, allowing you to start, stop, enable, or disable them.
+
+Daemons are essential for managing and maintaining various system functions and services, ensuring that they run smoothly and efficiently.
+
+In Linux, **`crontab`** and **`at`** are two powerful utilities used for scheduling tasks, but they serve slightly different purposes:
+
+### 1. `crontab`
+
+**`crontab`** (cron table) is used to schedule repetitive tasks to run at specified intervals (e.g., daily, weekly, monthly). The tasks are executed by the **cron daemon** (`crond`), which continuously runs in the background and checks the schedule.
+
+#### Key Features:
+
+- **Schedules repetitive tasks**: Ideal for tasks that need to run regularly, such as backups, updates, or clean-up scripts.
+- **Flexible scheduling**: Allows for precise control over when tasks are executed, down to the minute.
+
+#### Crontab Syntax:
+
+A crontab entry consists of five time-and-date fields followed by the command to be executed:
+
+```plaintext
+* * * * * command-to-be-executed
+| | | | |
+| | | | +---- Day of the week (0 - 7) (Sunday = 0 or 7)
+| | | +------ Month (1 - 12)
+| | +-------- Day of the month (1 - 31)
+| +---------- Hour (0 - 23)
++------------ Minute (0 - 59)
+```
+
+#### Example Crontab Entries:
+
+- **Run a script every day at 2:30 AM:**
+  ```bash
+  30 2 * * * /path/to/script.sh
+  ```
+- **Run a command every Monday at 5:00 PM:**
+  ```bash
+  0 17 * * 1 /path/to/command
+  ```
+- **Run a backup at midnight on the 1st of every month:**
+  ```bash
+  0 0 1 * * /path/to/backup.sh
+  ```
+
+#### Managing Crontab:
+
+- **View crontab entries for the current user:**
+  ```bash
+  crontab -l
+  ```
+- **Edit the crontab for the current user:**
+  ```bash
+  crontab -e
+  ```
+- **Remove all crontab entries for the current user:**
+  ```bash
+  crontab -r
+  ```
+
+### 2. `at`
+
+**`at`** is used to schedule a one-time task for a specific time in the future. Unlike `crontab`, which is used for repetitive tasks, `at` is perfect for scheduling tasks that need to run just once.
+
+#### Key Features:
+
+- **Schedules one-time tasks**: Useful for tasks that need to be run once at a specific time, such as sending a reminder email or running a script later in the day.
+- **Flexible time specification**: You can specify times like "now + 1 hour" or "midnight tomorrow."
+
+#### Using `at`:
+
+1. **Schedule a one-time task**:
+
+   ```bash
+   at 14:30
+   ```
+
+   This opens a prompt where you can type the command you want to execute at 2:30 PM.
+
+2. **Example Usage**:
+
+   ```bash
+   at now + 1 hour
+   at> /path/to/script.sh
+   at> <EOT>  # Press Ctrl + D to save and exit
+   ```
+
+3. **List all scheduled `at` jobs**:
+
+   ```bash
+   atq
+   ```
+
+   This shows the list of all jobs scheduled with `at`.
+
+4. **Remove a scheduled `at` job**:
+   ```bash
+   atrm <job_number>
+   ```
+   The `<job_number>` can be found using `atq`.
+
+### Summary
+
+- **`crontab`**: Used for scheduling recurring tasks. Ideal for jobs that need to be executed regularly, like daily backups or weekly reports.
+- **`at`**: Used for scheduling one-time tasks. Perfect for tasks that need to run once at a specific future time, such as sending a notification or running a script.
+
+Both tools are integral to task automation in Linux, helping users manage time-consuming tasks efficiently.
