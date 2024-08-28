@@ -84,12 +84,6 @@ By addressing these issues proactively, organizations can streamline their SDLC,
 
 ![alt text](Images/image.png)
 
-<<<<<<< HEAD
-
-> > > > > > > # e78cf7e0f2f499ba455057d09374e76b03887f3e
-> > > > > > >
-> > > > > > > 00c57ed18c7e1a7eba518dce1a4b330208eb2b16
-
 # Types of Version Control System
 
 Version control systems (VCS) can be categorized into several types based on their architecture and functionality:
