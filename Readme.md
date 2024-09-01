@@ -1914,6 +1914,277 @@ Docker architecture is based on a client-server model and consists of several ke
 
 This architecture allows Docker to be both powerful and flexible, supporting a wide range of applications and workflows.
 
+Docker networking allows Docker containers to communicate with each other, the Docker host, and external networks like the internet. It is a crucial component for managing how containers interact in a Dockerized environment. Here’s an overview of Docker networking:
+
+### 1. **Docker Network Types**
+
+Docker provides several types of networks that you can use depending on your needs:
+
+#### **Bridge Network (Default)**
+
+- **Description**: This is the default network type for containers. It allows containers to communicate with each other on the same host via an isolated network.
+- **Use Case**: When you want containers on the same host to communicate securely. It’s commonly used in standalone Docker setups.
+- **How It Works**: Containers connected to the same bridge network can communicate using their container names as hostnames.
+
+#### **Host Network**
+
+- **Description**: In this network mode, a container shares the network stack of the host. There is no network isolation between the container and the host.
+- **Use Case**: When you need high-performance networking with no overhead from container network abstraction, like running a network service that needs direct access to the host network.
+- **How It Works**: The container’s network interfaces are bound directly to the host’s network interfaces.
+
+#### **Overlay Network**
+
+- **Description**: This network type is used for Docker Swarm services. It enables communication between containers running on different Docker hosts.
+- **Use Case**: For deploying distributed applications across multiple Docker hosts in a Docker Swarm or Kubernetes cluster.
+- **How It Works**: Docker creates a distributed network that spans multiple Docker hosts and allows containers to communicate securely.
+
+#### **Macvlan Network**
+
+- **Description**: This allows you to assign a MAC address to a container, making it appear as a physical device on your network.
+- **Use Case**: When you need to integrate Docker containers directly into an existing physical network with custom MAC addresses.
+- **How It Works**: Containers are given a unique MAC address and can interact with physical network devices directly.
+
+#### **None Network**
+
+- **Description**: Containers are isolated and do not have any external network interfaces.
+- **Use Case**: When you want to run containers in complete isolation without any network access.
+- **How It Works**: No network interfaces are created for the container, except the loopback interface.
+
+### 2. **Docker Networking Commands**
+
+Here are some common commands for managing Docker networks:
+
+- **Create a Network:**
+
+  ```bash
+  docker network create my_network
+  ```
+
+  Creates a user-defined bridge network named `my_network`.
+
+- **List Networks:**
+
+  ```bash
+  docker network ls
+  ```
+
+  Lists all available Docker networks.
+
+- **Inspect a Network:**
+
+  ```bash
+  docker network inspect my_network
+  ```
+
+  Provides detailed information about `my_network`.
+
+- **Connect a Container to a Network:**
+
+  ```bash
+  docker network connect my_network my_container
+  ```
+
+  Connects an existing container `my_container` to the `my_network`.
+
+- **Disconnect a Container from a Network:**
+
+  ```bash
+  docker network disconnect my_network my_container
+  ```
+
+  Disconnects `my_container` from `my_network`.
+
+- **Remove a Network:**
+  ```bash
+  docker network rm my_network
+  ```
+  Deletes the `my_network`. Ensure no containers are connected to it before removing.
+
+### 3. **DNS in Docker Networks**
+
+- Docker networks have built-in DNS to resolve container names to their IP addresses.
+- Containers can reach other containers using the container name if they are on the same user-defined network.
+
+### 4. **Container Communication**
+
+- **Same Network**: Containers on the same network can communicate directly using container names or IP addresses.
+- **Different Networks**: Containers on different networks require special setup, like routing rules or connecting them to the same network, to communicate.
+
+### 5. **Network Security**
+
+- **Isolated Networks**: By using different networks for different services, you can isolate containers for security purposes.
+- **Network Policies**: You can implement network security policies to control traffic between containers, even on the same network.
+
+### 6. **Advanced Networking (Docker Compose and Swarm)**
+
+- **Docker Compose**: When using Docker Compose, networks are created automatically based on the configuration in the `docker-compose.yml` file.
+- **Docker Swarm**: In a Swarm, services are automatically connected to overlay networks, facilitating communication across different Docker hosts.
+
+### Summary
+
+Docker networking is a flexible and powerful feature that allows you to manage container communication within a host, across multiple hosts, and with external networks. Understanding Docker networking is essential for deploying secure, scalable, and high-performance applications in a containerized environment.
+
+The Container Network Model (CNM) is a foundational framework for Docker networking that defines how networking works in Docker. It abstracts the details of network connectivity, enabling containers to communicate with each other, the host, and external networks. The CNM is crucial for managing network interactions in containerized environments.
+
+### Core Components of CNM
+
+The Container Network Model consists of three main components:
+
+1. **Network Sandbox**:
+
+   - **Description**: This is the isolated network environment that contains the network configuration of a container. It includes the container’s interfaces, routing tables, and DNS settings.
+   - **Role**: The sandbox isolates network settings for each container, ensuring they don't interfere with each other or the host network unless explicitly connected.
+   - **Example**: When a container is started, Docker creates a sandbox with its network interfaces (e.g., eth0) and network stack settings.
+
+2. **Endpoint**:
+
+   - **Description**: An endpoint is a virtual network interface that connects a container to a network. It represents a container’s connection point to a Docker network.
+   - **Role**: Endpoints allow containers to connect to networks, enabling communication between containers, the host, or external networks.
+   - **Example**: When you connect a container to a Docker network, Docker creates an endpoint in that network, which is attached to the container’s sandbox.
+
+3. **Network**:
+   - **Description**: A network is a logical group of endpoints that can communicate with each other. Docker supports various network types (e.g., bridge, overlay, host) that define how containers on the same network can communicate.
+   - **Role**: Networks define the scope of communication between containers. Containers on the same network can reach each other using their container names as hostnames.
+   - **Example**: The default bridge network that Docker creates when it’s installed is an example of a network that containers can be connected to by default.
+
+### How CNM Components Interact
+
+When you start a container in Docker, the CNM components work together to manage networking:
+
+1. **Create a Network**: Docker creates or uses an existing network that will be used to connect containers.
+
+2. **Create a Sandbox**: A sandbox is created for the container, containing its network configuration (interfaces, IP addresses, etc.).
+
+3. **Create an Endpoint**: Docker creates an endpoint in the chosen network and associates it with the container’s sandbox.
+
+4. **Attach the Endpoint**: The endpoint is then attached to the network, connecting the container to the network and allowing communication with other containers, the host, or external networks.
+
+### Types of Docker Networks in the CNM
+
+- **Bridge Network**: The default network type that connects containers on a single Docker host. Containers communicate using an isolated virtual bridge.
+- **Host Network**: The container shares the host’s network stack, with no isolation. The container’s network is directly linked to the host.
+
+- **Overlay Network**: Used in Docker Swarm for multi-host networking. It connects containers across multiple Docker hosts, enabling them to communicate as if they were on the same network.
+
+- **Macvlan Network**: Allows containers to have unique MAC addresses and appear as physical devices on the network.
+
+- **None Network**: Completely isolates the container with no network interfaces apart from the loopback interface.
+
+### Plugins and Extensibility
+
+The CNM allows for the use of network plugins, which can extend Docker’s networking capabilities:
+
+- **Network Plugins**: These allow third-party networking solutions to integrate with Docker, providing custom network drivers and advanced networking features (e.g., CNI plugins for Kubernetes).
+
+- **IPAM (IP Address Management) Plugins**: Manage the allocation of IP addresses within Docker networks, allowing custom IP management policies.
+
+### Summary
+
+The Container Network Model (CNM) provides a structured way to manage container networking in Docker. By separating network configuration (sandbox), connection points (endpoints), and communication groups (networks), the CNM offers flexibility, scalability, and security in containerized environments. Understanding the CNM is key to effectively designing and managing Docker-based applications.
+
+Docker storage volumes are a key component of Docker's storage mechanism, providing a way to persist data generated and used by Docker containers. Here's a breakdown in simple terms:
+
+### What is a Docker Volume?
+
+A Docker volume is a directory or a storage location outside the container's filesystem that allows you to persist data generated by containers. This means that even if the container is stopped, removed, or recreated, the data stored in the volume remains intact.
+
+### Why Use Docker Volumes?
+
+1. **Data Persistence**: Volumes ensure that data is not lost when a container stops or is removed.
+2. **Data Sharing**: Volumes allow data to be shared between multiple containers.
+3. **Performance**: Volumes are designed to be more efficient than using bind mounts, particularly on Docker Desktop for Mac or Windows, or when using the Docker Engine on Linux.
+4. **Backup and Restore**: Volumes can be easily backed up or restored by accessing the volume directly on the host system.
+
+### How to Use Docker Volumes?
+
+1. **Create a Volume**
+
+   - You can create a volume with the following command:
+     ```bash
+     docker volume create myvolume
+     ```
+   - This creates a volume named `myvolume` that can be used by containers.
+
+2. **Attach a Volume to a Container**
+
+   - When you run a container, you can attach a volume to it:
+     ```bash
+     docker run -d --name mycontainer -v myvolume:/app/data myimage
+     ```
+   - In this example, the volume `myvolume` is mounted to the `/app/data` directory inside the container. Any data written to `/app/data` inside the container is stored in the volume.
+
+3. **List Volumes**
+
+   - To see all volumes on your system:
+     ```bash
+     docker volume ls
+     ```
+
+4. **Inspect a Volume**
+
+   - You can inspect a volume to see its details:
+     ```bash
+     docker volume inspect myvolume
+     ```
+
+5. **Remove a Volume**
+   - To remove a volume:
+     ```bash
+     docker volume rm myvolume
+     ```
+   - **Note**: Be cautious when removing volumes as this will delete all the data stored in them.
+
+### Types of Docker Storage
+
+- **Volumes**: Managed by Docker, and they are the recommended way to persist data.
+- **Bind Mounts**: A specific location on the host filesystem is mounted into the container. This is more flexible but also more dependent on the host's filesystem layout.
+- **tmpfs Mounts**: Store data in the host system’s memory only, not on the disk. Useful for storing temporary files.
+
+### Practical Example
+
+Imagine you have a database container that stores data. By using a Docker volume, you can ensure that even if the container is restarted or updated, the database data is preserved:
+
+```bash
+docker run -d --name db -v dbdata:/var/lib/mysql mysql:latest
+```
+
+In this command:
+
+- `dbdata` is the volume that stores the database files.
+- `/var/lib/mysql` is where MySQL stores its data inside the container.
+
+### Summary
+
+Docker volumes provide a simple, efficient way to manage persistent data in Docker containers. They are versatile, easy to use, and critical for managing data that needs to survive container restarts, updates, and removals.
+
+Let's break down the different types of Docker storage and how they work:
+
+### 1. **Bind Mounts**
+
+- **What is it?**: A bind mount is a way to link a specific directory or file on your host machine (your computer) directly into the filesystem of a Docker container.
+- **How does it work?**: When you use a bind mount, whatever is in the specified directory on your host will appear in the container at the designated path. This means changes made in the container reflect on the host, and vice versa.
+- **Why use it?**: Bind mounts are useful when you want a container to directly access files on your host, like code files for development, or configuration files.
+- **Considerations**: Since bind mounts rely on the host's directory structure, they can be less portable than volumes (which Docker manages). Also, they might behave differently across different environments (e.g., Windows vs. Linux).
+
+### 2. **tmpfs Mounts**
+
+- **What is it?**: `tmpfs` mounts store data in the system's memory (RAM) rather than on a disk.
+- **How does it work?**: When you mount a `tmpfs` filesystem in a container, the data stored there will not be saved on the host’s disk; instead, it is stored in RAM, making it temporary.
+- **Why use it?**: This is useful for temporary data that doesn’t need to be persistent, like caches or session data. It’s also faster because accessing data in RAM is quicker than reading or writing to disk.
+- **Considerations**: Since data is stored in RAM, it is lost when the container stops or the system reboots. Also, `tmpfs` mounts use up the system’s memory, which could affect performance if not managed properly.
+
+### Use Cases
+
+- **Bind Mounts**: If you’re developing a web app and want the container to use the code on your local machine, you’d use a bind mount to link your code directory to the container’s web server directory.
+- **tmpfs Mounts**: If your container needs to process some data very quickly and doesn’t need to save it permanently, you might use a `tmpfs` mount.
+
+### Summary
+
+- **Bind Mounts** allow a container to directly access and modify files on the host system. They're flexible but tightly coupled to the host's file structure.
+- **tmpfs Mounts** store data in memory (RAM) for fast, temporary storage that doesn’t persist after the container stops.
+
+These storage options let you decide how and where your containerized applications store data, depending on your needs for speed, persistence, and flexibility.
+
 # GitLab Implementation Services
 
 # Nginx (Engine - X)
@@ -5718,3 +5989,95 @@ If the command finds files that match the criteria, it will list them like this:
 ### Summary:
 
 - `find -type f -size 1033c` is used to locate all regular files that are exactly 1033 bytes in size within the specified directory and its subdirectories.
+
+The difference in the outputs of the two commands is due to the handling of error messages and the exact file size being searched for.
+
+### Let's break down what's happening:
+
+1. **First Command:**
+
+   ```bash
+   find / -user bandit7 -group bandit6 -size 32c
+   ```
+
+   - This command searches for files owned by the user `bandit7`, in the group `bandit6`, with a size of exactly **32 bytes**.
+   - The `find` command generates a lot of "Permission denied" errors because it attempts to search directories that the `bandit6` user doesn't have permission to access.
+   - Because the errors are not suppressed, they clutter the output, making it difficult to see the results (if there are any).
+
+2. **Second Command:**
+
+   ```bash
+   find / -user bandit7 -group bandit6 -size 32c 2>/dev/null
+   ```
+
+   - This is the same search as the first command, but with `2>/dev/null` added.
+   - The `2>/dev/null` part redirects all error messages (`stderr`, which is file descriptor 2) to `/dev/null`, effectively hiding them.
+   - As a result, you only see the files that match the search criteria, without any "Permission denied" messages.
+
+3. **Third Command:**
+   ```bash
+   find / -user bandit7 -group bandit6 -size 33c 2>/dev/null
+   ```
+   - This command searches for files owned by `bandit7`, in the group `bandit6`, but this time with a size of exactly **33 bytes**.
+   - It returns the path to a file (`/var/lib/dpkg/info/bandit7.password`) because this file matches the criteria (owned by `bandit7`, group `bandit6`, and 33 bytes in size).
+   - The `cat` command then reveals the password contained in this file.
+
+- **Suppressing Errors**: Using `2>/dev/null` hides the "Permission denied" errors, allowing you to see only the files that meet the criteria. Without this, the output includes a lot of noise from these errors.
+
+If you have a file and you want to find the lines that occur only once:
+
+1. **Sort** the file: This groups identical lines together.
+2. **Use `uniq -u`**: This option prints only the unique lines that appear exactly once.
+
+```bash
+sort filename | uniq -u
+```
+
+The command `strings data.txt | grep "="` is used to search for and print lines containing the `=` character within a file. Here's a breakdown of what each part does:
+
+### Breakdown of the Command:
+
+1. **`strings data.txt`**:
+
+   - The `strings` command extracts printable strings from a binary file or any file with non-text content.
+   - It looks for sequences of at least 4 printable characters (letters, digits, and symbols) in the file `data.txt` and outputs them.
+   - This command is typically used when you need to extract readable text from a file that might contain binary data or a mix of binary and text data.
+
+2. **`|` (Pipe)**:
+
+   - The pipe `|` takes the output of the `strings` command and passes it as input to the next command, which in this case is `grep`.
+
+3. **`grep "="`**:
+   - `grep` is used to search for lines that match a specified pattern—in this case, the pattern is the `=` character.
+   - It will output all lines from the `strings` command that contain the `=` character.
+
+### What the Command Does:
+
+- **`strings data.txt`** extracts all the human-readable text from `data.txt`.
+- **`grep "="`** filters this output to show only those lines that include the `=` character.
+
+### Example Scenario:
+
+If `data.txt` contains a mix of binary data and text like this:
+
+```
+Binary content
+key1=value1
+key2=value2
+Random binary data
+```
+
+Running:
+
+```bash
+strings data.txt | grep "="
+```
+
+Might output:
+
+```
+key1=value1
+key2=value2
+```
+
+This is useful for extracting key-value pairs or configuration settings embedded within a file that is not entirely plain text.
