@@ -2078,6 +2078,25 @@ The CNM allows for the use of network plugins, which can extend Docker’s netwo
 
 - **IPAM (IP Address Management) Plugins**: Manage the allocation of IP addresses within Docker networks, allowing custom IP management policies.
 
+The Container Network Model (CNM) in Docker is a way of organizing and managing how containers communicate with each other and with the outside world. It has three main parts:
+
+1. **Network Sandbox**:
+
+   - **What it is**: Think of this as a private space where a container’s network settings live. This includes things like its IP address, routing rules, and DNS settings.
+   - **Why it matters**: This private space keeps each container’s network setup separate, so they don’t accidentally mess with each other or the host machine’s network settings.
+   - **Example**: When you start a container, Docker creates a little box (sandbox) for it, where it has its own network settings, like a mini version of your computer’s network.
+
+2. **Endpoint**:
+
+   - **What it is**: This is like a virtual plug that connects a container to a network. It’s the point where the container’s network joins a Docker network.
+   - **Why it matters**: These “plugs” let containers connect to networks, so they can talk to each other, to the host machine, or to external networks.
+   - **Example**: When you connect a container to a network, Docker creates an endpoint that links the container’s network settings to that network.
+
+3. **Network**:
+   - **What it is**: A network in Docker is a group where endpoints (containers) can communicate. There are different types of networks that control how containers talk to each other.
+   - **Why it matters**: Networks determine which containers can communicate with each other. Containers on the same network can easily find and talk to each other.
+   - **Example**: The “bridge” network that Docker sets up by default is a type of network where containers can connect and communicate with each other right away.
+
 ### Summary
 
 The Container Network Model (CNM) provides a structured way to manage container networking in Docker. By separating network configuration (sandbox), connection points (endpoints), and communication groups (networks), the CNM offers flexibility, scalability, and security in containerized environments. Understanding the CNM is key to effectively designing and managing Docker-based applications.
@@ -2184,6 +2203,1446 @@ Let's break down the different types of Docker storage and how they work:
 - **tmpfs Mounts** store data in memory (RAM) for fast, temporary storage that doesn’t persist after the container stops.
 
 These storage options let you decide how and where your containerized applications store data, depending on your needs for speed, persistence, and flexibility.
+
+Let's break down the different types of Docker storage and how they work:
+
+### 1. **Bind Mounts**
+
+- **What is it?**: A bind mount is a way to link a specific directory or file on your host machine (your computer) directly into the filesystem of a Docker container.
+- **How does it work?**: When you use a bind mount, whatever is in the specified directory on your host will appear in the container at the designated path. This means changes made in the container reflect on the host, and vice versa.
+- **Why use it?**: Bind mounts are useful when you want a container to directly access files on your host, like code files for development, or configuration files.
+- **Considerations**: Since bind mounts rely on the host's directory structure, they can be less portable than volumes (which Docker manages). Also, they might behave differently across different environments (e.g., Windows vs. Linux).
+
+### 2. **tmpfs Mounts**
+
+- **What is it?**: `tmpfs` mounts store data in the system's memory (RAM) rather than on a disk.
+- **How does it work?**: When you mount a `tmpfs` filesystem in a container, the data stored there will not be saved on the host’s disk; instead, it is stored in RAM, making it temporary.
+- **Why use it?**: This is useful for temporary data that doesn’t need to be persistent, like caches or session data. It’s also faster because accessing data in RAM is quicker than reading or writing to disk.
+- **Considerations**: Since data is stored in RAM, it is lost when the container stops or the system reboots. Also, `tmpfs` mounts use up the system’s memory, which could affect performance if not managed properly.
+
+### Use Cases
+
+- **Bind Mounts**: If you’re developing a web app and want the container to use the code on your local machine, you’d use a bind mount to link your code directory to the container’s web server directory.
+- **tmpfs Mounts**: If your container needs to process some data very quickly and doesn’t need to save it permanently, you might use a `tmpfs` mount.
+  **Volumes** and **bind mounts** are two ways to store data outside of your Docker containers, but they work a bit differently:
+
+### Volumes
+
+- **What They Are**: Volumes are Docker-managed storage locations. When you create a volume, Docker takes care of where and how the data is stored.
+- **Why Use Them**: Volumes are great if you want Docker to handle everything for you, and they are stored in a specific place on your system, separate from your regular files. They’re also easier to back up and share between containers.
+- **Example**: If you’re running a database in a container and you want the data to stick around even if you delete the container, you’d use a volume.
+
+### Bind Mounts
+
+- **What They Are**: Bind mounts link a specific folder or file on your host machine (your actual computer) to a folder or file inside the Docker container.
+- **Why Use Them**: Bind mounts give you more control because you can directly link your own files and folders to the container. However, this means you’re responsible for managing those files.
+- **Example**: If you’re working on a web app and want to edit the files on your computer while seeing the changes live inside the container, you’d use a bind mount.
+
+### Key Differences:
+
+- **Control**: Bind mounts give you more direct control over the files since they’re just regular files and folders on your computer. Volumes are managed by Docker.
+- **Management**: Docker takes care of volumes, making them easier to use, while bind mounts require you to handle file management.
+- **Usage**: Volumes are better for container-specific storage that needs to be easily shared between containers or backed up. Bind mounts are better for linking existing files on your computer to a container for direct editing or access.
+
+### Summary
+
+- **Bind Mounts** allow a container to directly access and modify files on the host system. They're flexible but tightly coupled to the host's file structure.
+- **tmpfs Mounts** store data in memory (RAM) for fast, temporary storage that doesn’t persist after the container stops.
+
+These storage options let you decide how and where your containerized applications store data, depending on your needs for speed, persistence, and flexibility.
+
+# Dockerfile
+
+Environment variables in a Dockerfile are used to configure your containerized application and control its behavior. They allow you to set values that can be accessed by your application at runtime. Here's how you can use environment variables in a Dockerfile:
+
+### 1. **Setting Environment Variables with `ENV`**
+
+The `ENV` instruction in a Dockerfile sets an environment variable that will be available during the build process and in the running container.
+
+#### Example:
+
+```dockerfile
+# Set the base image
+FROM node:14
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=8080
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the application code
+COPY . .
+
+# Install dependencies
+RUN npm install
+
+# Expose the necessary port
+EXPOSE 8080
+
+# Start the application
+CMD ["npm", "start"]
+```
+
+In this example:
+
+- `NODE_ENV=production` and `PORT=8080` are environment variables that will be available to the application running inside the container.
+
+### 2. **Overriding Environment Variables at Runtime**
+
+You can override the environment variables set in the Dockerfile when you run the container using the `-e` flag with the `docker run` command.
+
+#### Example:
+
+```bash
+docker run -e NODE_ENV=development -e PORT=3000 -p 3000:3000 myapp
+```
+
+This command runs the container with `NODE_ENV` set to `development` and `PORT` set to `3000`, overriding the values specified in the Dockerfile.
+
+### 3. **Using Environment Variables in Commands**
+
+Environment variables can also be used within the Dockerfile to make commands more dynamic.
+
+#### Example:
+
+```dockerfile
+ENV USER_NAME=appuser
+RUN adduser --disabled-password --gecos '' $USER_NAME
+```
+
+In this example, the environment variable `USER_NAME` is used in the `RUN` instruction to create a new user.
+
+### 4. **Environment Variables with Default Values**
+
+You can set a default value for an environment variable in the Dockerfile, which can be overridden at runtime.
+
+#### Example:
+
+```dockerfile
+ENV DB_HOST=localhost
+```
+
+If `DB_HOST` is not specified during runtime, it will default to `localhost`.
+
+### 5. **Using `.env` Files**
+
+While not directly a Dockerfile feature, you can use `.env` files with `docker-compose` to manage environment variables more easily.
+
+#### Example:
+
+```bash
+# .env file
+NODE_ENV=production
+PORT=8080
+```
+
+You can reference these in your `docker-compose.yml`:
+
+```yaml
+version: "3"
+services:
+  app:
+    image: myapp
+    env_file:
+      - .env
+    ports:
+      - "${PORT}:8080"
+```
+
+### 6. **Best Practices**
+
+- **Sensitive Information:** Avoid hardcoding sensitive information (e.g., passwords) in the Dockerfile. Use Docker secrets or environment variables set at runtime instead.
+- **Documentation:** Document the environment variables and their purpose in the Dockerfile or related documentation.
+
+By using environment variables effectively, you can make your Docker images more flexible and configurable, allowing for different settings depending on the environment in which your container is deployed.
+
+# About Dockerfile
+
+A Dockerfile is a script that contains a series of instructions on how to build a Docker image. It’s essentially a blueprint for creating a Docker image, specifying everything needed for the application to run, including the operating system, dependencies, configurations, and commands.
+
+### Key Components of a Dockerfile:
+
+1. **FROM:**
+
+   - **Purpose:** Specifies the base image to use for the new image.
+   - **Example:** `FROM ubuntu:20.04`
+   - **Explanation:** This line tells Docker to start building the image from the official Ubuntu 20.04 image.
+
+2. **RUN:**
+
+   - **Purpose:** Executes commands in the shell during the image build process.
+   - **Example:** `RUN apt-get update && apt-get install -y python3`
+   - **Explanation:** This installs Python 3 in the image. Each `RUN` command creates a new layer in the Docker image.
+
+3. **COPY:**
+
+   - **Purpose:** Copies files or directories from the host machine into the Docker image.
+   - **Example:** `COPY . /app`
+   - **Explanation:** This copies all files from the current directory on the host machine to the `/app` directory in the container.
+
+4. **WORKDIR:**
+
+   - **Purpose:** Sets the working directory for any `RUN`, `CMD`, `ENTRYPOINT`, `COPY`, and `ADD` instructions that follow.
+   - **Example:** `WORKDIR /app`
+   - **Explanation:** This sets `/app` as the current directory for subsequent commands.
+
+5. **CMD:**
+
+   - **Purpose:** Provides the default command to run when a container starts.
+   - **Example:** `CMD ["python3", "app.py"]`
+   - **Explanation:** This runs the `app.py` Python script when the container starts.
+
+6. **ENTRYPOINT:**
+
+   - **Purpose:** Configures a container that will run as an executable.
+   - **Example:** `ENTRYPOINT ["python3", "app.py"]`
+   - **Explanation:** Similar to `CMD`, but it’s harder to override. It makes the container act like an executable.
+
+7. **EXPOSE:**
+
+   - **Purpose:** Documents the port on which the container listens at runtime.
+   - **Example:** `EXPOSE 8080`
+   - **Explanation:** This indicates that the container will listen on port 8080.
+
+8. **ENV:**
+
+   - **Purpose:** Sets environment variables inside the container.
+   - **Example:** `ENV DEBUG=true`
+   - **Explanation:** This sets the `DEBUG` environment variable to `true` in the container.
+
+9. **VOLUME:**
+
+   - **Purpose:** Creates a mount point with a specified path and marks it as holding externally mounted volumes.
+   - **Example:** `VOLUME /data`
+   - **Explanation:** This designates `/data` as a directory to be used for volumes.
+
+10. **ADD:**
+    - **Purpose:** Copies files, directories, or remote URLs to the image and can automatically unpack local archives.
+    - **Example:** `ADD my_archive.tar.gz /app/`
+    - **Explanation:** This unpacks `my_archive.tar.gz` into the `/app/` directory in the image.
+
+### Example of a Simple Dockerfile:
+
+```dockerfile
+# Start with a base image
+FROM node:14
+
+# Set the working directory
+WORKDIR /app
+
+# Copy package.json and install dependencies
+COPY package.json ./
+RUN npm install
+
+# Copy the rest of the application code
+COPY . .
+
+# Expose the port the app runs on
+EXPOSE 3000
+
+# Run the application
+CMD
+```
+
+# Docker Best Practice
+
+When writing a Dockerfile, following best practices ensures that your Docker images are efficient, secure, and easy to maintain. Here are some of the best practices to consider:
+
+### 1. **Use Official Base Images**
+
+- **Why:** Official images are maintained and updated regularly, ensuring security and stability.
+- **How:** Start with a minimal base image relevant to your application.
+- **Example:** `FROM node:14-alpine` (using the Alpine version for a smaller image size).
+
+### 2. **Minimize the Number of Layers**
+
+- **Why:** Each instruction in a Dockerfile creates a new layer, so reducing the number of layers helps keep your image size smaller.
+- **How:** Combine commands using `&&` or use multi-stage builds.
+- **Example:**
+  ```dockerfile
+  RUN apt-get update && apt-get install -y \
+      curl \
+      vim
+  ```
+
+### 3. **Use Multi-Stage Builds**
+
+- **Why:** Multi-stage builds allow you to keep your final image small by only including the necessary artifacts.
+- **How:** Use multiple `FROM` statements, with the final stage copying only what's needed from the earlier stages.
+- **Example:**
+
+  ```dockerfile
+  FROM golang:1.16 AS builder
+  WORKDIR /app
+  COPY . .
+  RUN go build -o myapp
+
+  FROM alpine:latest
+  COPY --from=builder /app/myapp /usr/local/bin/myapp
+  CMD ["myapp"]
+  ```
+
+### 4. **Leverage .dockerignore**
+
+- **Why:** Similar to `.gitignore`, the `.dockerignore` file excludes unnecessary files and directories from the Docker build context, reducing build time and image size.
+- **How:** Create a `.dockerignore` file in your project root.
+- **Example:**
+  ```
+  node_modules
+  .git
+  *.log
+  ```
+
+### 5. **Keep Layers Clean**
+
+- **Why:** Removing unnecessary files and cleaning up after package installations reduces image size.
+- **How:** Clean up with `rm` or use package manager cleanup commands within the same `RUN` instruction.
+- **Example:**
+  ```dockerfile
+  RUN apt-get update && apt-get install -y --no-install-recommends \
+      curl \
+      vim \
+      && rm -rf /var/lib/apt/lists/*
+  ```
+
+### 6. **Use Environment Variables**
+
+- **Why:** Environment variables make your Dockerfile more flexible and configurable.
+- **How:** Use `ENV` to set environment variables or pass them during runtime.
+- **Example:**
+  ```dockerfile
+  ENV NODE_ENV=production
+  ```
+
+### 7. **Set a Default `CMD` or `ENTRYPOINT`**
+
+- **Why:** This ensures that your container runs the correct application or command by default.
+- **How:** Use `CMD` for default commands and `ENTRYPOINT` for containers that need to be run like executables.
+- **Example:**
+  ```dockerfile
+  ENTRYPOINT ["python3"]
+  CMD ["app.py"]
+  ```
+
+### 8. **Use Specific Tags for Base Images**
+
+- **Why:** Pinning to a specific version of a base image ensures consistent builds and avoids unexpected changes.
+- **How:** Use version tags like `python:3.9-slim` instead of just `python`.
+- **Example:**
+  ```dockerfile
+  FROM python:3.9-slim
+  ```
+
+### 9. **Document Your Dockerfile**
+
+- **Why:** Comments make your Dockerfile easier to understand and maintain.
+- **How:** Use `#` to add comments explaining your decisions.
+- **Example:**
+
+  ```dockerfile
+  # Use official Python runtime as a parent image
+  FROM python:3.9-slim
+
+  # Set the working directory
+  WORKDIR /app
+
+  # Install dependencies
+  COPY requirements.txt ./
+  RUN pip install --no-cache-dir -r requirements.txt
+  ```
+
+### 10. **Avoid Installing Unnecessary Packages**
+
+- **Why:** Unnecessary packages increase the size of your image and potential attack surface.
+- **How:** Only install the packages that are needed for your application to run.
+- **Example:**
+  ```dockerfile
+  RUN apt-get update && apt-get install -y --no-install-recommends \
+      ca-certificates \
+      && rm -rf /var/lib/apt/lists/*
+  ```
+
+### 11. **Use Non-Root User**
+
+- **Why:** Running containers as a non-root user enhances security by reducing the impact of a compromised container.
+- **How:** Create a user and switch to it in the Dockerfile.
+- **Example:**
+  ```dockerfile
+  RUN useradd -m myuser
+  USER myuser
+  ```
+
+### 12. **Expose Only Necessary Ports**
+
+- **Why:** Exposing only the ports that are required minimizes security risks.
+- **How:** Use `EXPOSE` to define which ports should be accessible.
+- **Example:**
+  ```dockerfile
+  EXPOSE 8080
+  ```
+
+### 13. **Label Your Images**
+
+- **Why:** Labels provide metadata about the image, such as author, version, or purpose.
+- **How:** Use the `LABEL` instruction to add key-value pairs.
+- **Example:**
+  ```dockerfile
+  LABEL maintainer="you@example.com"
+  LABEL version="1.0"
+  LABEL description="My web app"
+  ```
+
+### 14. **Use `COPY` Instead of `ADD`**
+
+- **Why:** `COPY` is simpler and more predictable, while `ADD` has extra functionality (e.g., extracting tar files) that can lead to unexpected behavior.
+- **How:** Use `COPY` unless you specifically need `ADD`'s extra features.
+- **Example:**
+  ```dockerfile
+  COPY . /app
+  ```
+
+By following these best practices, you ensure that your Docker images are efficient, secure, and maintainable, making your containerized applications more reliable and easier to manage.
+
+# Environment Variables in Docker File
+
+Environment variables in a Dockerfile are used to configure your containerized application and control its behavior. They allow you to set values that can be accessed by your application at runtime. Here's how you can use environment variables in a Dockerfile:
+
+### 1. **Setting Environment Variables with `ENV`**
+
+The `ENV` instruction in a Dockerfile sets an environment variable that will be available during the build process and in the running container.
+
+#### Example:
+
+```dockerfile
+# Set the base image
+FROM node:14
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=8080
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the application code
+COPY . .
+
+# Install dependencies
+RUN npm install
+
+# Expose the necessary port
+EXPOSE 8080
+
+# Start the application
+CMD ["npm", "start"]
+```
+
+In this example:
+
+- `NODE_ENV=production` and `PORT=8080` are environment variables that will be available to the application running inside the container.
+
+### 2. **Overriding Environment Variables at Runtime**
+
+You can override the environment variables set in the Dockerfile when you run the container using the `-e` flag with the `docker run` command.
+
+#### Example:
+
+```bash
+docker run -e NODE_ENV=development -e PORT=3000 -p 3000:3000 myapp
+```
+
+This command runs the container with `NODE_ENV` set to `development` and `PORT` set to `3000`, overriding the values specified in the Dockerfile.
+
+### 3. **Using Environment Variables in Commands**
+
+Environment variables can also be used within the Dockerfile to make commands more dynamic.
+
+#### Example:
+
+```dockerfile
+ENV USER_NAME=appuser
+RUN adduser --disabled-password --gecos '' $USER_NAME
+```
+
+In this example, the environment variable `USER_NAME` is used in the `RUN` instruction to create a new user.
+
+### 4. **Environment Variables with Default Values**
+
+You can set a default value for an environment variable in the Dockerfile, which can be overridden at runtime.
+
+#### Example:
+
+```dockerfile
+ENV DB_HOST=localhost
+```
+
+If `DB_HOST` is not specified during runtime, it will default to `localhost`.
+
+### 5. **Using `.env` Files**
+
+While not directly a Dockerfile feature, you can use `.env` files with `docker-compose` to manage environment variables more easily.
+
+#### Example:
+
+```bash
+# .env file
+NODE_ENV=production
+PORT=8080
+```
+
+You can reference these in your `docker-compose.yml`:
+
+```yaml
+version: "3"
+services:
+  app:
+    image: myapp
+    env_file:
+      - .env
+    ports:
+      - "${PORT}:8080"
+```
+
+### 6. **Best Practices**
+
+- **Sensitive Information:** Avoid hardcoding sensitive information (e.g., passwords) in the Dockerfile. Use Docker secrets or environment variables set at runtime instead.
+- **Documentation:** Document the environment variables and their purpose in the Dockerfile or related documentation.
+
+By using environment variables effectively, you can make your Docker images more flexible and configurable, allowing for different settings depending on the environment in which your container is deployed.
+
+# Build Arguments in Dockerfile
+
+Build arguments in Dockerfiles, referred to as `ARG`, are variables that you can define and pass to the Docker build process. Unlike environment variables, which are available at runtime, build arguments are only available during the build process itself.
+
+### How to Use Build Arguments (`ARG`) in Dockerfile
+
+#### 1. **Defining a Build Argument**
+
+You can define a build argument in your Dockerfile using the `ARG` instruction.
+
+```dockerfile
+ARG VERSION=1.0
+FROM myapp:${VERSION}
+```
+
+Here, `VERSION` is a build argument with a default value of `1.0`. If you don’t pass a value during the build, Docker will use this default.
+
+#### 2. **Using Build Arguments**
+
+Build arguments can be used anywhere in the Dockerfile after they are defined.
+
+```dockerfile
+ARG VERSION=1.0
+FROM myapp:${VERSION}
+
+# Set environment variables using ARG values
+ARG USER_NAME=appuser
+ENV USER=${USER_NAME}
+
+RUN echo "Building version ${VERSION} for user ${USER_NAME}"
+```
+
+In this example:
+
+- The base image is chosen based on the `VERSION` argument.
+- An environment variable `USER` is set using the value of `USER_NAME`.
+
+#### 3. **Passing Build Arguments During Build**
+
+You can pass build arguments to the `docker build` command using the `--build-arg` flag.
+
+```bash
+docker build --build-arg VERSION=2.0 --build-arg USER_NAME=admin -t myapp:2.0 .
+```
+
+In this command:
+
+- `VERSION` is set to `2.0`, overriding the default `1.0`.
+- `USER_NAME` is set to `admin`.
+
+#### 4. **Example: Multi-Stage Builds**
+
+Build arguments are especially useful in multi-stage builds to pass different parameters to different stages.
+
+```dockerfile
+# Stage 1: Build
+FROM golang:1.16 AS builder
+ARG APP_VERSION=1.0
+WORKDIR /app
+COPY . .
+RUN go build -o myapp-${APP_VERSION}
+
+# Stage 2: Runtime
+FROM alpine:latest
+WORKDIR /app
+COPY --from=builder /app/myapp-${APP_VERSION} .
+CMD ["./myapp-${APP_VERSION}"]
+```
+
+In this example:
+
+- The `APP_VERSION` argument is used to control the build process and the final artifact name.
+
+### Key Points to Remember
+
+- **Scope:** Build arguments are available only during the build process. They do not persist in the final image.
+- **Default Values:** If an `ARG` is defined in the Dockerfile with a default value, it can be overridden during the build.
+- **Security:** Unlike environment variables, build arguments are not available in the final image, making them somewhat more secure for sensitive build-time information. However, they are still visible in the Docker build history, so avoid using them for secrets.
+
+### Best Practices
+
+- **Fallback Values:** Always provide a default value in the Dockerfile if the build argument is not mandatory.
+- **Documentation:** Clearly document which build arguments are available and what they control in the build process.
+- **Usage with Environment Variables:** If you need a variable both at build time and runtime, consider setting an environment variable from a build argument:
+
+  ```dockerfile
+  ARG PORT=8080
+  ENV PORT=${PORT}
+  ```
+
+By using build arguments effectively, you can make your Docker builds more flexible and dynamic, allowing for easy customization without modifying the Dockerfile itself.
+
+# Build arguments vs Environment variables
+
+Build arguments (`ARG`) and environment variables (`ENV`) in Dockerfiles are both used to pass and set variables, but they serve different purposes and have different scopes. Here’s a breakdown of the differences:
+
+### 1. **Purpose**
+
+- **`ARG`:** Used to define variables that are available only during the build process of the Docker image. They allow you to pass dynamic values to the Dockerfile at build time.
+- **`ENV`:** Used to define environment variables that are available both during the build process and at runtime, when the container is running.
+
+### 2. **Scope**
+
+- **`ARG`:** The scope of a build argument is limited to the build stage. Once the image is built, `ARG` values are not preserved in the final image.
+- **`ENV`:** Environment variables are available during the build process and persist in the final image, making them accessible when the container is running.
+
+### 3. **Visibility**
+
+- **`ARG`:** Build arguments are not available in the final container. They are only used to customize the build process.
+- **`ENV`:** Environment variables are embedded in the final container, meaning they can be used by applications running inside the container.
+
+### 4. **Usage**
+
+- **`ARG`:** Typically used for parameters like versions, package names, or any build-specific options. For example:
+  ```dockerfile
+  ARG NODE_VERSION=14
+  FROM node:${NODE_VERSION}
+  ```
+- **`ENV`:** Used to set variables that your application might need to read at runtime. For example:
+  ```dockerfile
+  ENV NODE_ENV=production
+  ```
+
+### 5. **Default Values**
+
+- **`ARG`:** Can have a default value in the Dockerfile, but this can be overridden at build time using the `--build-arg` flag.
+- **`ENV`:** Can also have a default value, but this value will persist in the image and can be overridden when the container is run using the `-e` flag with `docker run`.
+
+### 6. **Security**
+
+- **`ARG`:** Slightly more secure because they do not persist in the final image. However, they are still visible in the Docker image history.
+- **`ENV`:** Less secure if used for sensitive information like passwords, because they are stored in the final image and can be exposed.
+
+### 7. **Example**
+
+- **`ARG` Example:**
+
+  ```dockerfile
+  ARG VERSION=1.0
+  FROM myapp:${VERSION}
+  ```
+
+  - Here, `VERSION` is used only during the build process to specify the image version.
+
+- **`ENV` Example:**
+  ```dockerfile
+  ENV NODE_ENV=production
+  ```
+  - Here, `NODE_ENV` is available during both the build process and when the container is running.
+
+### Summary
+
+- **`ARG`:** Build-time only, not persistent, good for build configurations.
+- **`ENV`:** Persistent in the container, available at runtime, good for application configurations.
+
+Understanding when to use `ARG` vs. `ENV` helps you create more flexible and secure Docker images.
+
+# Non Previliged User
+
+Working with non-privileged users in Docker is an important security best practice, especially when deploying containers in production environments. Running containers as a non-privileged user (instead of the default `root` user) helps minimize the impact of potential security vulnerabilities. Here's how you can work with non-privileged users in Docker:
+
+### 1. **Create a Non-Privileged User in the Dockerfile**
+
+- You can create a non-privileged user inside your Dockerfile and switch to that user using the `USER` directive.
+- Example Dockerfile:
+
+  ```dockerfile
+  # Use an official base image
+  FROM ubuntu:latest
+
+  # Create a non-privileged user
+  RUN useradd -m -s /bin/bash appuser
+
+  # Switch to the non-privileged user
+  USER appuser
+
+  # Set the working directory
+  WORKDIR /home/appuser
+
+  # Copy the application files
+  COPY . .
+
+  # Run the application
+  CMD ["./your-application"]
+  ```
+
+### 2. **Switching Users After Container Start**
+
+- If you are using an existing Docker image and want to run it as a non-root user, you can override the user when you start the container using the `--user` flag.
+- Example command:
+  ```bash
+  docker run --user 1000:1000 my-image
+  ```
+- Here, `1000:1000` represents the UID and GID of the non-privileged user.
+
+### 3. **Permissions and Ownership**
+
+- Ensure that the files and directories your application needs to access are owned by the non-privileged user or have the appropriate permissions.
+- Example Dockerfile:
+
+  ```dockerfile
+  # Use an official base image
+  FROM node:14
+
+  # Create a non-privileged user
+  RUN useradd -m -s /bin/bash appuser
+
+  # Change ownership of the application directory
+  COPY . /app
+  RUN chown -R appuser:appuser /app
+
+  # Switch to the non-privileged user
+  USER appuser
+
+  # Set the working directory
+  WORKDIR /app
+
+  # Install dependencies and run the application
+  RUN npm install
+  CMD ["npm", "start"]
+  ```
+
+### 4. **Handling Root-Owned Files**
+
+- If your application needs to modify files that are owned by `root`, consider either changing the ownership of those files during the image build or adjusting file permissions to allow access by the non-privileged user.
+
+### 5. **Using Pre-built Images with Non-Root Users**
+
+- Some official Docker images come with a default non-root user. For example, the `node` image often runs as the `node` user instead of `root`.
+- You can verify this by checking the `USER` directive in the Dockerfile of the base image.
+
+### 6. **Security Considerations**
+
+- Running as a non-privileged user reduces the risk of container escape and minimizes potential damage if an attacker gains access to your container.
+- Avoid running your applications as `root` unless absolutely necessary, and always aim to run with the least privilege required.
+
+### Summary
+
+- **Non-privileged user:** A safer way to run containers, minimizing security risks.
+- **Creating users:** Use the `USER` directive in Dockerfile.
+- **Overriding users:** Use the `--user` flag in `docker run`.
+- **File permissions:** Ensure proper ownership and permissions for files.
+
+By following these practices, you can help ensure that your Docker containers are more secure and adhere to the principle of least privilege.
+
+# Order of Execution of Dockerfile
+
+In a Dockerfile, the order of execution is crucial for how the image is built and how it functions. Here’s the typical order of execution for Dockerfile instructions:
+
+### 1. **FROM**
+
+- **Purpose:** Specifies the base image for the Dockerfile.
+- **Execution:** The first instruction that must be executed.
+- **Example:** `FROM ubuntu:20.04`
+
+### 2. **LABEL (Optional)**
+
+- **Purpose:** Adds metadata to the image, such as author or version information.
+- **Execution:** Executes after the `FROM` instruction.
+- **Example:** `LABEL maintainer="yourname@example.com"`
+
+### 3. **ENV (Optional)**
+
+- **Purpose:** Sets environment variables that can be used later in the Dockerfile or by the container when it runs.
+- **Execution:** Executes early to allow subsequent instructions to use these variables.
+- **Example:** `ENV NODE_ENV=production`
+
+### 4. **ARG (Optional)**
+
+- **Purpose:** Defines build-time variables that can be passed at build time using the `docker build --build-arg` command.
+- **Execution:** Can be defined anywhere in the Dockerfile, but it's best to define them before they're used.
+- **Example:** `ARG version=1.0`
+
+### 5. **RUN**
+
+- **Purpose:** Executes commands in a new layer on top of the current image and commits the results.
+- **Execution:** Each `RUN` instruction creates a new layer.
+- **Example:** `RUN apt-get update && apt-get install -y curl`
+
+### 6. **COPY/ADD**
+
+- **Purpose:** Copies files or directories from the host system to the image. `ADD` can also handle URLs and tar archives.
+- **Execution:** After the `RUN` instructions or before, depending on when files are needed.
+- **Example:** `COPY . /app`
+
+### 7. **WORKDIR (Optional)**
+
+- **Purpose:** Sets the working directory for subsequent `RUN`, `CMD`, `ENTRYPOINT`, `COPY`, and `ADD` instructions.
+- **Execution:** Whenever you need to change the directory context in the Dockerfile.
+- **Example:** `WORKDIR /app`
+
+### 8. **USER (Optional)**
+
+- **Purpose:** Specifies the user under which the container should run.
+- **Execution:** After setting up everything as `root`, switch to a non-root user.
+- **Example:** `USER appuser`
+
+### 9. **EXPOSE (Optional)**
+
+- **Purpose:** Informs Docker that the container listens on the specified network ports at runtime.
+- **Execution:** Typically placed towards the end of the Dockerfile.
+- **Example:** `EXPOSE 8080`
+
+### 10. **CMD**
+
+- **Purpose:** Provides the default command to run when the container starts.
+- **Execution:** Executes when the container starts, but only if no other command is specified in `docker run`.
+- **Example:** `CMD ["npm", "start"]`
+
+### 11. **ENTRYPOINT (Optional)**
+
+- **Purpose:** Configures a container that will run as an executable.
+- **Execution:** Similar to `CMD`, but has higher priority; it's the "entry point" for a container.
+- **Example:** `ENTRYPOINT ["docker-entrypoint.sh"]`
+
+### 12. **VOLUME (Optional)**
+
+- **Purpose:** Creates a mount point with a specified path and marks it as holding externally mounted volumes.
+- **Execution:** Specifies directories that should persist and can be mounted from the host.
+- **Example:** `VOLUME /data`
+
+### 13. **HEALTHCHECK (Optional)**
+
+- **Purpose:** Tests to check if the container is still working.
+- **Execution:** Set towards the end to monitor the health of the container.
+- **Example:** `HEALTHCHECK CMD curl --fail http://localhost:8080 || exit 1`
+
+### 14. **ONBUILD (Optional)**
+
+- **Purpose:** Adds instructions that will be executed when the image is used as the base for another build.
+- **Execution:** Only runs during the next build, when the current image is used as the base image.
+- **Example:** `ONBUILD COPY . /app/src`
+
+### 15. **STOPSIGNAL (Optional)**
+
+- **Purpose:** Sets the system call signal that will be sent to the container to exit.
+- **Execution:** Used towards the end to control how the container stops.
+- **Example:** `STOPSIGNAL SIGTERM`
+
+### 16. **SHELL (Optional)**
+
+- **Purpose:** Overrides the default shell used in the `RUN` command.
+- **Execution:** Use when a non-default shell is required for `RUN` commands.
+- **Example:** `SHELL ["/bin/bash", "-c"]`
+
+### Summary of Order:
+
+1. **Base image** (`FROM`)
+2. **Metadata** (`LABEL`)
+3. **Environment variables** (`ENV`)
+4. **Build arguments** (`ARG`)
+5. **Install dependencies and perform actions** (`RUN`)
+6. **Copy files** (`COPY/ADD`)
+7. **Set working directory** (`WORKDIR`)
+8. **Switch user** (`USER`)
+9. **Expose ports** (`EXPOSE`)
+10. **Default command or entry point** (`CMD` / `ENTRYPOINT`)
+11. **Volume mounting** (`VOLUME`)
+12. **Health checks** (`HEALTHCHECK`)
+13. **Build triggers** (`ONBUILD`)
+14. **Stop signal** (`STOPSIGNAL`)
+15. **Shell customization** (`SHELL`)
+
+This order ensures that Docker builds images efficiently and that your containers run as expected.
+
+# Volume Instructions
+
+In a Dockerfile, the `VOLUME` instruction is used to create a mount point and mark it as holding externally mounted volumes from the host or other containers. This ensures that data in the specified directories is persisted even when the container is deleted.
+
+### Basic Syntax
+
+```Dockerfile
+VOLUME ["<path>"]
+```
+
+### Key Points:
+
+- **Persistence**: The `VOLUME` instruction ensures that any data written to the specified directory inside the container is stored on the host system and can be reused by other containers or persists after the container is stopped or removed.
+- **Sharing Data**: Volumes can be shared between multiple containers, allowing them to share data.
+- **Host-Independent**: Volumes are independent of the container's lifecycle, so they survive container restarts and deletions.
+
+### Example
+
+```Dockerfile
+FROM nginx:alpine
+
+# Create a volume for the /var/www/html directory
+VOLUME ["/var/www/html"]
+
+# Copy website files into the container's volume
+COPY . /var/www/html
+
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+In this example:
+
+- The `VOLUME` instruction creates a mount point at `/var/www/html`.
+- When this image is used to create a container, Docker ensures that the data in `/var/www/html` is persisted outside the container.
+
+### Usage in Docker Commands:
+
+- You can override the volume location at runtime using the `docker run -v` or `--mount` options to specify a different directory on the host.
+
+### Important Considerations:
+
+- **Data Initialization**: If data exists in the directory inside the image at the time of the `VOLUME` instruction, it is copied to the volume the first time the container is started.
+- **No Changes in Image Layer**: Data written to a `VOLUME` location does not form part of the image's filesystem, and thus, it won't be part of any new layers created after the `VOLUME` instruction.
+- **Permissions**: Ensure the correct file permissions are set, as the container will have the same permissions as the directory in the host system.
+
+# Entrypoint vs CMD
+
+In a Dockerfile, both `ENTRYPOINT` and `CMD` are used to specify commands that run when a container starts. However, they serve slightly different purposes and interact with each other in specific ways.
+
+### `CMD`
+
+- **Purpose**: The `CMD` instruction provides defaults for an executing container. It can include the executable and its default arguments or just the arguments if combined with `ENTRYPOINT`.
+- **Override**: When you run a container, you can override the `CMD` by specifying a different command or arguments.
+- **Usage**: Typically used for setting the default command that runs when the container starts.
+
+#### Example:
+
+```Dockerfile
+FROM ubuntu
+
+CMD ["echo", "Hello, World!"]
+```
+
+- In this case, if you run the container without specifying any command, it will print "Hello, World!".
+
+### `ENTRYPOINT`
+
+- **Purpose**: The `ENTRYPOINT` instruction is used to set the main command that will always run when the container starts. It is not easily overridden like `CMD`.
+- **Forced Execution**: The command specified in `ENTRYPOINT` will always run, and any arguments passed via the command line when starting the container will be passed as arguments to the `ENTRYPOINT`.
+- **Usage**: Ideal for setting up a container to run as an executable.
+
+#### Example:
+
+```Dockerfile
+FROM ubuntu
+
+ENTRYPOINT ["echo"]
+```
+
+- Here, when you run the container, `echo` will always be executed.
+
+### How `ENTRYPOINT` and `CMD` Work Together
+
+- **Combined**: When both `ENTRYPOINT` and `CMD` are used, the `CMD` will provide default arguments to the `ENTRYPOINT`.
+
+  ```Dockerfile
+  FROM ubuntu
+
+  ENTRYPOINT ["echo"]
+  CMD ["Hello, World!"]
+  ```
+
+  - Running this container without any arguments will output "Hello, World!" because `CMD` provides arguments to `ENTRYPOINT`.
+
+- **Override CMD**: You can override the `CMD` arguments by passing new arguments when you start the container:
+
+  ```bash
+  docker run <image> "Goodbye, World!"
+  ```
+
+  - This will output "Goodbye, World!".
+
+### Summary
+
+- **`CMD`**: Sets the default command and/or arguments. Can be easily overridden.
+- **`ENTRYPOINT`**: Sets the command to be executed. Typically not overridden; instead, additional arguments can be passed to it.
+
+By combining both, you can create flexible and reusable Docker images where the core command (via `ENTRYPOINT`) is consistent, but the behavior (via `CMD` or command-line arguments) can be customized.
+
+Let's look at how `ENTRYPOINT` and `CMD` work in a Dockerfile with some code examples.
+
+### Example 1: Using `CMD` Alone
+
+```Dockerfile
+# Use the official Python image as the base image
+FROM python:3.8-slim
+
+# Set the default command to run
+CMD ["echo", "Hello, World!"]
+```
+
+- **What Happens**: When you run a container from this image, it will execute `echo "Hello, World!"`. You can override the command by specifying a different command when running the container.
+  ```bash
+  docker run my-image           # Outputs: Hello, World!
+  docker run my-image echo Hi   # Outputs: Hi
+  ```
+
+### Example 2: Using `ENTRYPOINT` Alone
+
+```Dockerfile
+# Use the official Python image as the base image
+FROM python:3.8-slim
+
+# Set the entrypoint to always run
+ENTRYPOINT ["echo", "Hello,"]
+
+# CMD is not set, so the entrypoint will always execute as is
+```
+
+- **What Happens**: The container will always start by running `echo "Hello,"`. If you pass additional arguments when running the container, they’ll be appended to the `ENTRYPOINT`.
+  ```bash
+  docker run my-image            # Outputs: Hello,
+  docker run my-image World!     # Outputs: Hello, World!
+  ```
+
+### Example 3: Using Both `ENTRYPOINT` and `CMD`
+
+```Dockerfile
+# Use the official Python image as the base image
+FROM python:3.8-slim
+
+# Set the entrypoint to always run
+ENTRYPOINT ["echo", "Hello,"]
+
+# Set the default argument to be used with the entrypoint
+CMD ["World!"]
+```
+
+- **What Happens**:
+  - By default, the container runs `echo "Hello, World!"`.
+  - If you pass a different argument, it replaces `"World!"`.
+  ```bash
+  docker run my-image            # Outputs: Hello, World!
+  docker run my-image Docker!    # Outputs: Hello, Docker!
+  ```
+
+### Example 4: Overriding `ENTRYPOINT`
+
+If you really need to override the `ENTRYPOINT`, you can do so with the `--entrypoint` flag:
+
+```bash
+docker run --entrypoint /bin/bash my-image -c "echo Overridden"
+```
+
+- **What Happens**: This completely overrides the `ENTRYPOINT` and runs the new command instead.
+
+### Summary
+
+- **`CMD` Alone**: Provides a default command that can be easily overridden.
+- **`ENTRYPOINT` Alone**: Forces a command to run, with the possibility to append additional arguments.
+- **Both Together**: `ENTRYPOINT` runs a mandatory command, and `CMD` provides default arguments that can be overridden.
+
+# Image Building in Docker
+
+Building a Docker image involves creating a Dockerfile, which is a script containing instructions on how to build the image. Once the Dockerfile is ready, you use the `docker build` command to create the image. Let’s walk through the process:
+
+### 1. Create a Dockerfile
+
+The first step is to create a Dockerfile in your project directory. Here’s a simple example:
+
+```Dockerfile
+# Use the official Node.js image as a base image
+FROM node:14
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json to the working directory
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application code
+COPY . .
+
+# Expose the application port
+EXPOSE 3000
+
+# Define the command to run the application
+CMD ["node", "app.js"]
+```
+
+### 2. Build the Docker Image
+
+Once your Dockerfile is ready, you can build the image using the `docker build` command.
+
+```bash
+docker build -t my-node-app .
+```
+
+- **`-t my-node-app`**: Tags the image with the name `my-node-app`.
+- **`.`**: Indicates that the Dockerfile is in the current directory.
+
+### 3. Verify the Image
+
+After building, you can verify that your image has been created successfully by listing all Docker images:
+
+```bash
+docker images
+```
+
+You should see `my-node-app` listed among the available images.
+
+### 4. Run the Docker Image
+
+Now, you can run a container from the image you just built:
+
+```bash
+docker run -p 3000:3000 my-node-app
+```
+
+- **`-p 3000:3000`**: Maps port 3000 on your local machine to port 3000 in the container, so you can access your application at `localhost:3000`.
+
+### Summary of Commands
+
+- **Create a Dockerfile**: Write your instructions in a `Dockerfile`.
+- **Build the Image**: Use `docker build -t my-app .` to create the image.
+- **Verify the Image**: List images with `docker images`.
+- **Run the Image**: Start a container using `docker run`.
+
+This is the basic process to build and run a Docker image. You can build more complex images by adding additional steps in your Dockerfile.
+
+# Tag in Docker
+
+In Docker, the `-t` flag in the `docker build` command is used to **tag** the image you're building with a specific name and optionally a version (or tag).
+
+### What Does Tagging Mean?
+
+Tagging is a way to name your Docker image so you can easily reference it later. The tag typically includes two parts:
+
+1. **Repository Name** (e.g., `my-node-app`): This is like a label or identifier for the image. It helps you identify the image when you're listing images or pushing/pulling it from a Docker registry.
+2. **Tag/Version** (optional, e.g., `my-node-app:1.0`): This part specifies a particular version of the image. If you don't provide a version, Docker uses `latest` as the default.
+
+### Example of Tagging:
+
+- **`docker build -t my-node-app .`**:
+
+  - This command tags the image with the name `my-node-app`.
+  - Since no version is provided, it defaults to `latest`, making the full tag `my-node-app:latest`.
+
+- **`docker build -t my-node-app:1.0 .`**:
+  - Here, the image is tagged as `my-node-app` with the version `1.0`.
+  - This is useful if you want to maintain different versions of the same image.
+
+### Why Tagging Is Important:
+
+- **Organization**: It helps keep your images organized, especially when you have multiple images or different versions of the same image.
+- **Deployment**: Tags make it easier to deploy specific versions of an image.
+- **Registry Management**: When pushing images to a Docker registry (like Docker Hub), tags are essential for identifying and pulling the correct image.
+
+In summary, tagging is like labeling your image with a name and, optionally, a version, making it easier to manage and reference in future Docker commands.
+
+# Ways to build a Image in Docker
+
+You can build a Docker image directly from a URL in three different ways:
+
+### 1. **Using a Git Repository URL:**
+
+- You can build a Docker image from a Dockerfile located in a Git repository.
+- Docker will clone the repository, find the Dockerfile, and build the image.
+
+**Command:**
+
+```bash
+docker build https://github.com/username/repository.git#branch
+```
+
+**Example:**
+
+```bash
+docker build https://github.com/docker/example-voting-app.git#master
+```
+
+### 2. **Using a URL to a Tarball:**
+
+- If you have a compressed tarball (`.tar`, `.tar.gz`, `.tgz`, etc.) containing the Dockerfile and necessary context files, you can build an image from it.
+
+**Command:**
+
+```bash
+docker build https://example.com/path/to/your/archive.tar.gz
+```
+
+**Example:**
+
+```bash
+docker build https://example.com/dockerfiles/myapp.tar.gz
+```
+
+### 3. **Using a URL to a Dockerfile:**
+
+- You can build an image directly from a URL pointing to a raw Dockerfile. Docker will download the Dockerfile and any necessary build context from the provided URL.
+
+**Command:**
+
+```bash
+docker build - <(curl -sL https://example.com/path/to/Dockerfile)
+```
+
+**Example:**
+
+```bash
+docker build - <(curl -sL https://raw.githubusercontent.com/docker-library/hello-world/master/Dockerfile)
+```
+
+### Summary:
+
+- **Git Repository URL**: Use `docker build https://github.com/username/repository.git#branch`.
+- **Tarball URL**: Use `docker build https://example.com/path/to/your/archive.tar.gz`.
+- **Raw Dockerfile URL**: Use `docker build - <(curl -sL https://example.com/path/to/Dockerfile)`.
+
+These methods allow you to quickly build Docker images from remote locations without needing to download and manage files locally.
+
+# Multi-Stage Build in Docker
+
+**Multi-stage builds** in Docker allow you to use multiple `FROM` statements in your Dockerfile, each representing a different stage of the build process. This technique is particularly useful for optimizing image size by reducing the final image to only what's necessary to run your application, excluding any intermediate build artifacts.
+
+### Benefits:
+
+- **Smaller Final Image**: By only including the final artifacts, you can significantly reduce the size of your Docker image.
+- **Cleaner Separation**: Each stage can have its own environment, which helps keep your Dockerfile organized and modular.
+
+### Example of a Multi-Stage Build
+
+Suppose you have a Go application. The build process involves compiling the source code, which requires a large build environment, but the final application binary is small.
+
+```Dockerfile
+# Stage 1: Build the application
+FROM golang:1.20-alpine as builder
+
+# Set the working directory inside the builder container
+WORKDIR /app
+
+# Copy the source code into the container
+COPY . .
+
+# Compile the application
+RUN go build -o myapp
+
+# Stage 2: Create the final image
+FROM alpine:latest
+
+# Copy the compiled binary from the builder stage
+COPY --from=builder /app/myapp /usr/local/bin/myapp
+
+# Set the entrypoint to the application binary
+ENTRYPOINT ["myapp"]
+```
+
+### Explanation:
+
+1. **First Stage (`builder`)**:
+
+   - **Base Image**: `golang:1.20-alpine` - This image has all the tools needed to compile Go code.
+   - **Work Directory**: `/app` - All operations will happen in this directory.
+   - **Copy Source Code**: The source code is copied into the `/app` directory.
+   - **Build**: The `go build -o myapp` command compiles the Go application into a binary named `myapp`.
+
+2. **Second Stage (`final`)**:
+   - **Base Image**: `alpine:latest` - This is a minimal image that only contains the necessary runtime environment.
+   - **Copy from Builder**: The compiled binary `myapp` is copied from the `builder` stage.
+   - **Entry Point**: The `myapp` binary is set as the entry point, meaning it will be the default executable when the container starts.
+
+### Building the Image:
+
+```bash
+docker build -t myapp:latest .
+```
+
+### Running the Container:
+
+```bash
+docker run --rm myapp:latest
+```
+
+### Summary:
+
+- **Multi-Stage Builds** allow you to optimize Docker images by splitting the build process into multiple stages.
+- **Each Stage** can have a different base image, allowing for a full build environment initially and a minimal runtime environment in the final image.
+- **Result**: Smaller, cleaner, and more secure Docker images.
+
+Distributing images on Docker Hub involves creating, tagging, and pushing your Docker images to Docker Hub so they can be shared and used by others. Docker Hub is a cloud-based repository where you can store, manage, and distribute your Docker container images.
+
+### Steps to Distribute Images on Docker Hub:
+
+#### 1. **Create a Docker Hub Account**
+
+- If you don’t already have an account, sign up at [Docker Hub](https://hub.docker.com/).
+- Once you have an account, log in.
+
+#### 2. **Log in to Docker Hub from the Command Line**
+
+- Use the Docker CLI to log in to Docker Hub.
+- Command:
+  ```bash
+  docker login
+  ```
+- You will be prompted to enter your Docker Hub username and password.
+
+#### 3. **Build Your Docker Image**
+
+- Build your Docker image using the Dockerfile.
+- Command:
+  ```bash
+  docker build -t yourusername/yourimagename:tag .
+  ```
+- Replace `yourusername` with your Docker Hub username, `yourimagename` with the name of your image, and `tag` with the version or tag you want to assign.
+
+#### 4. **Tag Your Image (if not done during the build)**
+
+- If you didn’t tag your image during the build, you can tag it afterward.
+- Command:
+  ```bash
+  docker tag local-image-name yourusername/yourimagename:tag
+  ```
+- Example:
+  ```bash
+  docker tag myapp myusername/myapp:v1.0
+  ```
+
+#### 5. **Push the Image to Docker Hub**
+
+- Push your tagged image to Docker Hub.
+- Command:
+  ```bash
+  docker push yourusername/yourimagename:tag
+  ```
+- Example:
+  ```bash
+  docker push myusername/myapp:v1.0
+  ```
+- This uploads the image to Docker Hub under your account.
+
+#### 6. **Verify the Image on Docker Hub**
+
+- Go to Docker Hub and navigate to your repository to verify that the image has been uploaded.
+- You should see the image with the specified tag.
+
+#### 7. **Pull the Image (Optional)**
+
+- To test the distribution, you can pull the image from Docker Hub on any machine.
+- Command:
+  ```bash
+  docker pull yourusername/yourimagename:tag
+  ```
+
+### Best Practices for Distributing Images:
+
+- **Use Descriptive Tags:** Tags like `v1.0`, `stable`, or `latest` help users know what version of the image they are pulling.
+- **Include Documentation:** On Docker Hub, provide a description of what your image does, usage instructions, and any required environment variables or configurations.
+- **Keep Your Images Small:** Minimize the size of your Docker images to reduce the time required to push, pull, and deploy them.
+- **Use Multi-Stage Builds:** Optimize your Dockerfile using multi-stage builds to reduce the final image size and include only necessary dependencies.
+
+### Example:
+
+1. **Build and Tag Image:**
+
+   ```bash
+   docker build -t myusername/myapp:v1.0 .
+   ```
+
+2. **Push to Docker Hub:**
+
+   ```bash
+   docker push myusername/myapp:v1.0
+   ```
+
+3. **Pull from Docker Hub:**
+   ```bash
+   docker pull myusername/myapp:v1.0
+   ```
+
+This process makes it easy to share your Docker images with others or use them across different environments.
+
+# Copy vs Add command
+
+In Docker, the `COPY` and `ADD` commands are used to copy files and directories from the host machine into a Docker image. While they might seem similar, they have some differences in functionality.
+
+### `COPY` Command
+
+- **Purpose:** The `COPY` command is used to copy files and directories from the host file system to the Docker image.
+- **Syntax:**
+  ```dockerfile
+  COPY <source> <destination>
+  ```
+- **Key Points:**
+
+  - `COPY` is straightforward and only supports copying files and directories.
+  - It does not perform any additional processing, like unpacking compressed files.
+  - It is generally recommended for simple file copying.
+
+- **Example:**
+  ```dockerfile
+  COPY ./myapp /usr/src/app
+  ```
+  This command copies the `myapp` directory from the host into the Docker image at `/usr/src/app`.
+
+### `ADD` Command
+
+- **Purpose:** The `ADD` command is more versatile than `COPY`. In addition to copying files and directories, it can also do some additional things, like downloading files from URLs and automatically unpacking compressed files (like `.tar`, `.gz`).
+- **Syntax:**
+  ```dockerfile
+  ADD <source> <destination>
+  ```
+- **Key Points:**
+
+  - `ADD` can handle remote URLs, copying files from the web directly into the Docker image.
+  - It can automatically decompress certain archive formats.
+  - Use `ADD` when you need these extra features; otherwise, `COPY` is preferred.
+
+- **Example:**
+  ```dockerfile
+  ADD https://example.com/file.tar.gz /usr/src/app
+  ```
+  This command downloads `file.tar.gz` from the given URL and automatically unpacks it into `/usr/src/app` inside the Docker image.
+
+### Best Practices
+
+- **Use `COPY` for Simple Copying:** If all you need is to copy files from your host to the image, use `COPY`. It’s more transparent and less prone to unexpected behavior.
+- **Use `ADD` for Specific Use Cases:** Use `ADD` only when you need its additional features, such as downloading files from a URL or automatically unpacking archives.
+
+### Example of Both Commands in a Dockerfile:
+
+```dockerfile
+# Use COPY to add local files to the image
+COPY ./myapp /usr/src/app
+
+# Use ADD to download and extract a file
+ADD https://example.com/archive.tar.gz /usr/src/app
+
+# Use ADD to copy and unpack a local archive
+ADD ./files.tar.gz /usr/src/app/files
+```
+
+In most cases, prefer `COPY` unless you specifically need `ADD`'s additional capabilities.
 
 # GitLab Implementation Services
 
@@ -6080,4 +7539,4 @@ key1=value1
 key2=value2
 ```
 
-This is useful for extracting key-value pairs or configuration settings embedded within a file that is not entirely plain text.
+This is useful for extracting key-value pairs or configuration settings embedded within a file that is not entirely plain text.F
