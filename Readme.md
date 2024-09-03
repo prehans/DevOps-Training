@@ -3644,6 +3644,482 @@ ADD ./files.tar.gz /usr/src/app/files
 
 In most cases, prefer `COPY` unless you specifically need `ADD`'s additional capabilities.
 
+# Docker Image History
+
+Docker image history refers to the list of layers or changes that make up a Docker image. Each image in Docker is built in layers, and the history of an image shows how it was constructed, layer by layer. Each layer corresponds to a command in the Dockerfile or an action like copying files, running a command, or setting environment variables.
+
+### Viewing Docker Image History
+
+You can view the history of a Docker image using the `docker history` command. This command lists all the layers that make up the image, showing details about each layer, such as the command that created it, the size of the layer, and more.
+
+### Syntax
+
+```bash
+docker history <image_name_or_id>
+```
+
+### Example
+
+Suppose you have an image called `myapp` and you want to see its history. You would run:
+
+```bash
+docker history myapp
+```
+
+### Output Explanation
+
+The output might look something like this:
+
+```bash
+IMAGE          CREATED        CREATED BY                                      SIZE      COMMENT
+<image_id>     2 days ago     /bin/sh -c #(nop)  CMD ["node"]                 0B
+<image_id>     2 days ago     /bin/sh -c npm install                          525MB
+<image_id>     2 days ago     /bin/sh -c #(nop) COPY dir:1234abc in /app      67.2MB
+<image_id>     2 days ago     /bin/sh -c #(nop)  ENV NODE_ENV=production      0B
+<image_id>     2 days ago     /bin/sh -c #(nop)  WORKDIR /app                 0B
+<image_id>     2 days ago     /bin/sh -c FROM node:14-alpine                  5.6MB
+```
+
+### Breakdown of Columns:
+
+1. **IMAGE**: The ID of the layer or image.
+2. **CREATED**: How long ago the layer was created.
+3. **CREATED BY**: The command that was run to create this layer. This typically corresponds to a command in the Dockerfile.
+4. **SIZE**: The size of the layer. This is how much space this layer occupies in the image.
+5. **COMMENT**: Any comments or notes associated with this layer (though usually empty).
+
+### Importance of Image History
+
+- **Debugging:** You can use the image history to debug issues in your Docker image by seeing exactly how it was built.
+- **Optimizing Image Size:** Reviewing the history can help you identify large layers and optimize your Dockerfile to reduce the final image size.
+- **Understanding Layering:** It helps you understand how Docker layers your image, which can be useful for improving caching and build performance.
+
+By looking at the image history, you gain insights into the build process of the Docker image, helping you manage, optimize, and troubleshoot your Docker images more effectively.
+
+To view the history of a Docker image, including the layers that make up the image and the commands used to create each layer, you can use the `docker history` command.
+
+### Command:
+
+```bash
+docker history <image_name_or_id>
+```
+
+### Example:
+
+```bash
+docker history my-image:latest
+```
+
+or
+
+```bash
+docker history 7a86f8ffcb25
+```
+
+### Explanation:
+
+- **`<image_name_or_id>`**: Replace this with the name, tag, or ID of the Docker image whose history you want to inspect.
+- **`my-image:latest`**: If you know the image name and tag.
+- **`7a86f8ffcb25`**: If you prefer to use the image ID.
+
+### Sample Output:
+
+```bash
+IMAGE          CREATED        CREATED BY                                      SIZE      COMMENT
+7a86f8ffcb25   2 hours ago    /bin/sh -c #(nop)  CMD ["node" "app.js"]        0B
+<missing>      2 hours ago    /bin/sh -c npm install                          105MB
+<missing>      2 hours ago    /bin/sh -c #(nop) COPY dir:4cb13a1f629e482b...  45kB
+<missing>      2 hours ago    /bin/sh -c #(nop)  WORKDIR /app                 0B
+<missing>      2 hours ago    /bin/sh -c #(nop)  ENV NODE_ENV=production      0B
+<missing>      3 hours ago    /bin/sh -c apt-get update && apt-get install... 152MB
+<missing>      3 hours ago    /bin/sh -c #(nop)  FROM node:alpine             5.6MB
+```
+
+### Columns Explained:
+
+- **`IMAGE`**: The image ID for each layer (some may show `<missing>` if the layer is shared across images and not uniquely identifiable).
+- **`CREATED`**: The time since the layer was created.
+- **`CREATED BY`**: The command that was used to create this layer, showing what was run in the Dockerfile.
+- **`SIZE`**: The size of the layer.
+- **`COMMENT`**: Any additional comments that might have been included (often empty).
+
+### Useful Options:
+
+- **`--no-trunc`**: Shows the full-length command in the `CREATED BY` column, which is truncated by default.
+  ```bash
+  docker history --no-trunc <image_name_or_id>
+  ```
+- **`--format`**: Customize the output format using Go templates.
+  ```bash
+  docker history --format "{{.ID}}: {{.CreatedBy}}" <image_name_or_id>
+  ```
+
+This command is particularly useful for understanding how an image was built, optimizing the Dockerfile, or troubleshooting build issues.
+
+The `--quiet` (or `-q`) option in the `docker history` command is used to display only the IDs of the image layers without any additional details. This can be useful when you want a quick overview of the layers that make up an image without the verbose output.
+
+### Command Usage:
+
+```bash
+docker history --quiet <image_name_or_id>
+```
+
+or
+
+```bash
+docker history -q <image_name_or_id>
+```
+
+### Example:
+
+```bash
+docker history --quiet my-image:latest
+```
+
+### Output:
+
+This command will output just the layer IDs, one per line, like this:
+
+```bash
+7a86f8ffcb25
+<missing>
+<missing>
+<missing>
+<missing>
+```
+
+### Explanation:
+
+- **Layer IDs**: Each line represents a layer in the Docker image, listed in reverse order (from the most recent to the oldest).
+- **`<missing>`**: This indicates a layer that cannot be uniquely identified, often because it is shared with other images and its ID is not stored separately.
+
+The `--quiet` option is particularly useful in scripts or when you need to work with just the image layer IDs without additional information.
+
+In Docker, you can save and load images as tar files. This is useful for sharing Docker images offline, backing them up, or moving them between systems that might not have access to a Docker registry. Here's how you can save and load Docker images.
+
+### Saving a Docker Image
+
+The `docker save` command allows you to save a Docker image (and its layers) into a tar file.
+
+#### Syntax:
+
+```bash
+docker save -o <path_to_output_file> <image_name_or_id>
+```
+
+#### Example:
+
+Let's say you want to save an image called `myapp:latest` to a file named `myapp_image.tar`. You would run:
+
+```bash
+docker save -o myapp_image.tar myapp:latest
+```
+
+This command will create a file named `myapp_image.tar` in the current directory containing the entire image and its layers.
+
+### Loading a Docker Image
+
+The `docker load` command is used to load a Docker image from a tar file that was previously saved using `docker save`.
+
+#### Syntax:
+
+```bash
+docker load -i <path_to_tar_file>
+```
+
+#### Example:
+
+If you have a tar file named `myapp_image.tar` and you want to load this image back into Docker, you would run:
+
+```bash
+docker load -i myapp_image.tar
+```
+
+This command will restore the image into your local Docker environment, making it available for use.
+
+### Use Cases:
+
+1. **Transferring Images:** If you need to move a Docker image from one machine to another without using a registry, you can save it to a tar file, transfer it (e.g., via USB or network), and then load it on the other machine.
+
+2. **Backup and Restore:** You can save a Docker image to a tar file as a backup, which you can later load to restore the image.
+
+3. **Offline Usage:** In environments where internet access is limited or unavailable, saving and loading images manually allows you to work with Docker images without needing to pull them from an online registry.
+
+### Example Workflow:
+
+1. **On the Source Machine:**
+
+   - Save the image: `docker save -o myapp_image.tar myapp:latest`
+   - Transfer the `myapp_image.tar` file to the destination machine (e.g., using a USB drive or network transfer).
+
+2. **On the Destination Machine:**
+   - Load the image: `docker load -i myapp_image.tar`
+   - Verify the image is loaded: `docker images`
+
+This process ensures that Docker images can be easily shared and reused across different environments, even in the absence of network connectivity or a Docker registry.
+
+# Inspect Container Process
+
+To inspect the processes running inside a Docker container, you can use the `docker top` command. This command shows the running processes inside a specified container, similar to how the `ps` command works on a Linux system.
+
+### Command to Inspect Container Processes
+
+```bash
+docker top <container_name_or_id>
+```
+
+### Example
+
+Suppose you have a container running with the name `myapp_container`. To see what processes are running inside it, you would use:
+
+```bash
+docker top myapp_container
+```
+
+This command will output a list of processes currently running inside the container. The output typically includes the PID (process ID), the user running the process, and the command associated with each process.
+
+### Example Output
+
+Here’s what the output might look like:
+
+```bash
+UID                 PID                 PPID                C                   STIME               TTY                 TIME                CMD
+root                1342                1319                0                   16:07               pts/0               00:00:00            /bin/bash
+root                1356                1342                0                   16:07               pts/0               00:00:00            ps aux
+```
+
+### Use Cases
+
+1. **Debugging:** Inspecting the running processes in a container can help you debug issues such as high CPU usage, unexpected behavior, or to check if a particular service is running as expected.
+
+2. **Monitoring:** You can monitor the status of your containerized applications by regularly checking the running processes.
+
+3. **Security Auditing:** Ensuring that only expected processes are running in a container can help maintain the security of your application.
+
+### Additional Inspection with `docker exec`
+
+For more detailed inspection, you can also use the `docker exec` command to start an interactive shell session within the container and then manually run commands like `ps aux`, `top`, or any other process monitoring tools.
+
+```bash
+docker exec -it <container_name_or_id> /bin/bash
+```
+
+This command gives you an interactive terminal session inside the container, where you can execute commands just like you would on a regular Linux system.
+
+# Docker Container Start Automatically
+
+To have a Docker container start automatically after a system reboot or when the Docker daemon restarts, you can use the `--restart` policy option when running a container. This option specifies the restart behavior of the container under various conditions.
+
+### Common `--restart` Policies
+
+1. **`no`** (default): The container does not restart automatically.
+2. **`on-failure[:max-retries]`**: Restart the container only if it exits with a non-zero exit status. You can optionally specify a maximum number of retries.
+3. **`always`**: Always restart the container if it stops, regardless of the exit status. The container will not restart if it is manually stopped.
+4. **`unless-stopped`**: Always restart the container unless it is manually stopped. This policy is similar to `always`, but the container does not restart after a manual stop or when the Docker daemon restarts.
+
+### Example Commands
+
+1. **Restart on Failure:**
+
+   ```bash
+   docker run --restart on-failure:5 <image_name>
+   ```
+
+   This command runs a container with a policy to restart up to 5 times if the container exits with an error.
+
+2. **Always Restart:**
+
+   ```bash
+   docker run --restart always <image_name>
+   ```
+
+   This command ensures the container will automatically restart whenever it stops, unless you manually stop it.
+
+3. **Restart Unless Stopped:**
+   ```bash
+   docker run --restart unless-stopped <image_name>
+   ```
+   This command ensures the container will restart automatically unless it was manually stopped.
+
+### Adding Restart Policy to Existing Container
+
+You can also set a restart policy for an existing container using the `docker update` command:
+
+```bash
+docker update --restart=always <container_name_or_id>
+```
+
+This command will update the restart policy for an existing container without needing to recreate it.
+
+### Use Cases
+
+- **Critical Services**: For containers running critical services, using the `always` or `unless-stopped` policies ensures that they automatically come back online after a failure or system reboot.
+- **Development and Testing**: The `on-failure` policy is useful during development and testing when you want to retry a container after failures but don’t want it to restart indefinitely.
+
+- **Avoiding Manual Intervention**: With the appropriate restart policy, you can minimize the need for manual intervention in case of unexpected shutdowns.
+
+# Docker Events
+
+Docker events are a way to monitor real-time activity in your Docker environment. Docker emits events related to various actions like starting, stopping, creating, or destroying containers, and these events can be tracked using the `docker events` command. This is particularly useful for debugging, monitoring, and automating responses to changes in your Docker ecosystem.
+
+### Using `docker events`
+
+The `docker events` command streams real-time events from the Docker daemon to your terminal.
+
+#### Basic Usage
+
+```bash
+docker events
+```
+
+Running this command will show a continuous stream of events as they occur in your Docker environment.
+
+#### Example Output
+
+When you run `docker events` and perform some Docker actions (like starting or stopping a container), you'll see output like this:
+
+```
+2024-09-01T12:45:00.000000000Z container create b1d3bc7c3f6e (image=busybox, name=my_busybox)
+2024-09-01T12:45:01.000000000Z container start b1d3bc7c3f6e (image=busybox, name=my_busybox)
+2024-09-01T12:45:05.000000000Z container stop b1d3bc7c3f6e (image=busybox, name=my_busybox)
+2024-09-01T12:45:06.000000000Z container destroy b1d3bc7c3f6e (image=busybox, name=my_busybox)
+```
+
+#### Filtering Events
+
+You can filter the events you want to monitor using various options:
+
+- **By Event Type**: Monitor specific event types like `create`, `start`, `stop`, etc.
+
+  ```bash
+  docker events --filter event=start
+  ```
+
+- **By Container Name or ID**: Monitor events related to a specific container.
+
+  ```bash
+  docker events --filter container=my_busybox
+  ```
+
+- **By Image Name**: Monitor events related to a specific image.
+
+  ```bash
+  docker events --filter image=busybox
+  ```
+
+- **By Label**: Monitor events associated with a specific label.
+
+  ```bash
+  docker events --filter label=my_label=my_value
+  ```
+
+- **By Time Range**: You can also get historical events within a certain time range.
+
+  ```bash
+  docker events --since '2024-09-01T00:00:00' --until '2024-09-01T23:59:59'
+  ```
+
+#### Use Cases
+
+- **Monitoring**: Keep track of what's happening in your Docker environment in real-time.
+- **Automation**: Trigger scripts or actions in response to specific Docker events (e.g., restart a service if a container stops).
+- **Debugging**: Investigate issues by reviewing what events occurred before a problem started.
+- **Auditing**: Review historical events to understand changes in your Docker environment over time.
+
+Docker events provide a powerful way to gain insights into your containerized environment and to create automated workflows based on the real-time state of your containers.
+
+# Managing the Stopped Container
+
+Managing stopped containers in Docker involves a few key operations: listing, restarting, removing, and inspecting them. Here’s how you can manage stopped containers:
+
+### 1. **Listing Stopped Containers**
+
+To see a list of all stopped containers:
+
+```bash
+docker ps -a -f "status=exited"
+```
+
+- `-a`: Shows all containers, including stopped ones.
+- `-f "status=exited"`: Filters the list to show only containers that have stopped.
+
+### 2. **Restarting a Stopped Container**
+
+You can restart a stopped container using:
+
+```bash
+docker start <container_id_or_name>
+```
+
+This command will start the container again with the same settings it had when it was initially started.
+
+### 3. **Removing Stopped Containers**
+
+To remove a stopped container:
+
+```bash
+docker rm <container_id_or_name>
+```
+
+This command deletes the container, freeing up resources like disk space. If you want to remove all stopped containers at once, you can use:
+
+```bash
+docker container prune
+```
+
+This will remove all containers that are in the "exited" state.
+
+### 4. **Inspecting a Stopped Container**
+
+To inspect a stopped container, which can be useful for debugging or understanding why it was stopped:
+
+```bash
+docker inspect <container_id_or_name>
+```
+
+This command provides detailed information about the container, including its configuration, state, and the reason it was stopped.
+
+### 5. **Starting a Container with Different Options**
+
+If you need to start a stopped container with different options or a different command, you can remove the old container and create a new one:
+
+```bash
+docker rm <container_id_or_name>
+docker run <new_options> <image_name>
+```
+
+This ensures that the container starts with the desired configuration.
+
+### 6. **Viewing Logs of a Stopped Container**
+
+To view the logs of a stopped container, which might give insights into why it stopped:
+
+```bash
+docker logs <container_id_or_name>
+```
+
+This command shows the output that the container generated before it stopped.
+
+### 7. **Renaming a Stopped Container**
+
+If you want to rename a stopped container before restarting it:
+
+```bash
+docker rename <old_name> <new_name>
+```
+
+### 8. **Checking Disk Usage**
+
+Stopped containers can take up disk space. To check how much space they are using:
+
+```bash
+docker system df
+```
+
+This will give you an overview of the disk space used by images, containers, and volumes.
+
+By using these commands, you can effectively manage stopped containers in your Docker environment, ensuring that resources are used efficiently and that your containers behave as expected.
+
 # GitLab Implementation Services
 
 # Nginx (Engine - X)
