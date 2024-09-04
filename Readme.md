@@ -4120,6 +4120,182 @@ This will give you an overview of the disk space used by images, containers, and
 
 By using these commands, you can effectively manage stopped containers in your Docker environment, ensuring that resources are used efficiently and that your containers behave as expected.
 
+# Docker Compose
+
+**Docker Compose** is a tool that allows you to define and run multi-container Docker applications. With Docker Compose, you can manage complex applications with multiple services (containers) using a single configuration file. This makes it easier to orchestrate and manage your applications compared to running individual Docker commands for each container.
+
+### Key Features of Docker Compose:
+
+- **Multi-container Deployment**: You can define multiple containers and their configurations in one file.
+- **Easy Configuration**: Use a YAML file (`docker-compose.yml`) to configure application services, networks, and volumes.
+- **Single Command**: Start and stop all your services with a single command (`docker-compose up` or `docker-compose down`).
+- **Networking**: Automatically creates a network for your services to communicate with each other.
+- **Environment Variables**: Easily set and manage environment variables for your containers.
+
+### How to Use Docker Compose
+
+#### 1. **Installing Docker Compose**
+
+Docker Compose comes pre-installed with Docker Desktop. If you're using Docker on a server, you can install Docker Compose manually. Check the official documentation for the installation process for your OS.
+
+#### 2. **Creating a `docker-compose.yml` File**
+
+The `docker-compose.yml` file is where you define your application services. Here's a simple example:
+
+```yaml
+version: "3" # Specify the Compose file format version
+
+services: # Define the services
+  web: # Name of the service
+    image: nginx # Use the official Nginx image
+    ports:
+      - "8080:80" # Map port 8080 on the host to port 80 in the container
+
+  db: # Another service
+    image: postgres # Use the official Postgres image
+    environment: # Environment variables
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+```
+
+In this example:
+
+- Two services are defined: `web` (using the Nginx image) and `db` (using the Postgres image).
+- The `web` service maps port 8080 on the host to port 80 on the container.
+- The `db` service sets environment variables for the Postgres database.
+
+#### 3. **Running Your Application**
+
+To start your application defined in the `docker-compose.yml` file, navigate to the directory containing the file and run:
+
+```bash
+docker-compose up
+```
+
+This command will:
+
+- Pull the specified images (if not already available).
+- Create the containers as defined in the configuration.
+- Start the containers.
+
+You can run it in detached mode (in the background) by adding the `-d` flag:
+
+```bash
+docker-compose up -d
+```
+
+#### 4. **Stopping Your Application**
+
+To stop the running services, use:
+
+```bash
+docker-compose down
+```
+
+This will stop and remove the containers, networks, and volumes created by `docker-compose up`.
+
+#### 5. **Scaling Services**
+
+You can scale the number of instances of a service using the `--scale` flag:
+
+```bash
+docker-compose up --scale web=3
+```
+
+This command will start three instances of the `web` service.
+
+#### 6. **Viewing Logs**
+
+To see logs from your services, use:
+
+```bash
+docker-compose logs
+```
+
+You can also view logs for a specific service:
+
+```bash
+docker-compose logs web
+```
+
+### Example: A Simple Web Application
+
+Here’s a more complete example that includes a web application using Flask and a Redis database:
+
+**`docker-compose.yml`:**
+
+```yaml
+version: "3"
+
+services:
+  web:
+    build: ./web # Specify the build context
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis
+```
+
+**Directory Structure:**
+
+```
+.
+├── docker-compose.yml
+└── web
+    ├── Dockerfile
+    └── app.py
+```
+
+**`Dockerfile` in `./web`:**
+
+```Dockerfile
+FROM python:3.9
+
+WORKDIR /app
+
+COPY . .
+
+RUN pip install flask redis
+
+CMD ["python", "app.py"]
+```
+
+**`app.py`:**
+
+```python
+from flask import Flask
+import redis
+
+app = Flask(__name__)
+cache = redis.Redis(host='redis', port=6379)
+
+@app.route('/')
+def index():
+    visits = cache.incr('visits')
+    return f'Number of visits: {visits}'
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
+```
+
+### Running the Example:
+
+1. Navigate to the directory with `docker-compose.yml`.
+2. Run:
+
+   ```bash
+   docker-compose up
+   ```
+
+3. Access the application at `http://localhost:5000`.
+
+### Conclusion
+
+Docker Compose simplifies the process of managing multi-container Docker applications by allowing you to define and run them with a single command. It is ideal for development, testing, and deploying applications with multiple services and dependencies. By using `docker-compose.yml`, you can easily manage the configuration, scaling, and networking of your applications in a clean and organized manner.
+
 # GitLab Implementation Services
 
 # Nginx (Engine - X)
@@ -8015,4 +8191,4 @@ key1=value1
 key2=value2
 ```
 
-This is useful for extracting key-value pairs or configuration settings embedded within a file that is not entirely plain text.F
+This is useful for extracting key-value pairs or configuration settings embedded within a file that is not entirely plain text.
