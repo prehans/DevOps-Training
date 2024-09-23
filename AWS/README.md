@@ -706,3 +706,75 @@ Here’s an overview of **AWS EC2 Image Builder**:
 ### Conclusion:
 
 AWS EC2 Image Builder provides a powerful, automated way to create, maintain, and distribute AMIs with minimal manual effort. By automating the image creation process, it ensures that your instances are always running the latest, secure, and compliant software, reducing operational overhead and improving security.
+
+# EC2 Instance Store
+
+**EC2 Instance Store** is a type of temporary, high-performance storage that is physically attached to the host machine where your Amazon EC2 instance runs. Unlike Elastic Block Store (EBS) volumes, which are network-attached and persistent, **instance store** is ephemeral, meaning it provides temporary block-level storage that persists only for the lifetime of the instance.
+
+### Key Features of EC2 Instance Store:
+
+1. **Ephemeral Storage**:
+
+   - **Instance store volumes** are temporary and tied to the lifecycle of the EC2 instance. When the instance is stopped, terminated, or fails, the data on the instance store is lost.
+   - This makes it unsuitable for storing critical or long-term data but useful for temporary data needs (e.g., caching, buffers, or scratch data).
+
+2. **High Performance**:
+
+   - Instance store provides **high IOPS** (input/output operations per second) and low-latency access, as the storage is directly attached to the physical hardware.
+   - It's ideal for workloads that require very fast temporary storage, such as high-throughput, I/O-intensive applications (e.g., big data processing, databases that use cache).
+
+3. **Capacity**:
+
+   - Instance store volumes offer varying amounts of storage depending on the EC2 instance type. For example, some instance families like **M5d, C5d, I3, and R5d** come with NVMe-based instance store volumes, which provide even faster access times.
+   - Instance store storage is fixed to the instance type and cannot be detached or attached to another instance.
+
+4. **No Additional Costs**:
+
+   - Instance store volumes are included in the price of the instance and do not incur additional charges, unlike EBS volumes, which are billed separately based on size and usage.
+
+5. **Use Cases**:
+   - **Temporary Data**: Ideal for temporary data storage, such as cache, buffers, or scratch files during batch processing.
+   - **High-Performance Workloads**: Useful for applications that need fast, local storage with low latency, such as media processing, high-performance databases, or big data processing.
+   - **Non-Critical Data**: Data that can be easily re-created or doesn’t need to persist beyond the instance lifecycle.
+
+### Instance Store Characteristics:
+
+- **Data Persistence**: Data is lost when the instance is stopped or terminated.
+- **Performance**: Provides very high performance for data-intensive applications, especially when using SSD-based instance store (NVMe).
+- **Size**: The size of instance store volumes is predefined and depends on the instance type (ranging from a few GB to several TB).
+
+### Differences Between Instance Store and EBS:
+
+| Feature           | Instance Store                                                      | Elastic Block Store (EBS)                                              |
+| ----------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Persistence**   | Data is lost when the instance is stopped, terminated, or fails.    | Data persists independently of the instance.                           |
+| **Performance**   | High throughput and low latency; directly attached to the instance. | Good performance, but network-attached, so slightly higher latency.    |
+| **Data Backup**   | No automatic backup; data is ephemeral.                             | Snapshots allow easy backup and restore.                               |
+| **Size**          | Predefined and tied to the instance type.                           | You can specify the size and increase it later.                        |
+| **Cost**          | Included with the instance (no extra cost).                         | Charged based on the size and performance tier.                        |
+| **Detachability** | Cannot be detached or attached to another instance.                 | EBS volumes can be detached from one instance and attached to another. |
+
+### Use Cases for Instance Store:
+
+- **Temporary Storage**: Good for caching, temporary data storage, or log files that don’t need to be stored permanently.
+- **High-Performance Computing (HPC)**: Suitable for workloads that require fast access to large datasets during computation (e.g., scientific computing, media rendering).
+- **Big Data Processing**: Ideal for storing intermediate data or scratch space for distributed computing tasks like Hadoop, Spark, or data warehousing.
+- **Web Applications**: When using application servers that store session data locally or need fast access to temporary data.
+
+### Instance Types with Instance Store:
+
+Not all EC2 instance types come with instance store. Instance store is available on certain instance types such as:
+
+- **General Purpose**: `M5d`, `M6gd`
+- **Compute Optimized**: `C5d`, `C6gd`
+- **Storage Optimized**: `I3`, `I3en`, `D2`
+- **Memory Optimized**: `R5d`, `X1`, `X1e`
+- **Accelerated Computing**: `P3dn`, `F1`
+
+### Example Use:
+
+If you are running a large-scale data processing job that needs to store intermediate results temporarily, you can use an instance type like **I3** (storage-optimized) that comes with high-speed instance store. Once the job completes, the results are either stored to a more permanent storage like S3 or EBS, and the instance (along with its ephemeral storage) can be terminated without worrying about the loss of data.
+
+### Conclusion:
+
+EC2 **Instance Store** is ideal for applications requiring high-performance local storage for temporary data. Its ephemeral nature makes it unsuitable for storing critical data, but it is valuable for high I/O tasks where speed and performance are essential, such as big data, caching, and temporary files. For long-term, persistent storage, EBS is a better fit.
