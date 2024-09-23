@@ -35,6 +35,13 @@ Cloud computing is widely adopted across industries for tasks like hosting websi
 
 # Amazon EC2
 
+## Capability of EC2 are :
+
+Renting virtual machines (EC2)
+Storing data on virtual drives (EBS)
+Distributing load across machine(ELB)
+Scaling the services using the auto scaling group.
+
 Amazon EC2 (Elastic Compute Cloud) is a web service provided by AWS (Amazon Web Services) that offers scalable virtual servers in the cloud. It allows you to run applications and services on virtual machines (called instances) with flexible configuration options. Here’s a breakdown of key details about Amazon EC2:
 
 ### 1. **Instance Types**
@@ -96,6 +103,100 @@ Amazon EC2 (Elastic Compute Cloud) is a web service provided by AWS (Amazon Web 
 Would you like more details on any specific aspect of EC2?
 
 ![alt text](../Images/image30.png)
+
+Amazon EC2 instance types are categorized based on their underlying hardware and are designed to fit different use cases. These instances differ in terms of their CPU, memory, storage, and networking capabilities. Here's a breakdown of the basics of EC2 instance types:
+
+### **General-Purpose Instances**
+
+- **Purpose**: Balanced CPU, memory, and networking resources, suitable for a variety of applications.
+- **Use Cases**: Web servers, development and test environments, small databases, and general-purpose workloads.
+- **Popular Instance Families**:
+  - **T4g/T3/T3a**: Burstable performance instances with a baseline level of CPU performance that can burst to higher levels.
+  - **M6g/M5/M5a/M5n**: Standard instances for a balanced mix of compute, memory, and networking.
+
+### **Compute-Optimized Instances**
+
+- **Purpose**: Optimized for compute-intensive tasks that require high CPU processing power.
+- **Use Cases**: High-performance computing (HPC), batch processing, media transcoding, and gaming servers.
+- **Popular Instance Families**:
+  - **C6g/C5/C5n**: Instances designed for applications that benefit from high-performance processors.
+
+### **Memory-Optimized Instances**
+
+- **Purpose**: Provide more memory relative to CPU, optimized for memory-intensive applications.
+- **Use Cases**: Large-scale databases, real-time big data processing, and in-memory caching.
+- **Popular Instance Families**:
+  - **R6g/R5/R5n**: High memory-to-CPU ratio, designed for memory-intensive workloads.
+  - **X2idn/X2iedn**: Instances optimized for extremely large, memory-bound workloads like SAP HANA or high-performance databases.
+
+### **Storage-Optimized Instances**
+
+- **Purpose**: Optimized for high disk throughput and I/O, providing direct access to local storage.
+- **Use Cases**: NoSQL databases, data warehousing, log processing, and other applications that require high sequential read/write access to large data sets.
+- **Popular Instance Families**:
+  - **I4i/I3**: High storage performance, often using NVMe-based SSDs for fast, low-latency access.
+  - **D2/D3**: Dense storage instances optimized for massive amounts of hard drive storage.
+
+### **Accelerated Computing Instances (GPU Instances)**
+
+- **Purpose**: Utilize hardware accelerators like GPUs (Graphics Processing Units) to perform tasks that require massive parallel processing power.
+- **Use Cases**: Machine learning training and inference, high-performance computing, video rendering, and 3D applications.
+- **Popular Instance Families**:
+  - **P4/P3**: Optimized for machine learning, AI, and deep learning applications.
+  - **G5**: Instances with NVIDIA GPUs optimized for graphics-intensive applications and machine learning inference.
+
+### **EC2 Instance Naming Convention**
+
+The naming convention for EC2 instances follows a simple pattern:
+
+- **Family (Instance Class)**: Denotes the type of instance (e.g., T for general-purpose, C for compute-optimized).
+- **Generation**: A number that indicates the generation of the instance type (e.g., `M5`, `C6g`).
+- **Size Modifier**: Indicates the instance size in terms of vCPUs and memory (e.g., `small`, `medium`, `large`, `xlarge`, etc.).
+
+For example, **t3.medium** refers to:
+
+- **t3**: General-purpose burstable instance, third generation.
+- **medium**: Indicates its size, offering a moderate number of vCPUs and memory.
+
+### **Instance Sizes**
+
+Within each instance family, there are different sizes that determine the number of vCPUs, memory, storage, and network performance.
+
+- Sizes range from **nano** to **16xlarge**, with increasing power and cost as you move up the scale.
+
+### **Instance Pricing Models**
+
+EC2 instances can be purchased using various pricing models to suit different needs:
+
+- **On-Demand**: Pay by the second or hour without any long-term commitments.
+- **Reserved Instances (RI)**: Commit to using instances for 1 or 3 years for a discounted price.
+- **Spot Instances**: Purchase unused capacity at up to 90% discount, though AWS may interrupt the instance when capacity is needed elsewhere.
+- **Savings Plans**: Flexible discount pricing plans where you commit to a specific amount of compute usage (measured in dollars per hour).
+
+### **EC2 Instance Examples by Type**:
+
+1. **General Purpose (T3)**:
+   - **t3.micro**: 2 vCPUs, 1 GB RAM.
+   - **t3.medium**: 2 vCPUs, 4 GB RAM.
+2. **Compute Optimized (C5)**:
+
+   - **c5.large**: 2 vCPUs, 4 GB RAM.
+   - **c5.4xlarge**: 16 vCPUs, 32 GB RAM.
+
+3. **Memory Optimized (R5)**:
+
+   - **r5.large**: 2 vCPUs, 16 GB RAM.
+   - **r5.12xlarge**: 48 vCPUs, 384 GB RAM.
+
+4. **Storage Optimized (I3)**:
+   - **i3.large**: 2 vCPUs, 16 GB RAM, 475 GB NVMe SSD storage.
+   - **i3.8xlarge**: 32 vCPUs, 244 GB RAM, 6.4 TB NVMe SSD storage.
+
+### Summary:
+
+- EC2 instances are categorized into **General Purpose**, **Compute Optimized**, **Memory Optimized**, **Storage Optimized**, and **Accelerated Computing**.
+- Each type is suited for specific workloads, offering flexibility for different performance and cost requirements.
+- AWS provides a variety of instance sizes and pricing models, allowing you to customize your cloud resources to fit your workload and budget.
 
 # AWS EBS (Elastic Block Store)
 
@@ -181,3 +282,243 @@ EBS offers several types of volumes optimized for different use cases:
 - **Maximum Size**: The maximum size for an EBS volume is 64 TiB.
 
 Would you like to dive deeper into any specific feature of EBS?
+
+# AWS Amazon Machine Image (AMI)
+
+An **Amazon Machine Image (AMI)** is a pre-configured virtual machine image that provides the information required to launch an **EC2 instance** in the AWS cloud. AMIs include essential components like the operating system, application software, and configurations, making them fundamental to creating, deploying, and scaling EC2 instances.
+
+### Key Components of an AMI:
+
+1. **Root Volume Template**:
+
+   - The AMI defines the root volume, which includes an operating system, the application server, and applications installed on that OS.
+   - The root volume is typically stored on Amazon EBS or, for instance-store-backed instances, as an instance store.
+
+2. **Launch Permissions**:
+
+   - AMIs control which AWS accounts can launch instances from them. You can make an AMI private, share it with specific AWS accounts, or make it publicly accessible.
+
+3. **Block Device Mapping**:
+   - This specifies the volumes (e.g., EBS volumes) that will be attached to the instance when it is launched. It includes the root volume and any additional data volumes that might be needed.
+
+### Types of AMIs:
+
+1. **Amazon-provided AMIs**:
+
+   - These are created and maintained by AWS and are the most common starting point for launching instances.
+   - Examples: Standard Linux distributions (Amazon Linux, Ubuntu, Red Hat), Windows Server, etc.
+
+2. **AWS Marketplace AMIs**:
+
+   - Pre-configured AMIs available in the AWS Marketplace, which may include commercial software like databases, web servers, development environments, etc.
+
+3. **Custom AMIs**:
+
+   - Created by users based on their needs. For example, after setting up a specific application environment on an EC2 instance, you can create an AMI of that setup to use for future instances.
+   - Custom AMIs are useful for cloning environments, ensuring consistency across instances, and scaling applications quickly.
+
+4. **Community AMIs**:
+   - AMIs shared by the AWS community that are publicly available and can be used by any AWS account.
+
+### AMI Lifecycle:
+
+1. **Launch an Instance**:
+
+   - When you launch an EC2 instance, you must select an AMI to define what software will be installed on the instance.
+
+2. **Instance Creation**:
+
+   - Once an instance is running, you can modify its configuration (e.g., install software, change configurations) and then create a new custom AMI from that instance.
+
+3. **Reuse and Scaling**:
+
+   - Using an AMI allows you to quickly and consistently launch multiple EC2 instances with the same setup, which is useful for scaling or disaster recovery.
+
+4. **Retirement**:
+   - If an AMI is no longer needed, you can deregister it, preventing further use, but any existing instances launched from that AMI will continue to run.
+
+### How AMIs Work:
+
+1. **Region-Specific**:
+
+   - AMIs are created in specific AWS regions and can only be used to launch EC2 instances within that region. However, you can copy an AMI to other regions if needed.
+
+2. **Types of Backing Store**:
+   - **EBS-backed AMI**:
+     - The root device for an instance launched from an EBS-backed AMI is an EBS volume created from the AMI.
+     - EBS-backed instances can be stopped and restarted, preserving data between reboots.
+   - **Instance Store-backed AMI**:
+     - The root device for an instance store-backed AMI uses the instance store, which is ephemeral storage directly attached to the host.
+     - Data is lost when the instance stops or terminates, and it cannot be restarted (only rebooted).
+
+### Common Use Cases:
+
+1. **Scaling Applications**:
+
+   - AMIs allow you to replicate an EC2 instance’s setup to launch identical instances, making it easy to scale applications by deploying pre-configured instances.
+
+2. **Backup and Recovery**:
+
+   - You can create an AMI from a running instance to use as a backup. If the instance fails or needs to be moved, you can launch a new instance from the AMI.
+
+3. **Environment Standardization**:
+   - Using custom AMIs ensures that all team members or servers are running the same environment, simplifying application development and operations.
+
+### AMI Creation Process:
+
+1. **Prepare the Instance**:
+
+   - Launch an EC2 instance and install/configure the software and settings you want included in the AMI.
+
+2. **Create the AMI**:
+
+   - From the EC2 Dashboard, select the instance, right-click, and choose **Create Image**. This will create a new AMI based on that instance.
+
+3. **Launch Instances**:
+
+   - Once the AMI is created, you can launch new EC2 instances from that AMI, replicating the environment and software.
+
+4. **Distribute the AMI**:
+   - You can share the AMI with other AWS accounts or regions. You can also publish it to the AWS Marketplace or make it public for others to use.
+
+### How to Choose an AMI:
+
+When selecting or creating an AMI, consider the following factors:
+
+- **Operating System**: Linux, Windows, or specific distributions like Ubuntu, Red Hat, etc.
+- **Software Pre-installed**: AMIs may come with specific software (e.g., LAMP stack, MySQL).
+- **Region**: Ensure the AMI is available in the region where you want to launch your instance.
+- **Instance Store vs. EBS**: Choose based on whether you need persistent storage (EBS) or ephemeral storage (Instance Store).
+- **Performance Requirements**: Some AMIs are optimized for specific performance needs like HPC (High-Performance Computing) workloads.
+
+### Key Advantages of AMIs:
+
+- **Fast Provisioning**: AMIs enable rapid deployment of pre-configured environments.
+- **Consistency**: Ensure consistent application deployment across multiple instances.
+- **Customizable**: Create custom AMIs tailored to specific workloads or applications.
+
+### Summary:
+
+An **AMI** is the blueprint for your EC2 instance, defining the operating system, application server, and any software installed. It allows for quick and efficient launching of new instances with the same configuration. AMIs are region-specific but can be copied across regions for flexibility. Users can choose from a variety of AMIs provided by AWS, the AWS Marketplace, or create custom AMIs for specific use cases.
+
+# Security Groups
+
+A **Security Group** in Amazon EC2 acts as a virtual firewall that controls the inbound and outbound traffic for your EC2 instances. It plays a key role in ensuring the security of your resources within AWS by allowing or denying specific types of network traffic.
+
+### Key Concepts of Security Groups:
+
+1. **Instance-Level Firewall**:
+
+   - Security groups are applied to **instances**, not individual resources within an instance. All rules in a security group apply to every instance that the group is associated with.
+
+2. **Stateful Nature**:
+
+   - Security groups are **stateful**, meaning that if you allow an inbound connection, the return traffic for that connection is automatically allowed, even if you don't explicitly allow outbound traffic for that connection.
+
+3. **Allow Rules Only**:
+
+   - Security groups work by allowing traffic. You cannot explicitly block traffic using security groups (you'd use **Network ACLs** for that). If there is no allow rule for a certain type of traffic, it is denied by default.
+
+4. **Inbound and Outbound Rules**:
+
+   - **Inbound rules** control the incoming traffic to your instance.
+   - **Outbound rules** control the outgoing traffic from your instance.
+
+5. **Protocol and Port Control**:
+
+   - You can specify traffic by **protocol** (e.g., TCP, UDP, ICMP) and **port number** (e.g., port 22 for SSH, port 80 for HTTP, port 443 for HTTPS).
+
+6. **Source and Destination**:
+   - For inbound rules, you define the **source** of the traffic (IP address, CIDR block, or another security group).
+   - For outbound rules, you define the **destination** (IP address, CIDR block, or another security group).
+7. **Security Group Scope**:
+   - A security group can be associated with multiple instances.
+   - Instances can have multiple security groups attached to them, and the rules from all attached security groups are evaluated to determine access.
+
+### Common Use Cases:
+
+1. **Web Servers**:
+
+   - Allow inbound HTTP (port 80) and HTTPS (port 443) traffic from any IP address (0.0.0.0/0).
+   - Allow outbound traffic to any IP address for updates or communication with external services.
+
+   Example Inbound Rules:
+
+   - Type: HTTP, Protocol: TCP, Port: 80, Source: 0.0.0.0/0
+   - Type: HTTPS, Protocol: TCP, Port: 443, Source: 0.0.0.0/0
+
+2. **SSH Access to EC2 Instance**:
+
+   - Allow inbound SSH (port 22) access only from a specific IP address or range, preventing unauthorized login attempts.
+
+   Example Inbound Rule:
+
+   - Type: SSH, Protocol: TCP, Port: 22, Source: **your IP address** or **CIDR block** (e.g., 203.0.113.0/24)
+
+3. **Database Access**:
+
+   - Allow inbound MySQL or PostgreSQL access (port 3306 or 5432) from a specific set of trusted instances or IP ranges.
+
+   Example Inbound Rule:
+
+   - Type: MySQL/Aurora, Protocol: TCP, Port: 3306, Source: 10.0.0.0/16 (private IP range for instances in the same VPC).
+
+### Example Security Group:
+
+Imagine you're running a web application with a database backend, and you want to secure it:
+
+1. **Web Server Security Group**:
+
+   - Inbound Rules:
+     - Allow HTTP (80) and HTTPS (443) traffic from the internet (0.0.0.0/0).
+     - Allow SSH (22) traffic only from your IP address.
+   - Outbound Rules:
+     - Allow all outbound traffic.
+
+2. **Database Server Security Group**:
+   - Inbound Rules:
+     - Allow MySQL (3306) traffic only from the web server's security group.
+   - Outbound Rules:
+     - Allow all outbound traffic.
+
+### Security Group Example:
+
+- **Inbound Rules**:
+  | Type | Protocol | Port Range | Source |
+  |-------------|----------|------------|-----------------------|
+  | HTTP | TCP | 80 | 0.0.0.0/0 |
+  | HTTPS | TCP | 443 | 0.0.0.0/0 |
+  | SSH | TCP | 22 | Your IP (e.g., 203.x.x.x) |
+
+- **Outbound Rules**:
+  | Type | Protocol | Port Range | Destination |
+  |-------------|----------|------------|-----------------------|
+  | All Traffic | All | All | 0.0.0.0/0 |
+
+### Best Practices for Security Groups:
+
+1. **Principle of Least Privilege**:
+
+   - Only allow the minimum amount of traffic necessary for your application to function. For example, don't allow all IP addresses to access your instances if it's unnecessary.
+
+2. **Limit SSH and RDP Access**:
+
+   - Restrict SSH (port 22) or RDP (port 3389) access to trusted IP addresses. If possible, use VPNs or bastion hosts to further secure access.
+
+3. **Use Descriptive Security Group Names**:
+
+   - Give security groups meaningful names and descriptions so you can easily identify their purpose.
+
+4. **Regularly Review and Audit Rules**:
+
+   - Periodically review your security groups to ensure you're not allowing unnecessary access.
+
+5. **Use Security Groups with VPCs**:
+   - Security groups work at the **instance level**, but when used in conjunction with **VPC** (Virtual Private Cloud), they provide a more robust security model that includes **network ACLs** and **route tables**.
+
+### Summary:
+
+- **Security Groups** act as a virtual firewall for EC2 instances, controlling inbound and outbound traffic.
+- They allow only explicitly permitted traffic and block everything else by default.
+- You can configure rules based on IP ranges, protocols, and ports.
+- Security groups are stateful, and they allow return traffic for any allowed connection.
