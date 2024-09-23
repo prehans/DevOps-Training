@@ -778,3 +778,102 @@ If you are running a large-scale data processing job that needs to store interme
 ### Conclusion:
 
 EC2 **Instance Store** is ideal for applications requiring high-performance local storage for temporary data. Its ephemeral nature makes it unsuitable for storing critical data, but it is valuable for high I/O tasks where speed and performance are essential, such as big data, caching, and temporary files. For long-term, persistent storage, EBS is a better fit.
+
+# Amazon Elastic File System (EFS)
+
+**Amazon Elastic File System (Amazon EFS)** is a fully managed, scalable, and highly available file storage service provided by AWS that can be mounted to and used by EC2 instances, containers, and on-premises servers. EFS is designed to provide a simple, scalable, and elastic file storage solution for a wide range of applications, particularly those requiring shared storage across multiple instances.
+
+### Key Features of Amazon EFS:
+
+1. **Scalability**:
+
+   - Amazon EFS automatically scales to accommodate your storage needs. It can grow or shrink elastically as you add or remove files, providing storage as you need it without provisioning.
+   - You don't need to pre-provision storage capacity, and there are no limits on storage size.
+
+2. **Shared File System**:
+
+   - EFS provides **shared file access** to multiple EC2 instances or other compute resources. It supports standard file system protocols, allowing instances in the same or different Availability Zones to concurrently access the same file system.
+   - Multiple instances can read and write to the same files, making it ideal for applications requiring concurrent access, such as web applications or content management systems.
+
+3. **Fully Managed**:
+
+   - AWS manages all aspects of the file system, including storage infrastructure, durability, backups, scaling, and security.
+   - You don't need to manage or maintain the underlying hardware, making it an ideal choice for businesses looking to offload storage management tasks.
+
+4. **Availability and Durability**:
+
+   - EFS stores data redundantly across multiple Availability Zones in a region, ensuring high availability and durability.
+   - It is designed to provide **99.999999999% (11 9's)** durability and **99.99%** availability, ensuring your data is always accessible.
+
+5. **Performance Modes**:
+
+   - **General Purpose**: Suitable for most applications, offering low-latency access with good throughput.
+   - **Max I/O**: Provides higher levels of aggregate throughput and is ideal for applications that require a high number of concurrent connections or have high throughput demands (e.g., big data applications).
+
+   - Additionally, EFS offers two throughput modes:
+     - **Bursting Throughput**: Throughput is tied to the amount of data stored and can burst when needed.
+     - **Provisioned Throughput**: You can provision a specific amount of throughput independent of the amount of data stored.
+
+6. **Cost-Effective Storage Classes**:
+
+   - EFS offers two storage classes:
+     - **Standard**: Designed for frequently accessed data.
+     - **Infrequent Access (IA)**: Lower-cost option for storing data that is not frequently accessed (offers lower cost, but has retrieval fees).
+   - EFS automatically moves files between Standard and IA storage classes based on usage patterns, helping optimize costs.
+
+7. **Encryption and Security**:
+
+   - **Data Encryption**: EFS supports encryption for both data at rest and data in transit. Encryption at rest is automatically handled by AWS KMS (Key Management Service).
+   - **Access Control**: EFS integrates with AWS Identity and Access Management (IAM) to provide fine-grained access control to your file system.
+   - **Network Security**: EFS file systems are mounted within an Amazon Virtual Private Cloud (VPC), which provides network-level security and can be accessed via VPC Peering or AWS Direct Connect.
+
+8. **Backup and Snapshot Integration**:
+
+   - Amazon EFS supports integration with AWS Backup to create automated backups of your file system, ensuring that data is protected and easily recoverable.
+
+9. **POSIX-Compliant**:
+   - EFS is fully POSIX-compliant, which means it supports standard file system semantics, making it suitable for a variety of traditional file-based applications such as media processing, content management, and machine learning.
+
+### Key Use Cases for Amazon EFS:
+
+1. **Content Management Systems**:
+   - Applications like WordPress or Drupal often require shared storage for media files and user-generated content. EFS provides scalable and shared storage that can be accessed by multiple EC2 instances in a load-balanced setup.
+2. **Web Hosting**:
+
+   - EFS can store website assets, such as HTML files, images, and videos, making it suitable for scalable web hosting environments where multiple instances need access to the same assets.
+
+3. **Big Data and Analytics**:
+
+   - For workloads like Hadoop or Spark, EFS provides a shared storage environment where multiple instances can read and write large datasets concurrently, without worrying about storage limits.
+
+4. **Development and Testing**:
+
+   - Development environments often require shared storage across multiple instances for configuration files, logs, and test data. EFS ensures that all instances can access the same file system without provisioning storage upfront.
+
+5. **Machine Learning and Data Science**:
+
+   - EFS can store large datasets for machine learning and data science tasks, allowing multiple instances to access the same data concurrently.
+
+6. **Backup and Restore**:
+   - EFS can act as a backup location for critical application data, leveraging AWS Backup for automated backup scheduling and long-term retention.
+
+### Cost and Pricing Model:
+
+Amazon EFS charges based on the amount of storage used. There are no upfront costs or provisioning fees. You pay for the storage used and can save costs by utilizing the **Infrequent Access (IA)** storage class for less frequently accessed data. Additionally, you can select between **Bursting Throughput** (based on storage size) or **Provisioned Throughput** (fixed throughput regardless of storage size).
+
+- **Standard Storage**: Higher cost but optimized for frequently accessed files.
+- **Infrequent Access (IA) Storage**: Lower cost for files that are not accessed often but incur a small fee when retrieving data.
+
+### Mounting and Using EFS:
+
+To use Amazon EFS, you need to mount the file system on your EC2 instances using the NFS protocol. You can mount an EFS file system to multiple EC2 instances within the same or across different Availability Zones.
+
+### Steps to Set Up EFS:
+
+1. **Create an EFS File System**: In the AWS Management Console, create a new EFS file system.
+2. **Configure Mount Targets**: Choose the VPC and subnets where the EFS file system will be accessible.
+3. **Mount on EC2 Instances**: Use the NFS client (or the Amazon EFS Mount Helper) to mount the file system on your EC2 instances. Once mounted, it behaves like a typical POSIX-compliant file system.
+
+### Conclusion:
+
+Amazon EFS is a powerful and flexible solution for applications that require scalable, shared file storage. It provides a simple way to store and manage files with high availability and durability, and it's particularly useful for applications requiring concurrent access to data across multiple EC2 instances.
