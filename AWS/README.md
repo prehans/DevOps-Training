@@ -877,3 +877,28 @@ To use Amazon EFS, you need to mount the file system on your EC2 instances using
 ### Conclusion:
 
 Amazon EFS is a powerful and flexible solution for applications that require scalable, shared file storage. It provides a simple way to store and manage files with high availability and durability, and it's particularly useful for applications requiring concurrent access to data across multiple EC2 instances.
+
+Here is a comparison between **Amazon Elastic Block Store (EBS)** and **Amazon Elastic File System (EFS)** in a table format:
+
+| Feature                         | Amazon EBS (Elastic Block Store)                                                                           | Amazon EFS (Elastic File System)                                                                       |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Type of Storage**             | Block storage                                                                                              | File storage                                                                                           |
+| **Data Access**                 | Can be attached to a single EC2 instance at a time                                                         | Can be mounted to multiple EC2 instances simultaneously                                                |
+| **Use Case**                    | Primarily for single instance block-level storage (e.g., databases, boot volumes)                          | Shared file storage across multiple instances (e.g., web applications, content management)             |
+| **Persistence**                 | Persistent storage tied to EC2 instances, data remains after stopping or restarting instances              | Persistent and shared across instances, data remains intact                                            |
+| **Scalability**                 | Needs manual provisioning, size can be increased manually (up to 64 TiB per volume)                        | Automatically scales based on usage, no need to provision storage capacity                             |
+| **Performance Modes**           | Multiple performance types (General Purpose SSD, Provisioned IOPS SSD, Throughput Optimized HDD, Cold HDD) | General Purpose and Max I/O performance modes                                                          |
+| **Throughput**                  | Higher throughput with Provisioned IOPS SSD (up to 64,000 IOPS per volume)                                 | Scales automatically with the number of clients and the amount of data being transferred               |
+| **Availability and Durability** | Replicated within a single Availability Zone                                                               | Replicated across multiple Availability Zones (high durability and availability)                       |
+| **Backup Support**              | Supports snapshots for backup and restore                                                                  | Supports AWS Backup for automated backups                                                              |
+| **Access**                      | Must be mounted as a block device on EC2, one instance at a time                                           | Can be mounted to multiple instances at the same time via NFS (Network File System)                    |
+| **Pricing Model**               | Pay for the storage provisioned (per GB-month) and performance type (SSD, HDD)                             | Pay based on the amount of storage used, with two storage classes: Standard and Infrequent Access (IA) |
+| **Operating Systems**           | Supports all operating systems as a block device                                                           | POSIX-compliant, supports Linux-based operating systems (NFS protocol)                                 |
+| **Network Access**              | Accessible only within the same Availability Zone                                                          | Accessible across Availability Zones within a region                                                   |
+| **Primary Use Cases**           | Boot volumes, databases, low-latency transactional workloads                                               | Content management, web serving, shared file storage, big data analytics                               |
+| **Encryption**                  | Supports encryption at rest using AWS KMS                                                                  | Supports encryption at rest and in transit                                                             |
+
+### Summary:
+
+- **EBS** is suitable for single-instance block-level storage, particularly for applications like databases or boot volumes.
+- **EFS** is ideal for applications needing shared file storage, such as web servers or content management systems, where multiple instances require access to the same data.
