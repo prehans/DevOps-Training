@@ -905,30 +905,59 @@ Here is a comparison between **Amazon Elastic Block Store (EBS)** and **Amazon E
 
 # Amazon FsX
 
-Here is a comparison between **Amazon Elastic Block Store (EBS)** and **Amazon Elastic File System (EFS)** in a table format:
+It seems like you might be referring to **Amazon FSx**, which is an AWS service for fully managed, high-performance file systems optimized for specific workloads.
 
-| Feature                         | Amazon EBS (Elastic Block Store)                                                                           | Amazon EFS (Elastic File System)                                                                       |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Type of Storage**             | Block storage                                                                                              | File storage                                                                                           |
-| **Data Access**                 | Can be attached to a single EC2 instance at a time                                                         | Can be mounted to multiple EC2 instances simultaneously                                                |
-| **Use Case**                    | Primarily for single instance block-level storage (e.g., databases, boot volumes)                          | Shared file storage across multiple instances (e.g., web applications, content management)             |
-| **Persistence**                 | Persistent storage tied to EC2 instances, data remains after stopping or restarting instances              | Persistent and shared across instances, data remains intact                                            |
-| **Scalability**                 | Needs manual provisioning, size can be increased manually (up to 64 TiB per volume)                        | Automatically scales based on usage, no need to provision storage capacity                             |
-| **Performance Modes**           | Multiple performance types (General Purpose SSD, Provisioned IOPS SSD, Throughput Optimized HDD, Cold HDD) | General Purpose and Max I/O performance modes                                                          |
-| **Throughput**                  | Higher throughput with Provisioned IOPS SSD (up to 64,000 IOPS per volume)                                 | Scales automatically with the number of clients and the amount of data being transferred               |
-| **Availability and Durability** | Replicated within a single Availability Zone                                                               | Replicated across multiple Availability Zones (high durability and availability)                       |
-| **Backup Support**              | Supports snapshots for backup and restore                                                                  | Supports AWS Backup for automated backups                                                              |
-| **Access**                      | Must be mounted as a block device on EC2, one instance at a time                                           | Can be mounted to multiple instances at the same time via NFS (Network File System)                    |
-| **Pricing Model**               | Pay for the storage provisioned (per GB-month) and performance type (SSD, HDD)                             | Pay based on the amount of storage used, with two storage classes: Standard and Infrequent Access (IA) |
-| **Operating Systems**           | Supports all operating systems as a block device                                                           | POSIX-compliant, supports Linux-based operating systems (NFS protocol)                                 |
-| **Network Access**              | Accessible only within the same Availability Zone                                                          | Accessible across Availability Zones within a region                                                   |
-| **Primary Use Cases**           | Boot volumes, databases, low-latency transactional workloads                                               | Content management, web serving, shared file storage, big data analytics                               |
-| **Encryption**                  | Supports encryption at rest using AWS KMS                                                                  | Supports encryption at rest and in transit                                                             |
+### Amazon FSx Overview:
 
-### Summary:
+Amazon FSx offers **two managed file system options**:
 
-- **EBS** is suitable for single-instance block-level storage, particularly for applications like databases or boot volumes.
-- **EFS** is ideal for applications needing shared file storage, such as web servers or content management systems, where multiple instances require access to the same data.
+1. **Amazon FSx for Windows File Server** – Provides fully managed, highly reliable, and scalable file storage that supports the Windows native SMB protocol.
+2. **Amazon FSx for Lustre** – Provides a fully managed high-performance file system optimized for workloads like high-performance computing (HPC), machine learning, media processing, and other data-intensive applications.
+
+### Amazon FSx for Windows File Server:
+
+- **Purpose**: Designed for Windows-based applications that require shared storage with Windows-compatible file system features such as Active Directory (AD) integration, Distributed File System (DFS), and SMB (Server Message Block) protocol.
+- **Use Cases**: Enterprise applications, Microsoft SQL Server, .NET applications, home directories, content management.
+- **Features**:
+  - Fully managed service with automatic backups and built-in security.
+  - Supports Windows-native features like NTFS, Active Directory (AD) integration, and Distributed File System (DFS).
+  - Scales up to petabytes of storage, with throughput options.
+  - Supports SMB protocol for sharing files across multiple EC2 instances or on-premises servers.
+
+### Amazon FSx for Lustre:
+
+- **Purpose**: High-performance file system designed for compute-intensive workloads. Lustre is an open-source parallel file system typically used in high-performance computing (HPC) environments.
+- **Use Cases**: Big data analytics, high-performance computing, media rendering, machine learning.
+- **Features**:
+  - Seamless integration with Amazon S3, enabling you to process massive amounts of data with high throughput and low-latency storage.
+  - Provides hundreds of gigabytes per second of throughput and millions of IOPS.
+  - Scalable and high-performance, suited for data-intensive applications.
+  - Optimized for workloads that require fast storage, like financial modeling, seismic data processing, genomics research, and more.
+
+### Key Differences Between FSx and Other AWS Storage Solutions:
+
+- **FSx for Windows File Server** is geared towards Windows-specific environments and applications, supporting SMB and Windows file system features.
+- **FSx for Lustre** is tailored for high-throughput and low-latency workloads, making it an excellent choice for compute-heavy applications, particularly those leveraging large datasets.
+
+### FSx vs. EFS:
+
+| Feature               | FSx for Windows File Server                        | FSx for Lustre                                  | Amazon EFS                                   |
+| --------------------- | -------------------------------------------------- | ----------------------------------------------- | -------------------------------------------- |
+| **Primary Use Case**  | Windows-based workloads                            | HPC, machine learning, data-intensive workloads | General-purpose file system with NFS support |
+| **Protocol**          | SMB                                                | Lustre                                          | NFS                                          |
+| **Integration**       | Active Directory (AD), Windows NTFS                | Amazon S3, HPC clusters                         | EC2, multiple AZs                            |
+| **Performance**       | Optimized for Windows applications                 | High throughput, low latency                    | Elastic scaling based on file size           |
+| **Cost**              | Based on the file system configuration and storage | Based on performance and storage                | Pay-as-you-use, based on storage and access  |
+| **Operating Systems** | Windows                                            | Linux                                           | Linux                                        |
+
+### When to Use Amazon FSx:
+
+- **FSx for Windows File Server**: Use this when you need a fully managed Windows-native file system with support for SMB, Active Directory, and NTFS.
+- **FSx for Lustre**: Ideal for high-performance workloads that require fast processing of large datasets, such as machine learning, media processing, and financial simulations.
+
+Both FSx options offer fully managed file storage with automatic backups, encryption, and high availability, tailored to meet different types of workloads.
+
+If you were referring to something else with "FXS," let me know!
 
 # Availability and Scalability
 
