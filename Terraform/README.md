@@ -159,3 +159,68 @@ resource "aws_instance" "my_instance" {
 With this setup, you can easily change parameters (like region, instance type, or number of instances) without modifying the core logic of your Terraform configuration.
 
 https://jhooq.com/terraform-variable-and-tfvars-file/
+
+# Terraform Locals
+
+In Terraform, **locals** are used to assign local values to simplify complex expressions or avoid repeating the same value multiple times within a module. These local values are scoped to the module in which they are defined, meaning they are not exposed outside the module and cannot be passed as inputs.
+
+### Syntax:
+
+Local values are defined inside a `locals` block and referenced with the `local.<variable_name>` syntax.
+
+### Example of Terraform `locals`:
+
+#### `main.tf`
+
+```hcl
+provider "aws" {
+  region = "us-west-2"
+}
+
+# Define local values
+locals {
+  environment       = "production"
+  instance_type     = "t2.micro"
+  instance_count    = 3
+  app_name          = "MyApp"
+  full_instance_name = "${local.app_name}-${local.environment}"
+}
+
+# Create multiple EC2 instances using locals
+resource "aws_instance" "my_instance" {
+  count         = local.instance_count        # Use local value for count
+  ami           = "ami-0c55b159cbfafe1f0"     # Replace with appropriate AMI
+  instance_type = local.instance_type         # Use local value for instance type
+  security_groups = [aws_security_group.web_sg.name]
+
+  tags = {
+    Name = "${local.full_instance_name}-${count.index}"  # Use local value for name
+  }
+}
+```
+
+### Key Points:
+
+- **`locals` block**: This is where you define the local values. In this example, variables like `environment`, `instance_type`, `app_name`, and `full_instance_name` are declared.
+- **Referencing**: You reference a local variable using `local.<variable_name>`. For example, `local.instance_type` or `local.full_instance_name`.
+- **Reusability**: Local values are useful to store computed values or values that are reused multiple times in the same module.
+
+### Example Breakdown:
+
+- **`local.environment`**: Stores the environment name (`production`).
+- **`local.full_instance_name`**: Concatenates the application name (`MyApp`) and the environment name (`production`), resulting in `MyApp-production`.
+- **`local.instance_count`**: Specifies that 3 instances should be created.
+
+### Benefits of Locals:
+
+1. **Simplify Code**: Instead of repeating the same values across your Terraform files, you can define them once and reuse them.
+2. **Improve Readability**: Local variables make the code more readable by breaking down complex expressions into simpler parts.
+3. **Avoid Duplication**: Prevents hardcoding the same value in multiple places, making the configuration easier to maintain and modify.
+
+### When to Use Locals:
+
+- When you need to reuse the same values across multiple resources.
+- When you have complex expressions that can be simplified.
+- When you need computed values (e.g., concatenating strings or performing calculations).
+
+Locals are an excellent way to streamline your Terraform configurations without making your code dependent on external inputs or exposing values externally.
