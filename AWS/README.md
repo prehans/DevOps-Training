@@ -5094,9 +5094,7 @@ https://www.naukri.com/code360/library/amazon-mq
 
 ### Pricing
 
-Amazon MQ pricing is based on the type and number of brokers, the storage used for messages, and data transfer. The cost structure typically includes charges for broker hours, storage, and data transfer out of the service, allowing users to pay only for what they use.
-
----
+## Amazon MQ pricing is based on the type and number of brokers, the storage used for messages, and data transfer. The cost structure typically includes charges for broker hours, storage, and data transfer out of the service, allowing users to pay only for what they use.
 
 ### Conclusion
 
