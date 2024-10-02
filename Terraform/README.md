@@ -162,6 +162,8 @@ https://jhooq.com/terraform-variable-and-tfvars-file/
 
 # Terraform Locals
 
+https://jhooq.com/how-to-use-terraform-locals/
+
 In Terraform, **locals** are used to assign local values to simplify complex expressions or avoid repeating the same value multiple times within a module. These local values are scoped to the module in which they are defined, meaning they are not exposed outside the module and cannot be passed as inputs.
 
 ### Syntax:
@@ -224,3 +226,188 @@ resource "aws_instance" "my_instance" {
 - When you need computed values (e.g., concatenating strings or performing calculations).
 
 Locals are an excellent way to streamline your Terraform configurations without making your code dependent on external inputs or exposing values externally.
+
+# Terraform Output
+
+https://jhooq.com/how-to-use-terraform-output-values/
+
+# Terraform loops
+
+https://jhooq.com/terraform-for-and-for-each-loop/
+
+# Terraform Provisioners
+
+https://jhooq.com/terraform-provisioner/
+
+# Terraform Dynamic Block
+
+https://jhooq.com/terraform-dynamic-block/
+
+# Terraform Module
+
+(again go through)
+
+https://jhooq.com/terraform-module/
+
+# Terraform Workspaces
+
+https://jhooq.com/terraform-workspaces/
+
+In Terraform, **workspaces** are a way to manage multiple environments (like `dev`, `qa`, `prod`) within the same configuration. Each workspace can have its own state and resources, allowing you to manage isolated environments using a single set of Terraform code.
+
+### Key Features of Workspaces:
+
+- **Multiple Environments**: Workspaces help you manage different environments (e.g., dev, qa, prod) with the same configuration.
+- **Separate States**: Each workspace maintains its own state file, ensuring that resources created in one workspace do not interfere with those in another.
+- **Easy Switching**: You can easily switch between workspaces using Terraform commands.
+
+### Workspace Commands:
+
+1. **Create a New Workspace**
+
+   ```bash
+   terraform workspace new <workspace_name>
+   ```
+
+   - This command creates a new workspace with the specified name.
+   - Example:
+     ```bash
+     terraform workspace new dev
+     ```
+
+2. **List All Workspaces**
+
+   ```bash
+   terraform workspace list
+   ```
+
+   - Lists all available workspaces in the current configuration.
+   - Example output:
+     ```bash
+     default
+     * dev
+     qa
+     prod
+     ```
+
+3. **Show the Current Workspace**
+
+   ```bash
+   terraform workspace show
+   ```
+
+   - Displays the name of the current workspace.
+   - Example:
+     ```bash
+     dev
+     ```
+
+4. **Switch to a Workspace**
+
+   ```bash
+   terraform workspace select <workspace_name>
+   ```
+
+   - Switches to the specified workspace.
+   - Example:
+     ```bash
+     terraform workspace select prod
+     ```
+
+5. **Delete a Workspace**
+   ```bash
+   terraform workspace delete <workspace_name>
+   ```
+   - Deletes a specified workspace. Note that you cannot delete the workspace you are currently in.
+   - Example:
+     ```bash
+     terraform workspace delete qa
+     ```
+
+### Example Usage of Workspaces:
+
+Suppose you are working with different environments (`dev`, `qa`, `prod`). Instead of creating separate Terraform files for each environment, you can use workspaces to manage them within the same configuration.
+
+1. **Define Resources in `main.tf`:**
+
+   ```hcl
+   provider "aws" {
+     region = "us-west-2"
+   }
+
+   resource "aws_instance" "my_instance" {
+     count         = var.instance_count
+     ami           = "ami-0c55b159cbfafe1f0"  # Replace with valid AMI ID
+     instance_type = "t2.micro"
+
+     tags = {
+       Name = "${terraform.workspace}-instance"
+     }
+   }
+
+   variable "instance_count" {
+     default = 1
+   }
+   ```
+
+2. **Switch to `dev` Workspace:**
+
+   ```bash
+   terraform workspace new dev
+   ```
+
+3. **Run Terraform Commands for `dev`:**
+
+   ```bash
+   terraform plan
+   terraform apply
+   ```
+
+4. **Switch to `prod` Workspace:**
+
+   ```bash
+   terraform workspace select prod
+   ```
+
+5. **Run Terraform Commands for `prod`:**
+   ```bash
+   terraform plan
+   terraform apply
+   ```
+
+### Benefits of Using Workspaces:
+
+- **Isolated State**: Workspaces maintain separate state files for each environment, ensuring that changes in one environment do not affect another.
+- **Code Reusability**: You can use the same Terraform configuration to manage multiple environments, avoiding duplication of code.
+- **Environment-Specific Configurations**: You can dynamically adjust configurations based on the current workspace using `terraform.workspace`, enabling environment-specific settings.
+
+### Workspace Considerations:
+
+- **Not for Every Use Case**: Workspaces are useful for isolated environments like `dev`, `qa`, and `prod`, but they might not be ideal for large-scale infrastructure management with complex branching.
+- **Workspaces are Local to the Directory**: Workspaces are specific to the working directory of your Terraform configuration.
+
+### Example of Using `terraform.workspace` in Variables:
+
+You can use `terraform.workspace` to adjust behavior based on the current workspace:
+
+```hcl
+variable "instance_count" {
+  default = {
+    default = 1
+    dev     = 1
+    prod    = 3
+  }
+}
+
+resource "aws_instance" "my_instance" {
+  count         = var.instance_count[terraform.workspace]
+  ami           = "ami-0c55b159cbfafe1f0"
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "${terraform.workspace}-instance"
+  }
+}
+```
+
+This example uses `terraform.workspace` to adjust the number of instances based on the current workspace (`dev` or `prod`).
