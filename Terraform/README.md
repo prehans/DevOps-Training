@@ -411,3 +411,256 @@ resource "aws_instance" "my_instance" {
 ```
 
 This example uses `terraform.workspace` to adjust the number of instances based on the current workspace (`dev` or `prod`).
+
+# Terraform State file
+
+https://jhooq.com/terraform-manage-state/
+
+The **Terraform state file** is a critical component of Terraform's infrastructure management. It tracks the current state of your infrastructure and is used by Terraform to plan, apply, and manage resources. Here's an overview of what the state file is and how you can manage it effectively:
+
+### 1. **What is the Terraform State File?**
+
+- The state file is a JSON-formatted file that records the current state of your infrastructure. By default, it’s stored locally as `terraform.tfstate`.
+- It serves as the "source of truth" for Terraform, helping it understand what infrastructure exists, what resources have been applied, and how they relate to each other.
+- Terraform uses the state file to compare the desired configuration (in your `.tf` files) with the actual state of the infrastructure (stored in `terraform.tfstate`), allowing it to generate a plan to apply changes.
+
+### 2. **Key Details Stored in the State File:**
+
+- Resource names and types.
+- Metadata (like IDs, IP addresses) of resources that have been created.
+- Dependencies between resources.
+- Output values defined in your Terraform configuration.
+- Sensitive information (such as passwords and access keys, unless encrypted).
+
+### 3. **State File Location:**
+
+- By default, the state file is stored locally as `terraform.tfstate`.
+- In a team setting or for larger projects, it's recommended to store the state file remotely (e.g., in AWS S3, Terraform Cloud, or Azure Blob Storage) to ensure consistency and allow collaboration across multiple users.
+
+### 4. **State File Management Operations:**
+
+#### a. **Local State Management:**
+
+- Terraform automatically manages the state file in the directory where the `terraform` commands are run.
+- Local state files are useful for small projects or individual work, but can cause issues in collaborative environments because the state file can become out of sync if multiple users modify the infrastructure.
+
+#### b. **Remote State Management:**
+
+- For larger teams or multi-environment setups, it's important to store the state remotely to avoid conflicts.
+- Remote state storage can be done in:
+  - **AWS S3** (with optional DynamoDB for state locking)
+  - **Terraform Cloud** or **Terraform Enterprise**
+  - **Azure Blob Storage**
+  - **Google Cloud Storage (GCS)**
+
+Example of configuring remote state in **AWS S3**:
+
+```hcl
+terraform {
+  backend "s3" {
+    bucket = "my-terraform-state-bucket"
+    key    = "path/to/my-state-file"
+    region = "us-east-1"
+    dynamodb_table = "terraform-lock-table"  # For state locking
+  }
+}
+```
+
+#### c. **State Locking**:
+
+- When multiple people or systems interact with Terraform simultaneously, there’s a risk of state corruption.
+- **State locking** prevents this by ensuring that only one process can modify the state file at a time. Many remote backends (e.g., AWS S3 + DynamoDB, Terraform Cloud) support state locking.
+
+#### d. **State File Commands:**
+
+- **terraform state list**: Lists all the resources in the current state file.
+- **terraform state show <resource>**: Shows the details of a specific resource in the state file.
+- **terraform state pull**: Retrieves the current state file from the backend.
+- **terraform state push**: Uploads a local state file to the configured remote backend.
+- **terraform state mv <src> <dst>**: Moves a resource in the state file to a different resource name.
+- **terraform state rm <resource>**: Removes a resource from the state file without destroying the resource in the real infrastructure.
+- **terraform state import**: Imports an existing resource from your infrastructure into the Terraform state file.
+
+#### e. **State File Migration**:
+
+If you need to move the state file from local storage to remote storage (or between remote backends), you can use the following steps:
+
+1.  **Initialize the new backend**: Update your `terraform { backend { ... } }` block in the configuration.
+2.  Run `terraform init` to initialize the new backend.
+3.  Terraform will offer to migrate the existing state file to the new backend automatically.
+
+#### f. **State File Locking**:
+
+- Locking prevents simultaneous write operations on the state file to avoid corruption.
+- Most remote backends (such as AWS S3 with DynamoDB, Terraform Cloud) offer state file locking. Always enable locking in collaborative environments.
+
+### 5. **Best Practices for Managing Terraform State:**
+
+- **Use Remote State for Collaboration**: If multiple team members are working on the same Terraform project, use remote state storage (e.g., S3, Terraform Cloud) to ensure consistency and prevent conflicts.
+- **Secure Sensitive Information**: The state file often contains sensitive information such as secrets, passwords, and keys. Use encrypted storage for remote state (such as S3 bucket with encryption enabled) or a tool like **Vault** for secure secret management.
+
+- **State Backups**: Regularly back up your state file. Most remote state backends support versioning, but if you’re using local state, create regular backups manually.
+
+- **State Locking**: Enable state locking to prevent multiple users or processes from working on the same state file simultaneously.
+
+- **Manage Drift**: Regularly check for drift between the state file and the actual infrastructure using `terraform plan`.
+
+- **Minimize Direct Edits**: Avoid manually editing the state file unless absolutely necessary, as incorrect changes can lead to inconsistencies.
+
+---
+
+### Example of Remote State with AWS S3:
+
+Here’s an example of using AWS S3 to store the state file with state locking via DynamoDB:
+
+```hcl
+terraform {
+  backend "s3" {
+    bucket         = "my-terraform-state-bucket"
+    key            = "path/to/my/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-lock-table"  # Optional: For state locking
+    encrypt        = true
+  }
+}
+```
+
+### Conclusion:
+
+Terraform state management is crucial for tracking your infrastructure. Remote state storage and locking mechanisms are best practices for preventing conflicts and ensuring collaboration. Regular maintenance, such as backups and minimizing manual state edits, will help you avoid issues.
+
+# Terraform state locking
+
+https://jhooq.com/terraform-state-file-locking/
+
+# Deploy using terraform on AWS lambda
+
+### Create a lambda function
+
+### In terraform ${path.module} is the current directory.
+
+resource "aws_lambda_function" "terraform_lambda_func" {
+filename = "${path.module}/python/hello-python.zip"
+function_name = "Jhooq-Lambda-Function"
+role = aws_iam_role.lambda_role.arn
+handler = "hello-python.lambda_handler"
+runtime = "python3.8"
+depends_on = [aws_iam_role_policy_attachment.attach_iam_policy_to_iam_role]
+}
+
+To configure AWS credentials for use with Terraform (or any AWS CLI tool), you need to set up your AWS access and secret keys. Here are the steps to do this on your local machine:
+
+# Steps to Configure AWS Credentials
+
+#### 1. **Install AWS CLI (if not already installed)**
+
+If you haven't already installed the AWS CLI, follow these steps based on your OS:
+
+- **Windows**: Download the installer from [AWS CLI official page](https://aws.amazon.com/cli/) or use `choco` (if you have Chocolatey):
+
+  ```bash
+  choco install awscli
+  ```
+
+- **macOS**: You can install it using `brew`:
+
+  ```bash
+  brew install awscli
+  ```
+
+- **Linux**: Use `apt` or `yum` based on your distribution:
+
+  ```bash
+  sudo apt install awscli
+  ```
+
+Verify the installation:
+
+```bash
+aws --version
+```
+
+#### 2. **Obtain AWS Access and Secret Keys**
+
+You need your AWS **Access Key ID** and **Secret Access Key**. These can be generated from the AWS Management Console.
+
+1. **Log in to the AWS Console**.
+2. Navigate to **IAM** (Identity and Access Management).
+3. In the left-hand navigation pane, click on **Users**.
+4. Select your username.
+5. Go to the **Security credentials** tab and click on **Create access key**.
+6. Copy the **Access Key ID** and **Secret Access Key**.
+
+#### 3. **Configure AWS CLI with your credentials**
+
+Once you have the **Access Key ID** and **Secret Access Key**, you can configure them using the AWS CLI:
+
+```bash
+aws configure
+```
+
+You’ll be prompted to enter the following details:
+
+```bash
+AWS Access Key ID [None]: YOUR_ACCESS_KEY_ID
+AWS Secret Access Key [None]: YOUR_SECRET_ACCESS_KEY
+Default region name [None]: YOUR_DEFAULT_REGION (e.g., us-east-1)
+Default output format [None]: json
+```
+
+- **Access Key ID**: Enter the Access Key ID you copied from the AWS console.
+- **Secret Access Key**: Enter the Secret Access Key.
+- **Default region**: Enter the region you want to work in (e.g., `us-east-1`, `eu-central-1`).
+- **Output format**: You can set this to `json`, `text`, or `table`. `json` is commonly used.
+
+This will create and store your credentials in `~/.aws/credentials` (Linux/macOS) or `C:\Users\<your-user>\.aws\credentials` (Windows).
+
+#### 4. **Verify the Configuration**
+
+Run the following command to verify that your credentials are configured correctly:
+
+```bash
+aws sts get-caller-identity
+```
+
+This will return details about your AWS account, confirming that your credentials are correctly set up:
+
+```json
+{
+  "UserId": "AIDXXXXXX",
+  "Account": "123456789012",
+  "Arn": "arn:aws:iam::123456789012:user/YourUserName"
+}
+```
+
+#### 5. **Use with Terraform**
+
+Once your credentials are configured using the AWS CLI, Terraform will automatically use them when you run `terraform init`, `terraform apply`, or any other Terraform command that interacts with AWS.
+
+You don’t need to hard-code the credentials in your Terraform configuration. Instead, Terraform will look for the credentials in the following locations (in order of priority):
+
+1. Environment variables (`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`).
+2. Shared credentials file (`~/.aws/credentials`).
+3. IAM role credentials (if running within an AWS EC2 instance).
+
+### Optionally: Set AWS Credentials as Environment Variables
+
+Alternatively, you can also export the AWS credentials as environment variables (useful for scripts or CI pipelines):
+
+- **Windows (PowerShell)**:
+
+  ```bash
+  $env:AWS_ACCESS_KEY_ID="YOUR_ACCESS_KEY_ID"
+  $env:AWS_SECRET_ACCESS_KEY="YOUR_SECRET_ACCESS_KEY"
+  ```
+
+- **Linux/macOS**:
+
+  ```bash
+  export AWS_ACCESS_KEY_ID="YOUR_ACCESS_KEY_ID"
+  export AWS_SECRET_ACCESS_KEY="YOUR_SECRET_ACCESS_KEY"
+  ```
+
+### Conclusion
+
+By following the steps above, you’ll configure AWS credentials on your machine using either the AWS CLI configuration or environment variables. Once configured, you can use Terraform to provision and manage AWS resources without having to hard-code credentials into your scripts.
