@@ -419,3 +419,669 @@ Kubernetes relies on CNI to handle networking for all the containers (or pods) i
 There are many CNI plugins available, each offering different features or capabilities. You can look them up on the CNI GitHub repository to find one that matches your requirements.
 
 In summary, CNI is like a network setup guide for containers, helping Kubernetes ensure that all the networking works smoothly and efficiently.
+
+# Pods with Yaml
+
+In Kubernetes, **Pods** are the smallest and simplest unit that you can create or deploy. A Pod represents a single instance of a running process in your cluster and can contain one or more containers. Pods are defined using **YAML configuration files**, which describe the desired state of the Pod and its associated containers.
+
+Here’s a guide on how to define and work with Pods using YAML in Kubernetes.
+
+### Structure of a Pod YAML File
+
+A typical Kubernetes Pod YAML file has the following components:
+
+1. **apiVersion**: Specifies the version of the Kubernetes API you’re using.
+2. **kind**: Defines the type of object you are creating (e.g., `Pod`).
+3. **metadata**: Provides metadata about the Pod, such as its name, namespace, and labels.
+4. **spec**: Describes the desired state of the Pod, including the containers and their configurations (e.g., image, ports, etc.).
+
+### Example 1: Simple Pod YAML
+
+Here is a basic example of a Pod definition in a YAML file:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-nginx-pod
+  labels:
+    app: nginx
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx:latest
+      ports:
+        - containerPort: 80
+```
+
+### Explanation of the Example:
+
+- **apiVersion**: The API version for Pod objects is `v1` (default).
+- **kind**: Specifies the type of resource being created, which is `Pod`.
+- **metadata**: Contains the name of the Pod (`my-nginx-pod`) and labels (`app: nginx`), which can be used for organizing and selecting Pods.
+- **spec**:
+  - **containers**: Defines the containers that will run in the Pod. In this case, there’s only one container:
+    - **name**: `nginx-container` is the name of the container inside the Pod.
+    - **image**: The Docker image used to run this container, `nginx:latest`.
+    - **ports**: The container will expose port 80.
+
+### Creating the Pod
+
+To create this Pod in your Kubernetes cluster, follow these steps:
+
+1. Save the YAML content in a file, e.g., `nginx-pod.yaml`.
+2. Apply the YAML file using the `kubectl` command:
+
+   ```bash
+   kubectl apply -f nginx-pod.yaml
+   ```
+
+3. Check if the Pod is running:
+
+   ```bash
+   kubectl get pods
+   ```
+
+You should see the `my-nginx-pod` in the output.
+
+### Example 2: Pod with Environment Variables and Volume
+
+Here’s an example of a more complex Pod that has environment variables and a volume mount:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-app-pod
+spec:
+  containers:
+    - name: my-app-container
+      image: my-app-image:1.0
+      env:
+        - name: ENV_VAR_NAME
+          value: "production"
+      ports:
+        - containerPort: 8080
+      volumeMounts:
+        - mountPath: "/app/config"
+          name: config-volume
+  volumes:
+    - name: config-volume
+      configMap:
+        name: app-config
+```
+
+### Explanation of the Example:
+
+- **env**: Sets environment variables for the container, e.g., `ENV_VAR_NAME` is set to `production`.
+- **volumeMounts**: Mounts the `config-volume` to the `/app/config` directory inside the container.
+- **volumes**: Refers to a Kubernetes **ConfigMap** named `app-config`, which is used to store configuration files.
+
+### Creating a Pod with Multiple Containers
+
+A Pod can contain more than one container, which share the same network namespace and can communicate with each other via `localhost`. Here's an example of a Pod with two containers:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: multi-container-pod
+spec:
+  containers:
+    - name: container-one
+      image: nginx
+      ports:
+        - containerPort: 80
+    - name: container-two
+      image: busybox
+      command: ["sh", "-c", "echo Hello, Kubernetes! && sleep 3600"]
+```
+
+### Explanation of the Multi-Container Pod:
+
+- This Pod has two containers:
+
+  1. **container-one**: Runs the `nginx` image and exposes port 80.
+  2. **container-two**: Runs the `busybox` image, which prints a message and sleeps for an hour.
+
+  Both containers share the same IP and can communicate with each other via `localhost`.
+
+### Viewing and Managing Pods
+
+Once you’ve created Pods, you can interact with them using the `kubectl` command-line tool:
+
+- **Get a list of Pods**:
+
+  ```bash
+  kubectl get pods
+  ```
+
+- **View detailed information about a Pod**:
+
+  ```bash
+  kubectl describe pod <pod-name>
+  ```
+
+- **Delete a Pod**:
+
+  ```bash
+  kubectl delete pod <pod-name>
+  ```
+
+### Debugging Pods
+
+To debug a running Pod, you can:
+
+1. **View Pod Logs**:
+
+   ```bash
+   kubectl logs <pod-name>
+   ```
+
+   If a Pod has multiple containers, you can specify the container name:
+
+   ```bash
+   kubectl logs <pod-name> -c <container-name>
+   ```
+
+2. **Execute a Command in a Running Pod**:
+
+   You can run commands inside a Pod’s container to troubleshoot issues:
+
+   ```bash
+   kubectl exec -it <pod-name> -- /bin/bash
+   ```
+
+   This command opens an interactive shell in the specified container.
+
+### Conclusion
+
+In Kubernetes, **Pods** are defined using YAML files, which specify how the containerized applications should run and interact within the cluster. Understanding the structure of Pod YAML files is essential for managing Pods effectively, allowing you to define single and multi-container applications, configure environment variables, attach volumes, and more.
+
+# Replication Controller and Replica set
+
+In Kubernetes, **ReplicationController** and **ReplicaSet** are both mechanisms used to ensure that a specified number of Pod replicas are running at any given time. While they serve similar purposes, **ReplicaSet** is the newer and more flexible version of **ReplicationController** and is generally preferred in modern Kubernetes deployments.
+
+### 1. **ReplicationController**
+
+A **ReplicationController** ensures that a specified number of replicas of a Pod are running at all times. If a Pod goes down, the ReplicationController replaces it by creating a new Pod. It also scales the number of replicas up or down based on changes in the configuration.
+
+#### Key Features:
+
+- Ensures that a specific number of Pods are running at all times.
+- Automatically replaces any failed Pods.
+- Performs scaling (up and down) by adjusting the number of replicas.
+
+However, ReplicationController uses basic matching for selecting Pods based on their labels. This is where **ReplicaSet** offers more advanced features.
+
+#### Example: ReplicationController YAML
+
+```yaml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: my-replication-controller
+spec:
+  replicas: 3
+  selector:
+    app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-container
+          image: nginx
+```
+
+- **replicas**: Specifies the desired number of Pods (3 in this case).
+- **selector**: Defines how the ReplicationController finds Pods to manage (by matching the `app: my-app` label).
+- **template**: Describes the template for the Pods that will be created.
+
+### 2. **ReplicaSet**
+
+A **ReplicaSet** is an upgraded and more flexible version of the ReplicationController. It’s backward compatible and serves the same function: ensuring that a specific number of replicas are running at all times. The main difference is that ReplicaSet supports **set-based label selectors**, which provide more flexibility when matching Pods.
+
+ReplicaSets are primarily used by **Deployments** (a higher-level abstraction for managing Pods) rather than being used directly.
+
+#### Key Features:
+
+- Ensures that a specified number of Pod replicas are running.
+- Supports **set-based label selectors** (i.e., match expressions like `In`, `NotIn`).
+- Used internally by Deployments for rolling updates and other management functions.
+- Can be used directly, but Deployments are usually preferred for managing ReplicaSets.
+
+#### Example: ReplicaSet YAML
+
+```yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: my-replica-set
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-container
+          image: nginx
+```
+
+- **selector**: Defines which Pods this ReplicaSet should manage. In this example, it manages Pods with the `app: my-app` label.
+- **matchLabels**: A simple label selector that matches Pods with specific labels.
+- **replicas**: Specifies how many Pods should be running (3 in this case).
+- **template**: Defines the template for the Pod.
+
+#### Advanced Example: Set-Based Selector in ReplicaSet
+
+With a **set-based selector**, you can match multiple labels or use conditions:
+
+```yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: example-replicaset
+spec:
+  replicas: 3
+  selector:
+    matchExpressions:
+      - key: tier
+        operator: In
+        values:
+          - frontend
+          - backend
+  template:
+    metadata:
+      labels:
+        tier: frontend
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+```
+
+- **matchExpressions**: This selector matches Pods that have the `tier` label set to either `frontend` or `backend`. This provides more flexibility than the matchLabels approach.
+
+### Differences Between ReplicationController and ReplicaSet
+
+| Feature                      | ReplicationController                               | ReplicaSet                                          |
+| ---------------------------- | --------------------------------------------------- | --------------------------------------------------- |
+| **Version**                  | Older, part of the original Kubernetes API (`v1`).  | Newer, part of `apps/v1` API.                       |
+| **Selector**                 | Uses simple equality-based selectors.               | Supports set-based selectors (`In`, `NotIn`, etc.). |
+| **Use Case**                 | Still usable but not recommended for new workloads. | Typically used as part of a Deployment.             |
+| **Deployment Compatibility** | Not compatible with Deployments.                    | Managed by Deployments, enabling rolling updates.   |
+
+### Deployments (Preferred Approach)
+
+Though you can use ReplicaSets directly, **Deployments** are generally the preferred way to manage Pods in Kubernetes. A Deployment manages ReplicaSets and offers additional features like:
+
+- Rolling updates.
+- Rollbacks to previous versions.
+- Declarative updates to Pods and ReplicaSets.
+
+When you create a Deployment, it automatically creates and manages ReplicaSets behind the scenes.
+
+#### Example: Deployment Using a ReplicaSet
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+```
+
+The Deployment will manage the ReplicaSet for you, including updating, scaling, and rollback operations.
+
+### Summary
+
+- **ReplicationController**: Ensures that a specific number of Pods are running but has been superseded by ReplicaSet.
+- **ReplicaSet**: A newer and more flexible version of ReplicationController that supports set-based label selectors and is typically used as part of a **Deployment**.
+- **Deployment**: The preferred method for managing Pods, which automatically handles ReplicaSets and provides additional functionality like rolling updates and rollbacks.
+
+In modern Kubernetes, you will most commonly work with **Deployments**, which manage ReplicaSets behind the scenes.
+
+# Difference between Deployment and Replica set
+
+The **ReplicaSet** and **Deployment** in Kubernetes are closely related but serve different purposes. While both ensure that a specified number of Pod replicas are running at any given time, **Deployment** is a higher-level abstraction that provides more advanced features for managing Pods and ReplicaSets, such as rolling updates, rollbacks, and declarative updates.
+
+Here’s a breakdown of the key differences:
+
+### 1. **Purpose**
+
+- **ReplicaSet**:
+
+  - Ensures that a specified number of Pod replicas are running at any given time.
+  - It is responsible for creating, deleting, or maintaining Pods directly.
+  - While you can use ReplicaSets directly, they are most often managed indirectly by Deployments.
+
+- **Deployment**:
+  - A higher-level abstraction that manages ReplicaSets.
+  - Automatically creates and manages ReplicaSets for you.
+  - Provides more advanced features like rolling updates, rollbacks, and declarative updates.
+
+### 2. **Features**
+
+- **ReplicaSet**:
+
+  - Simply ensures the number of Pod replicas matches the desired state.
+  - Does not have native support for rolling updates, rollbacks, or versioning.
+  - Can use **label selectors** (including set-based selectors) to manage Pods.
+
+- **Deployment**:
+  - Can perform **rolling updates** to smoothly update Pods without downtime.
+  - Allows **rollbacks** to a previous version if something goes wrong.
+  - Declaratively defines the desired state of Pods and automatically updates ReplicaSets to match it.
+  - Supports **versioning** by creating new ReplicaSets for each version of the application.
+
+### 3. **Use Case**
+
+- **ReplicaSet**:
+
+  - Useful for maintaining the desired number of Pod replicas but without the advanced features provided by Deployment.
+  - Can be used for simple scenarios where you need basic scaling.
+
+- **Deployment**:
+  - Used in nearly all real-world Kubernetes scenarios because it simplifies the management of Pods, updates, and rollbacks.
+  - The preferred way to manage applications in Kubernetes, especially for continuous updates and version control.
+
+### 4. **Rolling Updates**
+
+- **ReplicaSet**:
+
+  - Does not support rolling updates on its own. If you want to update a Pod template, you would need to manually create a new ReplicaSet and delete the old one.
+
+- **Deployment**:
+  - Supports **rolling updates** out of the box. When you update the Deployment, it automatically creates a new ReplicaSet and gradually replaces the old Pods with new ones.
+  - You can specify the update strategy (e.g., rolling update vs. recreate).
+
+### 5. **Rollback**
+
+- **ReplicaSet**:
+
+  - Does not support rollbacks. Once you update a ReplicaSet or Pods, there is no easy way to revert to a previous version.
+
+- **Deployment**:
+  - Supports **rollbacks**. Each Deployment update is versioned, so you can easily revert to a previous state if a new version causes issues.
+
+### 6. **Scaling**
+
+- **ReplicaSet**:
+
+  - Supports manual scaling by changing the `replicas` field, but there is no built-in mechanism for automatically updating or scaling based on changes to the application version.
+
+- **Deployment**:
+  - Can automatically scale the Pods by adjusting the underlying ReplicaSet. You can scale the Deployment and it will manage the corresponding ReplicaSet automatically.
+
+### 7. **Declarative Approach**
+
+- **ReplicaSet**:
+
+  - It is less declarative in the sense that you need to manage changes manually, such as updating Pods or scaling.
+
+- **Deployment**:
+  - Fully declarative. You describe the desired state in the Deployment YAML, and Kubernetes manages the ReplicaSets and Pods to match that state.
+
+### Example of a **ReplicaSet** YAML
+
+```yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: my-replicaset
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-container
+          image: nginx
+```
+
+In this example, the ReplicaSet maintains 3 replicas of the `nginx` container. There are no built-in mechanisms for handling updates or rollbacks.
+
+### Example of a **Deployment** YAML
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-container
+          image: nginx:1.14.2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+```
+
+In this Deployment example:
+
+- It creates a ReplicaSet with 3 replicas.
+- Supports rolling updates through the `strategy` field.
+- The Deployment manages the ReplicaSet, so if you update the `nginx` image, it will create a new ReplicaSet and gradually replace old Pods.
+
+### Key Differences Between **ReplicaSet** and **Deployment**
+
+| Feature              | ReplicaSet                               | Deployment                                                              |
+| -------------------- | ---------------------------------------- | ----------------------------------------------------------------------- |
+| **Primary Function** | Maintains a fixed number of Pod replicas | Manages ReplicaSets, providing features like rolling updates, rollbacks |
+| **Rolling Updates**  | Not supported                            | Supported                                                               |
+| **Rollback**         | Not supported                            | Supported                                                               |
+| **Pod Versioning**   | Not supported                            | Supported                                                               |
+| **Scaling**          | Manually done                            | Automatically managed by Deployment                                     |
+| **Use Case**         | Simple, manual Pod management            | Advanced, declarative Pod management                                    |
+| **Update Strategy**  | Requires manual ReplicaSet updates       | Supports rolling updates and can recreate Pods gracefully               |
+
+### When to Use:
+
+- **Use ReplicaSet**:
+  - If you want to manage Pod replicas without needing advanced features like rolling updates and rollbacks (although this is rare in practice).
+- **Use Deployment**:
+  - If you need to manage the entire lifecycle of an application, including updates, scaling, and rollbacks (this is the recommended method in most scenarios).
+
+### Conclusion
+
+- **ReplicaSet** is the low-level controller responsible for maintaining a desired number of Pods.
+- **Deployment** is a higher-level abstraction that manages ReplicaSets and provides advanced features like rolling updates, rollbacks, and versioning.
+
+In most cases, you will work with **Deployments**, which handle everything related to managing ReplicaSets and Pods, while providing additional features for smoother application updates and maintenance.
+
+# Update and Rollback in Deployment
+
+In Kubernetes, **Deployments** provide mechanisms for **updating** and **rolling back** applications in a safe and controlled manner. These features allow you to change the state of your application (e.g., new versions, configuration changes) and recover to a previous state if something goes wrong.
+
+### **1. Updating a Deployment**
+
+Updating a Deployment typically means modifying the Pod template (e.g., updating the container image or configuration). Kubernetes will handle the update process using a **rolling update strategy** by default, ensuring minimal downtime during the update.
+
+#### **Rolling Update**
+
+The rolling update strategy allows you to update your application gradually by replacing the old Pods with new Pods without bringing down the entire service. The update occurs in batches, so some old Pods remain running while new ones are created, ensuring that the application is always available.
+
+#### Example: Updating the Deployment
+
+Let’s say you have an existing Deployment with a `nginx:1.14.2` image, and you want to update it to `nginx:1.16.1`.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.16.1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+```
+
+- **maxUnavailable**: The maximum number of Pods that can be unavailable during the update. In this case, only 1 Pod can be down.
+- **maxSurge**: The maximum number of extra Pods that can be created temporarily during the update.
+
+#### Steps for Updating:
+
+1. **Edit the Deployment YAML**: Update the `image` field in the Deployment.
+2. **Apply the Changes**: Use the `kubectl apply -f <deployment.yaml>` command to apply the update.
+3. **Rolling Update in Action**: Kubernetes will start creating new Pods with the updated image and slowly terminate the old Pods.
+4. **Monitor the Update**: Use `kubectl rollout status deployment <deployment-name>` to watch the progress of the update.
+
+### **2. Rollback a Deployment**
+
+Kubernetes keeps track of the history of changes made to Deployments. If an update causes issues, you can easily roll back to a previous revision of the Deployment.
+
+#### Automatic Rollback:
+
+Kubernetes allows you to roll back to the previous state in case the new deployment fails, for example, due to a failing health check or improper configuration.
+
+#### Manual Rollback:
+
+To roll back a Deployment, Kubernetes provides a simple command:
+
+```bash
+kubectl rollout undo deployment <deployment-name>
+```
+
+This command will undo the most recent change and revert the Deployment to the previous version.
+
+You can also specify which revision to roll back to:
+
+```bash
+kubectl rollout undo deployment <deployment-name> --to-revision=<revision-number>
+```
+
+#### Steps for Rolling Back:
+
+1. **Check the History**: You can view the Deployment history with:
+
+   ```bash
+   kubectl rollout history deployment <deployment-name>
+   ```
+
+   This command will show you the history of all the revisions for that Deployment.
+
+2. **Initiate the Rollback**: If the update caused issues, roll back the Deployment with:
+
+   ```bash
+   kubectl rollout undo deployment <deployment-name>
+   ```
+
+3. **Monitor the Rollback**: Track the status of the rollback:
+   ```bash
+   kubectl rollout status deployment <deployment-name>
+   ```
+
+#### Example: Rolling Back to a Previous Revision
+
+Assume your Deployment failed after an update, and you want to roll back to the previous working version. You can run:
+
+```bash
+kubectl rollout undo deployment/nginx-deployment
+```
+
+If you want to roll back to a specific revision, run:
+
+```bash
+kubectl rollout undo deployment/nginx-deployment --to-revision=2
+```
+
+### **3. Rollout Status**
+
+To monitor the progress of a rolling update or rollback, Kubernetes provides the `rollout` command:
+
+```bash
+kubectl rollout status deployment <deployment-name>
+```
+
+This command shows the current state of the rollout, such as whether Pods are being updated or if the rollout is complete.
+
+### **4. Pausing and Resuming Updates**
+
+Sometimes you may want to pause an update mid-process to verify the current state before proceeding.
+
+#### **Pausing a Deployment**
+
+You can pause a rolling update using:
+
+```bash
+kubectl rollout pause deployment <deployment-name>
+```
+
+This will stop the creation of new Pods but will not kill any of the existing ones.
+
+#### **Resuming a Deployment**
+
+After pausing a rollout, you can resume it with:
+
+```bash
+kubectl rollout resume deployment <deployment-name>
+```
+
+### **Key Fields in Deployment Update Strategy**
+
+| Field              | Description                                                                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **maxUnavailable** | Specifies the maximum number of Pods that can be unavailable during the update process (either as a percentage or a number).                      |
+| **maxSurge**       | Specifies the maximum number of Pods that can be created above the desired number of Pods during the update (either as a percentage or a number). |
+| **type**           | Defines the update strategy, typically **RollingUpdate** or **Recreate**.                                                                         |
+
+- **RollingUpdate**: Kubernetes gradually updates the Pods, ensuring some are always running.
+- **Recreate**: Kubernetes will take down all existing Pods and then create new ones, which can lead to downtime.
+
+### **Summary**
+
+- **Updating**: Deployments allow rolling updates, ensuring new Pods are created while old ones are gradually terminated, keeping the service up and running.
+- **Rollback**: If an update fails, you can easily revert to a previous version using the `kubectl rollout undo` command.
+- **Pausing/Resuming**: You can pause a rollout to inspect the state and resume it when ready.
+- **Monitoring**: You can monitor the progress of both updates and rollbacks using the `kubectl rollout status` command.
+
+In real-world scenarios, these features help you ensure smooth application upgrades with minimal disruption and provide a mechanism to quickly recover from failures.
